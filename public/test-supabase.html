@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Supabase Connection Test</h1>
+        <button id="test-btn">Test Connection</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Using the provided Supabase credentials
+        const supabaseUrl = 'https://fjhtbrdnjhlxrwarcfrr.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqaHRicmRuamhseHJ3YXJjZnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzcxNjgsImV4cCI6MjA3NTA1MzE2OH0.Ox85u9pb2-SwvXQatJ9Qauc22tEVawynOHYXwle57pI'
+        
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+        
+        document.getElementById('test-btn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result')
+            resultDiv.innerHTML = '<p>Testing connection...</p>'
+            
+            try {
+                // Test authentication
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+                
+                if (sessionError) {
+                    resultDiv.innerHTML = `<p style="color: red;">Supabase session error: ${sessionError.message}</p>`
+                    return
+                }
+                
+                resultDiv.innerHTML += `<p>Supabase session: ${session ? 'Active' : 'None'}</p>`
+                
+                // Test database connection by querying a table (if exists)
+                const { data, error } = await supabase
+                    .from('blood_requests')
+                    .select('id')
+                    .limit(1)
+                
+                if (error && error.message !== 'The resource was not found') {
+                    resultDiv.innerHTML += `<p style="color: red;">Supabase database error: ${error.message}</p>`
+                    return
+                }
+                
+                resultDiv.innerHTML += `<p style="color: green;">Supabase connection successful!</p>`
+                resultDiv.innerHTML += `<p>Sample data query result: ${JSON.stringify(data)}</p>`
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Unexpected error: ${error.message}</p>`
+            }
+        })
+    </script>
+</body>
+</html>
