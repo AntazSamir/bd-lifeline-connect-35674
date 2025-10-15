@@ -105,13 +105,7 @@ const SignIn = () => {
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="text-sm">
-                  <Link to="/forgot-password" className="text-primary hover:text-primary-dark">
-                    Forgot password?
-                  </Link>
-                </div>
-              </div>
+              {/* Forgot password link removed - route not implemented yet */}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full bg-primary hover:bg-primary-dark" disabled={isLoading}>

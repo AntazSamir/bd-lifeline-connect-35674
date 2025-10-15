@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Menu, Search, User, LogOut, Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bloodLogo from "@/assets/blood_logo.png";
 import { getCurrentUser, signOut } from "@/services/dbService";
@@ -14,14 +14,14 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { isAdmin } = useUserRole();
   
-  // Check if user is logged in (in a real app, this would be more sophisticated)
-  useState(() => {
+  // Check if user is logged in
+  useEffect(() => {
     getCurrentUser().then(user => {
       setIsLoggedIn(!!user);
     }).catch(() => {
       setIsLoggedIn(false);
     });
-  });
+  }, []);
 
   const handleSignOut = async () => {
     try {
