@@ -42,7 +42,7 @@ const CreateRequest = () => {
         };
       case "flexible":
         return {
-          color: "bg-secondary text-white",
+          color: "bg-muted text-foreground",
           icon: <Clock className="h-4 w-4" />,
           description: "Required within 3 days - Planned procedure"
         };

@@ -214,7 +214,7 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
           </div>
 
           <Button 
-            className="w-full bg-primary hover:bg-primary-dark" 
+            className="w-full" 
             size="lg"
             onClick={handleSubmit}
           >

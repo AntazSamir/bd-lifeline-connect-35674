@@ -190,11 +190,11 @@ const FindDonors = () => {
   const getTierColor = (tier: string) => {
     switch (tier) {
       case "Gold Donor":
-        return "bg-yellow-500 text-white";
+        return "bg-hope-green text-white";
       case "Silver Donor":
-        return "bg-gray-400 text-white";
+        return "bg-muted text-foreground";
       case "Bronze Donor":
-        return "bg-orange-600 text-white";
+        return "bg-primary text-primary-foreground";
       default:
         return "bg-secondary text-secondary-foreground";
     }

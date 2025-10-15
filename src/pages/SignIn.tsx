@@ -108,12 +108,12 @@ const SignIn = () => {
               {/* Forgot password link removed - route not implemented yet */}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full bg-primary hover:bg-primary-dark" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
               <div className="text-center text-sm">
                 Need a new account?{" "}
-                <Link to="/sign-up" className="text-primary hover:text-primary-dark font-medium">
+                <Link to="/sign-up" className="text-primary hover:underline font-medium">
                   Sign Up
                 </Link>
               </div>

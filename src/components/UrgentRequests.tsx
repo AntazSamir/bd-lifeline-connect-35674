@@ -103,9 +103,9 @@ const UrgentRequests = () => {
       case "immediate":
         return "bg-urgent text-white";
       case "urgent":
-        return "bg-primary text-white";
+        return "bg-primary text-primary-foreground";
       default:
-        return "bg-secondary text-white";
+        return "bg-muted text-foreground";
     }
   };
 
@@ -162,7 +162,7 @@ const UrgentRequests = () => {
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <Button size="sm" className="flex-1 bg-primary hover:bg-primary-dark">
+                  <Button size="sm" className="flex-1">
                     <Phone className="h-4 w-4 mr-2" />
                     Contact
                   </Button>

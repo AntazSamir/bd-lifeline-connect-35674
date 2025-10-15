@@ -138,7 +138,7 @@ const UserProfile = () => {
         <Header />
         <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-12">
           <div className="text-center">
-            <p className="text-red-500">Error loading profile: {error}</p>
+            <p className="text-destructive">Error loading profile: {error}</p>
             <Button onClick={fetchProfile} className="mt-4">Retry</Button>
           </div>
         </div>
