@@ -60,9 +60,9 @@ const Header = () => {
               Admin
             </Link>
           )}
-          <a href="#contact" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Actions */}
@@ -126,9 +126,9 @@ const Header = () => {
                 Admin Panel
               </Link>
             )}
-            <a href="#contact" className="block text-sm font-medium hover:text-primary transition-colors">
+            <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors">
               Contact
-            </a>
+            </Link>
             
             {isLoggedIn ? (
               <>
