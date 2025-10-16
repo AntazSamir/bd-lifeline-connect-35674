@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useBloodRequests } from "@/hooks/useDatabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { supabase } from "@/services/supabaseClient";
 
 const CreateRequest = () => {
   const navigate = useNavigate();
@@ -25,6 +26,16 @@ const CreateRequest = () => {
     patient_info: "",
     contact_number: ""
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/sign-in");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const getUrgencyInfo = (level: string) => {
     switch (level) {

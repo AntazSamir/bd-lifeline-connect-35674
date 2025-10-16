@@ -1,12 +1,24 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Droplets, Plus } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BloodRequestFeed from "@/components/BloodRequestFeed";
+import { supabase } from "@/services/supabaseClient";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/sign-in");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
