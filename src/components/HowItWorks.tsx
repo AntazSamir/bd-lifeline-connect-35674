@@ -73,7 +73,7 @@ const HowItWorks = () => {
         {/* Additional Info */}
         <div className="mt-12 grid md:grid-cols-2 gap-8 text-center">
           <div className="space-y-2">
-            <div className="text-2xl font-bold text-secondary">24/7</div>
+            <div className="text-2xl font-bold text-hope-green">24/7</div>
             <div className="text-sm text-muted-foreground">Platform availability</div>
           </div>
           <div className="space-y-2">
