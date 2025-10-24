@@ -5,26 +5,22 @@ const steps = [
   {
     icon: UserPlus,
     title: "Register",
-    description: "Sign up as a donor or recipient with basic information and complete verification.",
-    step: "01"
+    description: "Sign up as a donor or recipient with basic information and complete verification."
   },
   {
     icon: Search,
     title: "Search & Match",
-    description: "Find compatible donors in your area or post a blood request with urgency level.",
-    step: "02"
+    description: "Find compatible donors in your area or post a blood request with urgency level."
   },
   {
     icon: Heart,
     title: "Connect & Donate",
-    description: "Connect directly with donors or recipients through our secure platform.",
-    step: "03"
+    description: "Connect directly with donors or recipients through our secure platform."
   },
   {
     icon: Award,
     title: "Earn Recognition",
-    description: "Donors earn badges and rewards for their life-saving contributions to the community.",
-    step: "04"
+    description: "Donors earn badges and rewards for their life-saving contributions to the community."
   }
 ];
 
@@ -47,14 +43,9 @@ const HowItWorks = () => {
             return (
               <Card key={index} className="relative overflow-hidden hover:shadow-medium transition-shadow duration-300">
                 <CardContent className="p-6 text-center">
-                  {/* Step Number */}
-                  <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-sm font-bold text-primary">{step.step}</span>
-                  </div>
-                  
                   {/* Icon */}
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:shadow-[0_0_30px_rgba(239,68,68,0.7)] transition-shadow duration-300">
+                    <IconComponent className="h-8 w-8 text-primary drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
                   </div>
 
                   {/* Content */}
