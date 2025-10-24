@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/services/dbService";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import heroBackground from "@/assets/hero-background.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -32,15 +33,24 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
-      <div className="container max-w-4xl text-center space-y-12">
+    <section 
+      id="home" 
+      className="min-h-screen flex flex-col items-center justify-center bg-background px-4 relative"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${heroBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="container max-w-4xl text-center space-y-12 relative z-10">
         {/* Main Heading */}
         <div className="space-y-6">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
             Save Lives with{" "}
             <span className="text-destructive">BloodConnect</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
             Connect with blood donors across Bangladesh instantly. Every donation saves up to 3 lives.
           </p>
         </div>
