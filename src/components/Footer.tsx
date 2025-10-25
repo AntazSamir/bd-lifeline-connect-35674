@@ -1,6 +1,6 @@
 import { Mail, Phone, MapPin } from "lucide-react";
 import bloodLogo from "@/assets/blood_logo.png";
-
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="bg-muted text-muted-foreground border-t">
@@ -21,18 +21,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-semibold">Quick Links</h4>
             <nav className="space-y-2">
-              <a href="#home" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
+              <Link to="/" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
                 Home
-              </a>
-              <a href="#donate" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
+              </Link>
+              <Link to="/find-donors" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
                 Donate Blood
-              </a>
-              <a href="#request" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
+              </Link>
+              <Link to="/request-blood" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
                 Request Blood
-              </a>
-              <a href="#about" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
+              </Link>
+              <Link to="/#about" className="text-muted-foreground hover:text-foreground text-sm block transition-colors">
                 How It Works
-              </a>
+              </Link>
             </nav>
           </div>
 
