@@ -67,10 +67,6 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="sm" className="hidden sm:flex">
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
           <ThemeToggle />
           
           {isLoggedIn ? (
