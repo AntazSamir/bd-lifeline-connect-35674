@@ -35,8 +35,8 @@ const Header = () => {
     }
   };
 
-  return <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+  return <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 transition-all duration-300">
+      <div className="container flex h-20 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={bloodLogo} alt="BloodConnect Logo" className="h-9 w-9" />
@@ -44,25 +44,34 @@ const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link to="/" className="text-sm font-medium hover:text-primary transition-all duration-300 relative group">
             Home
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link to="/request-blood" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/find-donors" className="text-sm font-medium hover:text-primary transition-all duration-300 relative group">
+            Find Donor
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </Link>
+          <Link to="/request-blood" className="text-sm font-medium hover:text-primary transition-all duration-300 relative group">
             Request Blood
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link to="/find-donors" className="text-sm font-medium hover:text-primary transition-colors">
-            Find Donors
+          <Link to="/#about" className="text-sm font-medium hover:text-primary transition-all duration-300 relative group">
+            About
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </Link>
+          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-all duration-300 relative group">
+            Contact
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link to="/admin" className="text-sm font-medium hover:text-primary transition-all duration-300 flex items-center gap-1 relative group">
               <Shield className="h-4 w-4" />
               Admin
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
           )}
-          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
-            Contact
-          </Link>
         </nav>
 
         {/* Actions */}
@@ -90,9 +99,9 @@ const Header = () => {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/sign-up">
-                <Button size="sm">
-                  Register
+               <Link to="/sign-up">
+                <Button size="sm" className="bg-gradient-to-r from-primary to-urgent hover:opacity-90 transition-opacity">
+                  Become a Donor
                 </Button>
               </Link>
             </>
