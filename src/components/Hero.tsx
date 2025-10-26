@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Search, Users, LifeBuoy, MapPin } from "lucide-react";
+import { Heart, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/services/dbService";
@@ -13,6 +13,7 @@ const Hero = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
 
+  // Check if user is logged in
   useEffect(() => {
     getCurrentUser().then(user => {
       setIsLoggedIn(!!user);
@@ -23,8 +24,10 @@ const Hero = () => {
 
   const handleBecomeDonor = () => {
     if (isLoggedIn) {
+      // If user is logged in, open the donor registration dialog
       setRegistrationDialogOpen(true);
     } else {
+      // If user is not logged in, redirect to signup page
       navigate("/sign-up");
     }
   };
@@ -32,94 +35,53 @@ const Hero = () => {
   return (
     <section 
       id="home" 
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center bg-background px-4 relative"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.65)), url(${heroBackground})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${heroBackground})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="container max-w-6xl text-center space-y-16 relative z-10 px-4 py-20">
-        {/* Main Heading with animation */}
-        <div className="space-y-6 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-            Save Lives.{" "}
-            <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-              Share Hope.
-            </span>
+      <div className="container max-w-4xl text-center space-y-12 relative z-10">
+        {/* Main Heading */}
+        <div className="space-y-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+            Save Lives with{" "}
+            <span className="text-destructive">BloodConnect</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-light">
-            Join BloodConnect and help patients find life-saving blood donors in minutes across Bangladesh.
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+            Connect with blood donors across Bangladesh instantly. Every donation saves up to 3 lives.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
-          <Link to="/find-donors">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-urgent hover:opacity-90 text-white px-10 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Search className="h-5 w-5 mr-2" />
-              Find Donor
-            </Button>
-          </Link>
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="px-10 py-6 text-lg rounded-full bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm shadow-lg transition-all duration-300 hover:scale-105"
-            onClick={handleBecomeDonor}
-          >
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-white px-8" onClick={handleBecomeDonor}>
             <Heart className="h-5 w-5 mr-2" />
             Become a Donor
           </Button>
+          <Link to="/find-donors">
+            <Button size="lg" variant="outline" className="px-8">
+              <Search className="h-5 w-5 mr-2" />
+              Find Blood Now
+            </Button>
+          </Link>
         </div>
 
-        {/* Stats Counters */}
-        <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto animate-slide-up">
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <Users className="h-6 w-6 text-white/80" />
-              <div className="text-4xl font-bold text-white">10K+</div>
-            </div>
-            <div className="text-sm text-white/70 font-medium">Active Donors</div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <LifeBuoy className="h-6 w-6 text-white/80" />
-              <div className="text-4xl font-bold text-white">3.5K+</div>
-            </div>
-            <div className="text-sm text-white/70 font-medium">Lives Saved</div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <MapPin className="h-6 w-6 text-white/80" />
-              <div className="text-4xl font-bold text-white">64</div>
-            </div>
-            <div className="text-sm text-white/70 font-medium">Districts</div>
-          </div>
-        </div>
-
-        {/* Modern Glassmorphism Search Card */}
-        <Card className="max-w-4xl mx-auto glass-card border-white/20 shadow-2xl animate-slide-up">
-          <div className="p-8 space-y-6">
-            <div className="flex items-center justify-center gap-3 text-2xl font-bold text-foreground">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-urgent flex items-center justify-center">
-                <Search className="h-6 w-6 text-white" />
-              </div>
+        {/* Search Card */}
+        <Card className="p-8 max-w-2xl mx-auto bg-card shadow-lg">
+          <div className="space-y-6">
+            <div className="flex items-center justify-center gap-2 text-xl font-semibold text-foreground">
+              <Search className="h-5 w-5 text-destructive" />
               Find Blood Donors
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  Blood Group
-                </label>
+                <label className="text-sm font-medium text-foreground">Blood Group</label>
                 <Select>
-                  <SelectTrigger className="h-12 border-2 rounded-xl">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select blood group" />
                   </SelectTrigger>
                   <SelectContent>
@@ -136,12 +98,9 @@ const Hero = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  Location
-                </label>
+                <label className="text-sm font-medium text-foreground">Location</label>
                 <Select>
-                  <SelectTrigger className="h-12 border-2 rounded-xl">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select division" />
                   </SelectTrigger>
                   <SelectContent>
@@ -158,12 +117,9 @@ const Hero = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  Urgency
-                </label>
+                <label className="text-sm font-medium text-foreground">Urgency</label>
                 <Select>
-                  <SelectTrigger className="h-12 border-2 rounded-xl">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select urgency level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,15 +132,16 @@ const Hero = () => {
             </div>
 
             <Link to="/find-donors" className="block">
-              <Button className="w-full bg-gradient-to-r from-primary to-urgent hover:opacity-90 text-white py-7 text-lg rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.02]">
+              <Button className="w-full bg-destructive hover:bg-destructive/90 text-white py-6 text-lg">
                 <Search className="h-5 w-5 mr-2" />
-                Search Donors Now
+                Search Donors
               </Button>
             </Link>
           </div>
         </Card>
       </div>
       
+      {/* Donor Registration Dialog */}
       <DonorRegistrationDialog 
         open={registrationDialogOpen} 
         onOpenChange={setRegistrationDialogOpen}
