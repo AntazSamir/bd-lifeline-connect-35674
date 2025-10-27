@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Menu, Search, User, LogOut, Shield } from "lucide-react";
+import { Menu, User, LogOut, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bloodLogo from "@/assets/blood_logo.png";
@@ -12,6 +12,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { isAdmin } = useUserRole();
   
   // Check if user is logged in
@@ -21,6 +22,15 @@ const Header = () => {
     }).catch(() => {
       setIsLoggedIn(false);
     });
+  }, []);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSignOut = async () => {
@@ -35,8 +45,12 @@ const Header = () => {
     }
   };
 
-  return <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+  return <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+    isScrolled 
+      ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-sm' 
+      : 'bg-transparent'
+  }`}>
+      <div className="container flex h-20 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <img src={bloodLogo} alt="BloodConnect Logo" className="h-9 w-9" />
@@ -44,24 +58,33 @@ const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link to="/" className="text-sm font-medium relative group transition-colors">
             Home
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link to="/request-blood" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/find-donors" className="text-sm font-medium relative group transition-colors">
+            Find Donor
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </Link>
+          <Link to="/request-blood" className="text-sm font-medium relative group transition-colors">
             Request Blood
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link to="/find-donors" className="text-sm font-medium hover:text-primary transition-colors">
-            Find Donors
-          </Link>
+          <a href="#about" className="text-sm font-medium relative group transition-colors">
+            About
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </a>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link to="/admin" className="text-sm font-medium relative group transition-colors flex items-center gap-1">
               <Shield className="h-4 w-4" />
               Admin
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
           )}
-          <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/contact" className="text-sm font-medium relative group transition-colors">
             Contact
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
         </nav>
 
@@ -72,12 +95,12 @@ const Header = () => {
           {isLoggedIn ? (
             <>
               <Link to="/profile">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="hover:scale-105 transition-transform">
                   <User className="h-4 w-4 mr-2" />
                   Profile
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="hover:scale-105 transition-transform">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -85,14 +108,16 @@ const Header = () => {
           ) : (
             <>
               <Link to="/sign-in">
-                <Button variant="outline" size="sm">
-                  <User className="h-4 w-4 mr-2" />
+                <Button variant="outline" size="sm" className="hover:scale-105 transition-transform">
                   Sign In
                 </Button>
               </Link>
               <Link to="/sign-up">
-                <Button size="sm">
-                  Register
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 transition-opacity"
+                >
+                  Become a Donor
                 </Button>
               </Link>
             </>

@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -52,6 +55,7 @@ export default {
         },
         // Blood donation theme colors
         'blood-red': "hsl(var(--blood-red))",
+        'trust-blue': "hsl(var(--trust-blue))",
         'trust-white': "hsl(var(--trust-white))",
         'hope-green': "hsl(var(--hope-green))",
         urgent: "hsl(var(--urgent))",
@@ -93,6 +97,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fadeIn 0.6s ease-out",
+        "slide-up": "slideUp 0.6s ease-out",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
