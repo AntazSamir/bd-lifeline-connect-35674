@@ -163,7 +163,7 @@ const Hero = () => {
               </div>
 
               <Link to="/find-donors" className="block mt-8">
-                <Button className="w-full bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <Button className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-6 text-lg font-semibold shadow-lg">
                   Search Donors
                 </Button>
               </Link>
