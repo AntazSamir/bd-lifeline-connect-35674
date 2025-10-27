@@ -78,7 +78,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up">
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 text-white px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              className="bg-gradient-to-r from-primary to-primary-dark text-white px-10 py-6 text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
               onClick={handleBecomeDonor}
             >
               <Heart className="h-5 w-5 mr-2" />
@@ -88,7 +88,7 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="px-10 py-6 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all hover:scale-105"
+                className="px-10 py-6 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
               >
                 Find Donor Now
               </Button>
