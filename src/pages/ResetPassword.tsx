@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,23 +21,38 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we have a valid session (user clicked reset link)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        toast({
-          title: "Invalid or expired link",
-          description: "Please request a new password reset link.",
-          variant: "destructive",
-        });
-        navigate("/sign-in");
-      }
-    });
-  }, [navigate, toast]);
+    // Get token from URL parameters
+    const token_hash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+    
+    // Verify this is a valid password reset request
+    if (!token_hash || type !== "recovery") {
+      toast({
+        title: "Invalid reset link",
+        description: "This password reset link is invalid or has expired.",
+        variant: "destructive",
+      });
+      navigate("/sign-in");
+      return;
+    }
+    
+    setToken(token_hash);
+  }, [searchParams, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!token) {
+      toast({
+        title: "Error",
+        description: "Invalid reset token",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -59,11 +75,20 @@ const ResetPassword = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: formData.password,
+      // Verify the token and update password
+      const { error } = await supabase.auth.verifyOtp({
+        type: "recovery",
+        token_hash: token,
       });
       
       if (error) throw error;
+      
+      // Update the user's password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: formData.password,
+      });
+      
+      if (updateError) throw updateError;
       
       toast({
         title: "Success",
@@ -162,7 +187,7 @@ const ResetPassword = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading || !token}>
                 {isLoading ? "Resetting..." : "Reset Password"}
               </Button>
             </CardFooter>
