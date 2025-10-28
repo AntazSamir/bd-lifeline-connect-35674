@@ -41,7 +41,7 @@ const HowItWorks = () => {
           {steps.map((step, index) => {
             const IconComponent = step.icon;
             return (
-              <Card key={index} className="relative overflow-hidden hover:shadow-medium transition-shadow duration-300">
+              <Card key={index} className="relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
                 <CardContent className="p-6 text-center">
                   {/* Icon */}
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
