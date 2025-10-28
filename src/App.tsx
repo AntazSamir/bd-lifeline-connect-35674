@@ -20,6 +20,7 @@ import AdminPanel from "./pages/AdminPanel";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
 import ResetPassword from "./pages/ResetPassword";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             
             <Route path="/request-blood" element={<RequestBlood />} />
             <Route path="/create-request" element={<CreateRequest />} />
