@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Droplets, Plus } from "lucide-react";
+import { Droplets, Plus, LogIn } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BloodRequestFeed from "@/components/BloodRequestFeed";
@@ -9,16 +9,23 @@ import { supabase } from "@/services/supabaseClient";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/sign-in");
-      }
+      setIsLoggedIn(!!user);
     };
     checkAuth();
-  }, [navigate]);
+  }, []);
+
+  const handleCreateRequest = () => {
+    if (isLoggedIn) {
+      navigate("/create-request");
+    } else {
+      navigate("/sign-in");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,10 +49,19 @@ const RequestBlood = () => {
               <Button 
                 size="lg" 
                 className="bg-primary hover:bg-primary/90"
-                onClick={() => navigate("/create-request")}
+                onClick={handleCreateRequest}
               >
-                <Plus className="h-5 w-5 mr-2" />
-                Make a Request
+                {isLoggedIn ? (
+                  <>
+                    <Plus className="h-5 w-5 mr-2" />
+                    Make a Request
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="h-5 w-5 mr-2" />
+                    Sign In to Request
+                  </>
+                )}
               </Button>
             </div>
           </div>
