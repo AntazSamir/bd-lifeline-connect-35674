@@ -162,6 +162,10 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
@@ -217,5 +221,18 @@ All colors MUST be HSL.
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  
+  /* Scroll animation utilities */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+  }
+  
+  .snap-y {
+    scroll-snap-type: y mandatory;
   }
 }

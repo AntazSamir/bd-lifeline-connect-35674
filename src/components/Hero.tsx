@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/services/dbService";
@@ -29,6 +29,14 @@ const Hero = () => {
     } else {
       // If user is not logged in, redirect to signup page
       navigate("/sign-up");
+    }
+  };
+
+  // Handle smooth scrolling to the next section
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('requests');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -95,81 +103,95 @@ const Hero = () => {
             </Link>
           </div>
 
-          {/* Search Card */}
-          <Card className="max-w-4xl mx-auto glass-card shadow-2xl animate-slide-up border-white/20">
-            <div className="p-8 md:p-10">
-              <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
-                Quick Donor Search
-              </h2>
+          {/* Scroll Down Button */}
+          <div className="flex justify-center animate-bounce mt-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:text-primary hover:bg-white/10 rounded-full"
+              onClick={scrollToNextSection}
+            >
+              <ChevronDown className="h-8 w-8" />
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Search Card */}
+      <div className="container relative z-10 px-4 pb-20">
+        <Card className="max-w-4xl mx-auto glass-card shadow-2xl animate-slide-up border-white/20">
+          <div className="p-8 md:p-10">
+            <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
+              Quick Donor Search
+            </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    🩸 Blood Group
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    📍 Location
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Select division" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dhaka">Dhaka</SelectItem>
-                      <SelectItem value="chittagong">Chittagong</SelectItem>
-                      <SelectItem value="sylhet">Sylhet</SelectItem>
-                      <SelectItem value="khulna">Khulna</SelectItem>
-                      <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                      <SelectItem value="barisal">Barisal</SelectItem>
-                      <SelectItem value="rangpur">Rangpur</SelectItem>
-                      <SelectItem value="mymensingh">Mymensingh</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    ⚡ Urgency
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Select urgency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="immediate">🔴 Immediate</SelectItem>
-                      <SelectItem value="urgent">🟠 Urgent</SelectItem>
-                      <SelectItem value="flexible">🟢 Flexible</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  🩸 Blood Group
+                </label>
+                <Select>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select blood group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A+">A+</SelectItem>
+                    <SelectItem value="A-">A-</SelectItem>
+                    <SelectItem value="B+">B+</SelectItem>
+                    <SelectItem value="B-">B-</SelectItem>
+                    <SelectItem value="AB+">AB+</SelectItem>
+                    <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="O+">O+</SelectItem>
+                    <SelectItem value="O-">O-</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <Link to="/find-donors" className="block mt-8">
-                <Button className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                  Search Donors
-                </Button>
-              </Link>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  📍 Location
+                </label>
+                <Select>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select division" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dhaka">Dhaka</SelectItem>
+                    <SelectItem value="chittagong">Chittagong</SelectItem>
+                    <SelectItem value="sylhet">Sylhet</SelectItem>
+                    <SelectItem value="khulna">Khulna</SelectItem>
+                    <SelectItem value="rajshahi">Rajshahi</SelectItem>
+                    <SelectItem value="barisal">Barisal</SelectItem>
+                    <SelectItem value="rangpur">Rangpur</SelectItem>
+                    <SelectItem value="mymensingh">Mymensingh</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  ⚡ Urgency
+                </label>
+                <Select>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select urgency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="immediate">🔴 Immediate</SelectItem>
+                    <SelectItem value="urgent">🟠 Urgent</SelectItem>
+                    <SelectItem value="flexible">🟢 Flexible</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </Card>
-        </div>
+
+            <Link to="/find-donors" className="block mt-8">
+              <Button className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                Search Donors
+              </Button>
+            </Link>
+          </div>
+        </Card>
       </div>
       
       {/* Donor Registration Dialog */}

@@ -45,6 +45,15 @@ const Header = () => {
     }
   };
 
+  // Handle smooth scrolling for anchor links
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
     isScrolled 
       ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-sm' 
