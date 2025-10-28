@@ -1,7 +1,10 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import UrgentRequests from "@/components/UrgentRequests";
+import WhyDonate from "@/components/WhyDonate";
+import ImpactStats from "@/components/ImpactStats";
 import HowItWorks from "@/components/HowItWorks";
+import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -10,7 +13,10 @@ const Index = () => {
       <Header />
       <Hero />
       <UrgentRequests />
+      <WhyDonate />
+      <ImpactStats />
       <HowItWorks />
+      <Testimonials />
       <Footer />
     </div>
   );

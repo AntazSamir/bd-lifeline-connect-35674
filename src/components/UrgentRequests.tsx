@@ -122,7 +122,7 @@ const UrgentRequests = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {urgentRequests.map((request) => (
+          {urgentRequests.slice(0, 6).map((request) => (
             <Card key={request.id} className="hover:shadow-medium transition-shadow duration-300">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
