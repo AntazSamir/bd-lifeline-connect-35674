@@ -45,15 +45,6 @@ const Header = () => {
     }
   };
 
-  // Handle smooth scrolling for anchor links
-  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    e.preventDefault();
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
     isScrolled 
       ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-sm' 
@@ -80,10 +71,10 @@ const Header = () => {
             Request Blood
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link to="/about" className="text-sm font-medium relative group transition-colors">
+          <a href="#about" className="text-sm font-medium relative group transition-colors">
             About
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-          </Link>
+          </a>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium relative group transition-colors flex items-center gap-1">
               <Shield className="h-4 w-4" />
@@ -150,9 +141,6 @@ const Header = () => {
             </Link>
             <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors">
               Find Donors
-            </Link>
-            <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors">
-              About
             </Link>
             {isAdmin && (
               <Link to="/admin" className="block text-sm font-medium hover:text-primary transition-colors">

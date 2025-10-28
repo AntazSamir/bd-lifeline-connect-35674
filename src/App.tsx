@@ -20,7 +20,6 @@ import AdminPanel from "./pages/AdminPanel";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
 import ResetPassword from "./pages/ResetPassword";
-import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -36,28 +35,25 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="scroll-smooth">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              
-              <Route path="/request-blood" element={<RequestBlood />} />
-              <Route path="/create-request" element={<CreateRequest />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/find-donors" element={<FindDonors />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/test-supabase" element={<TestSupabase />} />
-              <Route path="/test-supabase-page" element={<TestSupabasePage />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/confirm-email" element={<EmailConfirmation />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            
+            <Route path="/request-blood" element={<RequestBlood />} />
+            <Route path="/create-request" element={<CreateRequest />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/find-donors" element={<FindDonors />} />
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/test-supabase" element={<TestSupabase />} />
+            <Route path="/test-supabase-page" element={<TestSupabasePage />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/confirm-email" element={<EmailConfirmation />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
