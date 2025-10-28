@@ -37,6 +37,8 @@ const AdminPanel = () => {
     activeRequests: 0,
     completedDonations: 0
   });
+  const [roleEmail, setRoleEmail] = useState("");
+  const [roleActionLoading, setRoleActionLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -46,27 +48,77 @@ const AdminPanel = () => {
   }, [isAdmin, loading, navigate]);
 
   useEffect(() => {
-    // Fetch stats
     const fetchStats = async () => {
       try {
-        // These are placeholder queries - adjust based on your actual schema
-        const { count: usersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
+        const [{ count: usersCount }, { count: donorsCount }, { count: activeReqCount }] = await Promise.all([
+          supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
+          supabase.from('donors').select('*', { count: 'exact', head: true }),
+          supabase.from('blood_requests').select('*', { count: 'exact', head: true })
+        ]);
 
         setStats(prev => ({
           ...prev,
-          totalUsers: usersCount || 0
+          totalUsers: usersCount || 0,
+          totalDonors: donorsCount || 0,
+          activeRequests: activeReqCount || 0
         }));
       } catch (error) {
         console.error('Error fetching stats:', error);
       }
     };
 
-    if (isAdmin) {
-      fetchStats();
-    }
+    if (isAdmin) fetchStats();
   }, [isAdmin]);
+
+  const grantRole = async (email: string, role: 'admin' | 'moderator') => {
+    setRoleActionLoading(true);
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (profileError || !profile) throw profileError || new Error('User not found');
+
+      const { error: insertError } = await supabase
+        .from('user_roles')
+        .upsert({ user_id: profile.id, role });
+
+      if (insertError) throw insertError;
+      toast.success(`Granted ${role} role to ${email}`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to grant role');
+    } finally {
+      setRoleActionLoading(false);
+    }
+  };
+
+  const revokeRole = async (email: string, role: 'admin' | 'moderator') => {
+    setRoleActionLoading(true);
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (profileError || !profile) throw profileError || new Error('User not found');
+
+      const { error: deleteError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', profile.id)
+        .eq('role', role);
+
+      if (deleteError) throw deleteError;
+      toast.success(`Revoked ${role} role from ${email}`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to revoke role');
+    } finally {
+      setRoleActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -246,6 +298,23 @@ const AdminPanel = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <input
+                        className="border rounded px-3 py-2"
+                        placeholder="User email"
+                        value={roleEmail}
+                        onChange={(e) => setRoleEmail(e.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <Button disabled={!roleEmail || roleActionLoading} onClick={() => grantRole(roleEmail, 'admin')}>Grant Admin</Button>
+                        <Button variant="outline" disabled={!roleEmail || roleActionLoading} onClick={() => revokeRole(roleEmail, 'admin')}>Revoke Admin</Button>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button disabled={!roleEmail || roleActionLoading} onClick={() => grantRole(roleEmail, 'moderator')}>Grant Moderator</Button>
+                        <Button variant="outline" disabled={!roleEmail || roleActionLoading} onClick={() => revokeRole(roleEmail, 'moderator')}>Revoke Moderator</Button>
+                      </div>
+                    </div>
+
                     <div className="flex items-center justify-between p-4 border rounded-lg">
                       <div>
                         <h4 className="font-semibold">Admin</h4>

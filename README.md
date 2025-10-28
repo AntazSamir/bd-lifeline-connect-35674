@@ -67,10 +67,16 @@ This project is now integrated with Supabase for backend services including auth
 
 ### Configuration
 
-The Supabase configuration has been set up with the following credentials:
+Environment variables (Vite):
 
-- **Project URL**: https://fjhtbrdnjhlxrwarcfrr.supabase.co
-- **API Key**: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqaHRicmRuamhseHJ3YXJjZnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzcxNjgsImV4cCI6MjA3NTA1MzE2OH0.Ox85u9pb2-SwvXQatJ9Qauc22tEVawynOHYXwle57pI
+Create a `.env.local` file in the project root with:
+
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+These are read in `src/services/supabaseClient.ts` via `import.meta.env`.
 
 ### Database Schema
 

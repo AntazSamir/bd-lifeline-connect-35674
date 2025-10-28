@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import { useDonors } from "@/hooks/useDatabase";
 
 const FindDonors = () => {
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
@@ -28,183 +29,21 @@ const FindDonors = () => {
     distance: ""
   });
 
-  const donors = [
-    {
-      id: 1,
-      name: "Rashid Ahmed",
-      bloodGroup: "O+",
-      location: "Dhanmondi, Dhaka",
-      distance: "2.5 km",
-      rating: 4.9,
-      totalDonations: 12,
-      lastDonation: "2 months ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 2,
-      name: "Fatima Khatun",
-      bloodGroup: "O+",
-      location: "Gulshan, Dhaka",
-      distance: "4.2 km",
-      rating: 4.8,
-      totalDonations: 8,
-      lastDonation: "3 months ago",
-      availability: "Available in 24hrs",
-      verified: true,
-      tier: "Silver Donor"
-    },
-    {
-      id: 3,
-      name: "Mohammad Rahman",
-      bloodGroup: "O+",
-      location: "Uttara, Dhaka",
-      distance: "6.1 km",
-      rating: 4.7,
-      totalDonations: 6,
-      lastDonation: "1 month ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Bronze Donor"
-    },
-    {
-      id: 4,
-      name: "Nasir Uddin",
-      bloodGroup: "O+",
-      location: "Mirpur, Dhaka",
-      distance: "8.3 km",
-      rating: 4.6,
-      totalDonations: 15,
-      lastDonation: "4 months ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 5,
-      name: "Sharmin Akter",
-      bloodGroup: "A-",
-      location: "Chittagong",
-      distance: "1.2 km",
-      rating: 4.9,
-      totalDonations: 10,
-      lastDonation: "3 weeks ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 6,
-      name: "Abdul Hamid",
-      bloodGroup: "B+",
-      location: "Sylhet",
-      distance: "3.7 km",
-      rating: 4.5,
-      totalDonations: 7,
-      lastDonation: "2 months ago",
-      availability: "Available in 48hrs",
-      verified: true,
-      tier: "Silver Donor"
-    },
-    {
-      id: 7,
-      name: "Taslima Begum",
-      bloodGroup: "AB-",
-      location: "Rajshahi",
-      distance: "5.4 km",
-      rating: 4.8,
-      totalDonations: 9,
-      lastDonation: "1 month ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 8,
-      name: "Rezaul Karim",
-      bloodGroup: "O-",
-      location: "Khulna",
-      distance: "7.8 km",
-      rating: 4.7,
-      totalDonations: 11,
-      lastDonation: "3 months ago",
-      availability: "Available in 72hrs",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 9,
-      name: "Farida Akter",
-      bloodGroup: "A+",
-      location: "Barisal",
-      distance: "2.1 km",
-      rating: 4.9,
-      totalDonations: 14,
-      lastDonation: "2 weeks ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 10,
-      name: "Mamun Hossain",
-      bloodGroup: "B-",
-      location: "Rangpur",
-      distance: "3.9 km",
-      rating: 4.6,
-      totalDonations: 8,
-      lastDonation: "1 month ago",
-      availability: "Available in 24hrs",
-      verified: true,
-      tier: "Silver Donor"
-    },
-    {
-      id: 11,
-      name: "Shirin Akter",
-      bloodGroup: "AB+",
-      location: "Comilla",
-      distance: "4.5 km",
-      rating: 4.8,
-      totalDonations: 12,
-      lastDonation: "3 months ago",
-      availability: "Available now",
-      verified: true,
-      tier: "Gold Donor"
-    },
-    {
-      id: 12,
-      name: "Nazrul Islam",
-      bloodGroup: "O+",
-      location: "Dhaka",
-      distance: "6.7 km",
-      rating: 4.7,
-      totalDonations: 9,
-      lastDonation: "2 months ago",
-      availability: "Available in 48hrs",
-      verified: true,
-      tier: "Gold Donor"
-    }
-  ];
+  const { donors, loading, error } = useDonors();
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case "Gold Donor":
-        return "bg-hope-green text-white";
-      case "Silver Donor":
-        return "bg-muted text-foreground";
-      case "Bronze Donor":
-        return "bg-primary text-primary-foreground";
-      default:
-        return "bg-secondary text-secondary-foreground";
-    }
-  };
+  const filteredDonors = useMemo(() => {
+    return donors.filter((d) => {
+      const matchesGroup = filters.bloodGroup ? d.blood_group === filters.bloodGroup : true;
+      const matchesLocation = filters.location ? (d.location || "").toLowerCase().includes(filters.location.toLowerCase()) : true;
+      const matchesAvailability = filters.availability
+        ? (filters.availability === "now" ? d.is_available : true)
+        : true;
+      return matchesGroup && matchesLocation && matchesAvailability;
+    });
+  }, [donors, filters]);
 
-  const getAvailabilityColor = (availability: string) => {
-    if (availability.includes("now")) {
-      return "bg-success text-white";
-    }
-    return "bg-secondary text-secondary-foreground";
+  const getAvailabilityBadgeClass = (isAvailable: boolean | undefined) => {
+    return isAvailable ? "bg-success text-white" : "bg-secondary text-secondary-foreground";
   };
 
   return (
@@ -269,7 +108,7 @@ const FindDonors = () => {
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Availability</label>
-                  <Select value={filters.availability} onValueChange={(value) => setFilters({...filters, availability: value})}>
+                    <Select value={filters.availability} onValueChange={(value) => setFilters({...filters, availability: value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
@@ -303,7 +142,7 @@ const FindDonors = () => {
             </Card>
           </div>
 
-          {/* Donors List */}
+            {/* Donors List */}
           <div className="lg:col-span-3">
             {/* Search Bar */}
             <div className="mb-6">
@@ -319,7 +158,7 @@ const FindDonors = () => {
             {/* Results Header */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-muted-foreground">
-                Showing {donors.length} donors for <strong>O+ blood group</strong> in <strong>Dhaka</strong>
+                Showing {filteredDonors.length} donors
               </p>
               <Select defaultValue="distance">
                 <SelectTrigger className="w-40">
@@ -336,57 +175,48 @@ const FindDonors = () => {
 
             {/* Donors Grid */}
             <div className="space-y-4">
-              {donors.map((donor) => (
+              {loading && (
+                <div className="text-muted-foreground">Loading donors...</div>
+              )}
+              {error && !loading && (
+                <div className="text-destructive">Failed to load donors: {error}</div>
+              )}
+              {!loading && !error && filteredDonors.map((donor) => (
                 <Card key={donor.id} className="hover:shadow-medium transition-shadow duration-300">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4">
                         <Avatar className="w-16 h-16">
                           <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                            {donor.name.split(' ').map(n => n[0]).join('')}
+                            {(donor.name || '').split(' ').map(n => n[0]).join('') || 'D'}
                           </AvatarFallback>
                         </Avatar>
                         
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
-                            <h3 className="font-semibold text-lg">{donor.name}</h3>
-                            {donor.verified && (
-                              <Badge variant="secondary" className="text-xs">✓ Verified</Badge>
-                            )}
+                            <h3 className="font-semibold text-lg">{donor.name || 'Anonymous Donor'}</h3>
                           </div>
 
                           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                             <div className="flex items-center">
                               <MapPin className="h-4 w-4 mr-1" />
-                              {donor.location}
+                              {donor.location || '—'}
                             </div>
-                            <div>{donor.distance} away</div>
                           </div>
 
                           <div className="flex items-center space-x-2">
                             <Badge variant="outline" className="text-primary border-primary">
-                              {donor.bloodGroup}
+                              {donor.blood_group}
                             </Badge>
-                            <Badge className={getTierColor(donor.tier)}>
-                              {donor.tier}
-                            </Badge>
-                            <Badge className={getAvailabilityColor(donor.availability)}>
-                              {donor.availability}
+                            <Badge className={getAvailabilityBadgeClass(donor.is_available)}>
+                              {donor.is_available ? 'Available now' : 'Not available'}
                             </Badge>
                           </div>
 
                           <div className="flex items-center space-x-4 text-sm">
                             <div className="flex items-center">
-                              <Star className="h-4 w-4 text-yellow-500 mr-1" fill="currentColor" />
-                              {donor.rating}
-                            </div>
-                            <div className="flex items-center">
                               <Heart className="h-4 w-4 text-primary mr-1" />
-                              {donor.totalDonations} donations
-                            </div>
-                            <div className="flex items-center text-muted-foreground">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              Last: {donor.lastDonation}
+                              {donor.last_donation_date ? 'Last donation: ' + donor.last_donation_date : 'No recent donation info'}
                             </div>
                           </div>
                         </div>
@@ -395,7 +225,7 @@ const FindDonors = () => {
                       <div className="flex flex-col space-y-2">
                         <Button size="sm">
                           <Phone className="h-4 w-4 mr-2" />
-                          Contact
+                          {donor.contact_number || 'Contact'}
                         </Button>
                         <Button size="sm" variant="outline">
                           View Profile
@@ -405,6 +235,9 @@ const FindDonors = () => {
                   </CardContent>
                 </Card>
               ))}
+              {!loading && !error && filteredDonors.length === 0 && (
+                <div className="text-muted-foreground">No donors found.</div>
+              )}
             </div>
 
             {/* Load More */}
