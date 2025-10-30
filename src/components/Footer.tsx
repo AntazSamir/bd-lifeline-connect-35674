@@ -92,7 +92,7 @@ const Footer = () => {
               />
               <Button 
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 transition-opacity"
+                className="w-full bg-[#F05656] hover:opacity-90 transition-opacity"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Subscribe
