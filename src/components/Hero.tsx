@@ -78,7 +78,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up">
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-primary to-primary-dark text-white px-10 py-6 text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+              className="bg-[#F05656] text-white px-10 py-6 text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
               onClick={handleBecomeDonor}
             >
               <Heart className="h-5 w-5 mr-2" />
@@ -163,7 +163,7 @@ const Hero = () => {
               </div>
 
               <Link to="/find-donors" className="block mt-8">
-                <Button className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                <Button className="w-full bg-[#F05656] text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                   Search Donors
                 </Button>
               </Link>
