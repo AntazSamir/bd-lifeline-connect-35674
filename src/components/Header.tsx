@@ -71,10 +71,10 @@ const Header = () => {
             Request Blood
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <a href="#about" className="text-sm font-medium relative group transition-colors">
+          <Link to="/about" className="text-sm font-medium relative group transition-colors">
             About
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-          </a>
+          </Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium relative group transition-colors flex items-center gap-1">
               <Shield className="h-4 w-4" />
@@ -141,6 +141,9 @@ const Header = () => {
             </Link>
             <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors">
               Find Donors
+            </Link>
+            <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors">
+              About
             </Link>
             {isAdmin && (
               <Link to="/admin" className="block text-sm font-medium hover:text-primary transition-colors">
