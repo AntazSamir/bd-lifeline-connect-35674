@@ -19,6 +19,7 @@ import UserProfile from "./pages/UserProfile";
 import AdminPanel from "./pages/AdminPanel";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
 import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
