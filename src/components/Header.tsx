@@ -82,6 +82,10 @@ const Header = () => {
             Contact
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
+          <Link to="/about" className="text-sm font-medium relative group transition-colors">
+            About
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </Link>
         </nav>
 
         {/* Actions */}
@@ -111,7 +115,7 @@ const Header = () => {
               <Link to="/sign-up">
                 <Button 
                   size="sm" 
-                  className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90 transition-opacity"
+                  className="bg-[#F05656] hover:opacity-90 transition-opacity"
                 >
                   Become a Donor
                 </Button>
@@ -145,6 +149,9 @@ const Header = () => {
             )}
             <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors">
               Contact
+            </Link>
+            <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors">
+              About
             </Link>
             
             {isLoggedIn ? (
