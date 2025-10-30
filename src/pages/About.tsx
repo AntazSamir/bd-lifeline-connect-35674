@@ -1,96 +1,112 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-const FAQS = [
-  {
-    q: "How do I register as a donor or request blood?",
-    a: "Use the Register/Sign Up flow, then visit Find Donors or Request Blood to proceed.",
-  },
-  {
-    q: "Is my personal information secure?",
-    a: "Yes. We encrypt sensitive data and only share details necessary to enable donor–recipient connections.",
-  },
-  {
-    q: "Does the platform charge fees?",
-    a: "No. BloodConnect is free for both donors and recipients.",
-  },
-  {
-    q: "How quickly are requests matched?",
-    a: "Urgent requests are prioritized, but timing depends on nearby donor availability.",
-  },
-];
-
-export default function About() {
+const About = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <Header />
-      <main className="container max-w-2xl mx-auto py-10 space-y-10">
+
+      <main className="container py-12 md:py-16 space-y-12">
         {/* About the Website */}
-        <Card className="shadow">
-          <CardHeader>
-            <CardTitle className="text-2xl">About BloodConnect</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-base">
-            <p>
-              BloodConnect Bangladesh connects voluntary blood donors with people in need across the country, focusing on speed, safety, and trust.
-            </p>
-            <p>
-              We streamline discovery and communication so help is always within reach when it matters most.
-            </p>
-          </CardContent>
-        </Card>
+        <section className="space-y-6">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">About BloodConnect</h1>
+          <p className="text-muted-foreground max-w-3xl">
+            BloodConnect is a platform dedicated to connecting blood donors with recipients across Bangladesh. 
+            Our mission is to reduce the time to find compatible donors, streamline urgent requests, and build a 
+            dependable, community-driven network that saves lives every day.
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">What we do</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                We aggregate donor availability, match urgent requests, and notify potential donors in real-time.
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Why it matters</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                Timely access to blood can be life-saving. We help reduce friction, delay, and uncertainty.
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">For our users</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                Donors gain a simple way to contribute. Recipients get a reliable path to urgent help.
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
         {/* Privacy Policy */}
-        <Card className="shadow">
-          <CardHeader>
-            <CardTitle className="text-xl">Privacy Policy</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm space-y-2">
-            <p>We collect only the information required to enable secure matches between donors and recipients.</p>
-            <ul className="list-disc list-inside ml-6">
-              <li>Contact details to coordinate donations</li>
-              <li>Blood group and general location for compatibility</li>
-              <li>Account metadata for verification and safety</li>
-            </ul>
-            <p>Data is stored securely and never sold or shared with third parties without consent.</p>
-          </CardContent>
-        </Card>
+        <section className="space-y-4">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Privacy Policy</h2>
+          <Card>
+            <CardContent className="pt-6 text-muted-foreground leading-relaxed">
+              We collect essential information to operate the platform—such as account details and donor preferences. 
+              Your data is stored securely and accessed only for service functionality, safety, and compliance. 
+              We never sell your personal data. You may request data export or deletion in accordance with applicable laws.
+            </CardContent>
+          </Card>
+        </section>
 
         {/* FAQ */}
-        <Card className="shadow">
-          <CardHeader>
-            <CardTitle className="text-xl">Frequently Asked Questions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Accordion type="single" collapsible className="w-full">
-              {FAQS.map((faq, idx) => (
-                <AccordionItem value={String(idx)} key={faq.q}>
-                  <AccordionTrigger>{faq.q}</AccordionTrigger>
-                  <AccordionContent>{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </CardContent>
-        </Card>
+        <section className="space-y-4">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Frequently Asked Questions</h2>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="q1">
+              <AccordionTrigger>How do I become a donor?</AccordionTrigger>
+              <AccordionContent>
+                Create an account and complete your donor profile with blood group and availability. You can update preferences anytime.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="q2">
+              <AccordionTrigger>Is my personal information safe?</AccordionTrigger>
+              <AccordionContent>
+                Yes. We use secure storage and restrict access to operational needs. See our Privacy Policy for details.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="q3">
+              <AccordionTrigger>Do you charge any fees?</AccordionTrigger>
+              <AccordionContent>
+                No. BloodConnect is free for donors and recipients. We may add optional features in the future with clear disclosure.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="q4">
+              <AccordionTrigger>How are matches made?</AccordionTrigger>
+              <AccordionContent>
+                We match based on blood group compatibility, proximity, and donor availability to maximize response speed and safety.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </section>
 
         {/* Terms of Service */}
-        <Card className="shadow">
-          <CardHeader>
-            <CardTitle className="text-xl">Terms of Service</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm">
-            <ul className="list-disc list-inside ml-6 space-y-1">
-              <li>Use the platform for genuine medical needs and voluntary donation only.</li>
-              <li>Provide accurate information; do not impersonate or mislead.</li>
-              <li>Exercise caution when meeting; we are not liable for offline interactions.</li>
-              <li>We may update terms to improve safety and service quality.</li>
-            </ul>
-          </CardContent>
-        </Card>
+        <section className="space-y-4">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Terms of Service</h2>
+          <Card>
+            <CardContent className="pt-6 text-muted-foreground leading-relaxed">
+              By using BloodConnect, you agree to provide accurate information and use the platform responsibly. 
+              We may suspend accounts that violate safety, privacy, or misuse policies. Services are provided "as is" 
+              without warranties; users should follow medical guidance from certified professionals at all times.
+            </CardContent>
+          </Card>
+        </section>
       </main>
+
       <Footer />
     </div>
   );
-}
+};
+
+export default About;
+
+
