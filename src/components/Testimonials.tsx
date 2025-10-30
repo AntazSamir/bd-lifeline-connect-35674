@@ -73,20 +73,20 @@ const Testimonials = () => {
               key={testimonial.id}
               className="flex items-stretch flex-shrink-0 w-96 min-w-[24rem] mx-4"
             >
-              <Card className="flex flex-col justify-between h-full w-full bg-[#181B1F] shadow-xl border-none">
+              <Card className="flex flex-col justify-between h-full w-full bg-rose-500/10 shadow-xl border border-rose-500/20">
                 <CardContent className="p-6 flex flex-col h-full">
                   <div className="flex items-center gap-4 mb-4">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-rose-200/70"
                     />
                     <div>
-                      <p className="font-semibold text-white leading-tight">{testimonial.name}</p>
-                      <p className="text-xs opacity-70 text-gray-300 -mt-0.5">{testimonial.role}</p>
+                      <p className="font-semibold text-rose-900 leading-tight dark:text-rose-100">{testimonial.name}</p>
+                      <p className="text-xs opacity-80 text-rose-800 -mt-0.5 dark:text-rose-200/80">{testimonial.role}</p>
                     </div>
                   </div>
-                  <p className="text-gray-200 text-base font-normal mt-1">
+                  <p className="text-rose-900/90 dark:text-rose-50 text-base font-normal mt-1">
                     {testimonial.quote}
                   </p>
                 </CardContent>
