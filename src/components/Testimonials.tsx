@@ -73,25 +73,22 @@ const Testimonials = () => {
               key={testimonial.id}
               className="flex items-stretch flex-shrink-0 w-96 min-w-[24rem] mx-4"
             >
-              <Card className="flex flex-col justify-between h-full w-full">
+              <Card className="flex flex-col justify-between h-full w-full bg-[#181B1F] shadow-xl border-none">
                 <CardContent className="p-6 flex flex-col h-full">
-                  <Quote className="w-10 h-10 text-primary/20 mb-4" />
-                  <p className="text-foreground/90 mb-6 italic">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="flex items-center gap-4 mt-auto">
+                  <div className="flex items-center gap-4 mb-4">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white"
                     />
                     <div>
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {testimonial.role}
-                      </p>
+                      <p className="font-semibold text-white leading-tight">{testimonial.name}</p>
+                      <p className="text-xs opacity-70 text-gray-300 -mt-0.5">{testimonial.role}</p>
                     </div>
                   </div>
+                  <p className="text-gray-200 text-base font-normal mt-1">
+                    {testimonial.quote}
+                  </p>
                 </CardContent>
               </Card>
             </div>

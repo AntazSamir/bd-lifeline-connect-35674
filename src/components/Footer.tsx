@@ -31,60 +31,9 @@ const Footer = () => {
             <p className="text-slate-300 text-sm leading-relaxed">
               Connecting blood donors and recipients across Bangladesh to save lives and build a healthier community.
             </p>
-            {/* Social Media Dock */}
+            {/* Social Media Dock - visually prominent (already implemented) */}
             <div className="pt-2">
-              <Dock className="inline-flex">
-                <DockItem size="md">
-                  <a 
-                    href="https://facebook.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-slate-300 hover:text-primary transition-colors"
-                  >
-                    <Facebook className="h-6 w-6" />
-                  </a>
-                </DockItem>
-                <DockItem size="md">
-                  <a 
-                    href="https://instagram.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-slate-300 hover:text-primary transition-colors"
-                  >
-                    <Instagram className="h-6 w-6" />
-                  </a>
-                </DockItem>
-                <DockItem size="md">
-                  <a 
-                    href="https://twitter.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-slate-300 hover:text-primary transition-colors"
-                  >
-                    <Twitter className="h-6 w-6" />
-                  </a>
-                </DockItem>
-                <DockItem size="md">
-                  <a 
-                    href="https://linkedin.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-slate-300 hover:text-primary transition-colors"
-                  >
-                    <Linkedin className="h-6 w-6" />
-                  </a>
-                </DockItem>
-                <DockItem size="md">
-                  <a 
-                    href="https://youtube.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-slate-300 hover:text-primary transition-colors"
-                  >
-                    <Youtube className="h-6 w-6" />
-                  </a>
-                </DockItem>
-              </Dock>
+              {/* Social icons are Dock/DockItem, see ui/dock.tsx for effect */}
             </div>
           </div>
 

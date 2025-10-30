@@ -222,3 +222,46 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<ty
 CarouselNext.displayName = "CarouselNext";
 
 export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
+
+// New TrustedCompanies component (add at the end of file)
+// Create your own file in ../TrustedCompanies.tsx for better modularity in a real repo.
+
+// Example use (in a page or footer): <TrustedCompanies />
+
+import partner1 from "@/assets/partner1.png"
+import partner2 from "@/assets/partner2.png"
+import partner3 from "@/assets/partner3.png"
+import partner4 from "@/assets/partner4.png"
+import partner5 from "@/assets/partner5.png"
+
+export function TrustedCompanies() {
+  // Use placeholder assets, add your own logos in src/assets/
+  const logos = [
+    { src: partner1, alt: "icddr,b" },
+    { src: partner2, alt: "BRAC" },
+    { src: partner3, alt: "Labaid Hospital" },
+    { src: partner4, alt: "Square Hospitals" },
+    { src: partner5, alt: "Bangladesh Red Crescent" },
+  ];
+
+  return (
+    <div className="py-12 w-full bg-background">
+      <div className="max-w-5xl mx-auto text-center mb-8">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 text-foreground">Trusted by leading healthcare partners</h2>
+      </div>
+      <Carousel opts={{ align: "start", loop: true }}>
+        <CarouselContent className="-ml-2">
+          {logos.map((logo, idx) => (
+            <CarouselItem key={logo.alt + idx} className="basis-1/2 md:basis-1/4 lg:basis-1/5 p-2 flex items-center justify-center">
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                className="h-16 w-auto max-w-[120px] mx-auto object-contain filter grayscale hover:grayscale-0 transition duration-300"
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    </div>
+  )
+}
