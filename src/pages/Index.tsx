@@ -5,6 +5,7 @@ import WhyDonate from "@/components/WhyDonate";
 import ImpactStats from "@/components/ImpactStats";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
+import TrustedCompanies from "@/components/TrustedCompanies";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
       <ImpactStats />
       <HowItWorks />
       <Testimonials />
+      <TrustedCompanies />
       <Footer />
     </div>
   );
