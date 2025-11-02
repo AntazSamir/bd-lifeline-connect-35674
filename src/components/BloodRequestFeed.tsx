@@ -17,7 +17,17 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useBloodRequests } from "@/hooks/useDatabase";
-import { BloodRequest } from "@/services/dbService";
+
+interface BloodRequest {
+  id: number;
+  blood_group: string;
+  location: string;
+  units_needed: number;
+  urgency: "immediate" | "urgent" | "flexible";
+  patient_info: string;
+  contact_number: string;
+  created_at: string;
+}
 
 // Utility functions
 const getUrgencyStyle = (urgency: string) => {
