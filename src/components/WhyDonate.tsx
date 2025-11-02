@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Users, Clock, Shield, Droplets, Award, Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
+import saveLivesImg from "@/assets/illustration-save-lives.png";
+import quickEasyImg from "@/assets/illustration-quick-easy.png";
+import healthBenefitsImg from "@/assets/illustration-health-benefits.png";
+import healthCheckImg from "@/assets/illustration-health-check.png";
 
 const benefits = [
   {
@@ -8,28 +12,32 @@ const benefits = [
     title: "Save Lives",
     description: "One donation can save up to three lives. Your single act of kindness creates a ripple effect of hope.",
     gradient: "from-pink-500 to-rose-500",
-    span: "col-span-1 md:col-span-2 md:row-span-2"
+    span: "col-span-1 md:col-span-2 md:row-span-2",
+    image: saveLivesImg
   },
   {
     icon: Clock,
     title: "Quick & Easy",
     description: "The entire donation process takes less than an hour, but the impact lasts a lifetime.",
     gradient: "from-green-500 to-emerald-500",
-    span: "col-span-1"
+    span: "col-span-1",
+    image: quickEasyImg
   },
   {
     icon: Shield,
     title: "Health Benefits",
     description: "Regular donation can reduce the risk of heart disease and helps maintain healthy iron levels.",
     gradient: "from-orange-500 to-red-500",
-    span: "col-span-1"
+    span: "col-span-1",
+    image: healthBenefitsImg
   },
   {
     icon: Stethoscope,
     title: "Free Health Check",
     description: "Get a basic health screening before every donation at no cost.",
     gradient: "from-indigo-500 to-blue-500",
-    span: "col-span-1 md:col-span-2"
+    span: "col-span-1 md:col-span-2",
+    image: healthCheckImg
   },
 ];
 
@@ -61,6 +69,13 @@ const WhyDonate = () => {
                   "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300",
                   benefit.gradient
                 )} />
+                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+                  <img 
+                    src={benefit.image} 
+                    alt={benefit.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <CardContent className={cn(
                   "p-6 h-full relative z-10",
                   index === 0 ? "text-left" : "text-center"
