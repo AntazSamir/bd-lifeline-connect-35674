@@ -89,30 +89,30 @@ const Header = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <ThemeToggle />
           
           {isLoggedIn ? (
             <>
-              <Link to="/profile">
+              <Link to="/profile" className="hidden sm:block">
                 <Button variant="outline" size="sm" className="hover:scale-105 transition-transform">
                   <User className="h-4 w-4 mr-2" />
                   Profile
                 </Button>
               </Link>
-              <Button variant="outline" size="sm" onClick={handleSignOut} className="hover:scale-105 transition-transform">
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="hover:scale-105 transition-transform hidden sm:flex">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
             </>
           ) : (
             <>
-              <Link to="/sign-in">
+              <Link to="/sign-in" className="hidden sm:block">
                 <Button variant="outline" size="sm" className="hover:scale-105 transition-transform">
                   Sign In
                 </Button>
               </Link>
-              <Link to="/sign-up">
+              <Link to="/sign-up" className="hidden sm:block">
                 <Button 
                   size="sm" 
                   className="bg-[#F05656] hover:opacity-90 transition-opacity"

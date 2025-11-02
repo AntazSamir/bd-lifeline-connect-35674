@@ -29,34 +29,34 @@ const stats = [
 
 const ImpactStats = () => {
   return (
-    <section className="py-16 px-4 bg-primary/5">
+    <section className="py-12 sm:py-16 px-4 bg-primary/5">
       <div className="container mx-auto max-w-7xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
             Our Impact in Numbers
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             Together, we're building a stronger, healthier community
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
               <div
                 key={index}
-                className="text-center group transition-all duration-300 hover:scale-110"
+                className="text-center group transition-all duration-300 hover:scale-105 sm:hover:scale-110"
               >
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-background shadow-lg flex items-center justify-center group-hover:shadow-xl transition-shadow duration-300">
-                    <IconComponent className={`w-8 h-8 ${stat.color}`} />
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-background shadow-lg flex items-center justify-center group-hover:shadow-xl transition-shadow duration-300">
+                    <IconComponent className={`w-6 h-6 sm:w-8 sm:h-8 ${stat.color}`} />
                   </div>
                 </div>
-                <div className="text-3xl md:text-4xl font-bold mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
                   {stat.value}
                 </div>
-                <div className="text-muted-foreground font-medium">
+                <div className="text-xs sm:text-sm text-muted-foreground font-medium">
                   {stat.label}
                 </div>
               </div>

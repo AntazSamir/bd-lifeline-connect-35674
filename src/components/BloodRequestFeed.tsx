@@ -17,17 +17,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useBloodRequests } from "@/hooks/useDatabase";
-
-interface BloodRequest {
-  id: number;
-  blood_group: string;
-  location: string;
-  units_needed: number;
-  urgency: "immediate" | "urgent" | "flexible";
-  patient_info: string;
-  contact_number: string;
-  created_at: string;
-}
+import { BloodRequest } from "@/services/dbService";
 
 // Utility functions
 const getUrgencyStyle = (urgency: string) => {
@@ -85,63 +75,63 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-              <Droplets className="h-6 w-6 text-destructive" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+              <Droplets className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-foreground">Patient #{request.id}</h3>
+              <div className="flex items-center space-x-2 flex-wrap">
+                <h3 className="font-semibold text-foreground text-sm sm:text-base">Patient #{request.id}</h3>
                 <Badge variant="secondary" className="text-xs font-bold">
                   {request.blood_group}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground flex items-center">
+              <p className="text-xs sm:text-sm text-muted-foreground flex items-center mt-1">
                 <Clock className="h-3 w-3 mr-1" />
                 {timeAgo}
               </p>
             </div>
           </div>
-          <Badge className={urgencyStyle.badge}>
+          <Badge className={`${urgencyStyle.badge} flex-shrink-0 text-xs`}>
             {urgencyStyle.icon}
             <span className="ml-1">{urgencyStyle.text}</span>
           </Badge>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center space-x-2">
-            <Hospital className="h-4 w-4 text-muted-foreground" />
-            <span className="text-foreground">{request.patient_info || "Patient information not provided"}</span>
+      <CardContent className="space-y-3 sm:space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+          <div className="flex items-start space-x-2">
+            <Hospital className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <span className="text-foreground line-clamp-2">{request.patient_info || "Patient information not provided"}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <span className="text-foreground">{formatDistrict(request.location)}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <User className="h-4 w-4 text-muted-foreground" />
+            <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <span className="text-foreground">Contact Person</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Droplets className="h-4 w-4 text-muted-foreground" />
+            <Droplets className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <span className="text-foreground">{request.units_needed} unit(s) needed</span>
           </div>
         </div>
 
         <Separator />
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Phone className="h-4 w-4" />
-            <span>{request.contact_number}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+            <Phone className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{request.contact_number}</span>
           </div>
           <div className="flex space-x-2">
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" className="flex-1 sm:flex-none text-xs sm:text-sm">
               Share
             </Button>
-            <Button size="sm" className="bg-destructive hover:bg-destructive/90">
+            <Button size="sm" className="bg-destructive hover:bg-destructive/90 flex-1 sm:flex-none text-xs sm:text-sm">
               I Can Help
             </Button>
           </div>
