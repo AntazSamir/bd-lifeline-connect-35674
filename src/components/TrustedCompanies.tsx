@@ -10,14 +10,14 @@ import dhakaMedicalLogo from "@/assets/dhaka-medical-college-logo.png";
 const TrustedCompanies = () => {
   // Use existing assets in the project
   const logos = [
+    { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" },
+    { src: dhakaMedicalLogo, alt: "Dhaka Medical College" },
     { src: bkashLogo, alt: "bKash" },
     { src: nagadLogo, alt: "Nagad" },
     { src: upayLogo, alt: "Upay" },
     { src: rocketLogo, alt: "Rocket" },
-    { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" },
-    { src: dhakaMedicalLogo, alt: "Dhaka Medical College" },
-    { src: bkashLogo, alt: "bKash" }, // Duplicate for continuous loop
-    { src: nagadLogo, alt: "Nagad" }, // Duplicate for continuous loop
+    { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" }, // Duplicate for continuous loop
+    { src: dhakaMedicalLogo, alt: "Dhaka Medical College" }, // Duplicate for continuous loop
   ];
 
   return (
