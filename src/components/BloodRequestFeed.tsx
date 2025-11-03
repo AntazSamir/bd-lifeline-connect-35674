@@ -145,19 +145,41 @@ BloodRequestCard.displayName = "BloodRequestCard";
 
 const ITEMS_PER_PAGE = 12;
 
-const BloodRequestFeed = () => {
+interface BloodRequestFeedProps {
+  searchQuery?: string;
+}
+
+const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
   const { requests, loading, error } = useBloodRequests();
   
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Paginate requests
+  // Filter requests based on search query
+  const filteredRequests = useMemo(() => {
+    if (!searchQuery.trim()) return requests;
+    
+    const query = searchQuery.toLowerCase();
+    return requests.filter(request => 
+      request.blood_group.toLowerCase().includes(query) ||
+      request.location.toLowerCase().includes(query) ||
+      request.urgency.toLowerCase().includes(query) ||
+      (request.patient_info && request.patient_info.toLowerCase().includes(query))
+    );
+  }, [requests, searchQuery]);
+
+  // Reset to page 1 when search changes
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  // Paginate filtered requests
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    return requests.slice(startIndex, endIndex);
-  }, [requests, currentPage]);
+    return filteredRequests.slice(startIndex, endIndex);
+  }, [filteredRequests, currentPage]);
 
-  const totalPages = Math.ceil(requests.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredRequests.length / ITEMS_PER_PAGE);
 
   if (loading) {
     return (
@@ -214,9 +236,11 @@ const BloodRequestFeed = () => {
         ))}
       </div>
 
-      {requests.length === 0 && (
+      {paginatedData.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-muted-foreground">No blood requests found.</p>
+          <p className="text-muted-foreground">
+            {searchQuery ? `No blood requests match "${searchQuery}"` : "No blood requests found."}
+          </p>
         </div>
       )}
 
