@@ -4,6 +4,8 @@ import bkashLogo from "@/assets/bkash-logo.png";
 import nagadLogo from "@/assets/nagad-logo.png";
 import upayLogo from "@/assets/upay-logo.png";
 import rocketLogo from "@/assets/rocket-logo.png";
+import bangladeshMedicalLogo from "@/assets/bangladesh-medical-college-logo.png";
+import dhakaMedicalLogo from "@/assets/dhaka-medical-college-logo.png";
 
 const TrustedCompanies = () => {
   // Use existing assets in the project
@@ -12,6 +14,8 @@ const TrustedCompanies = () => {
     { src: nagadLogo, alt: "Nagad" },
     { src: upayLogo, alt: "Upay" },
     { src: rocketLogo, alt: "Rocket" },
+    { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" },
+    { src: dhakaMedicalLogo, alt: "Dhaka Medical College" },
     { src: bkashLogo, alt: "bKash" }, // Duplicate for continuous loop
     { src: nagadLogo, alt: "Nagad" }, // Duplicate for continuous loop
   ];
