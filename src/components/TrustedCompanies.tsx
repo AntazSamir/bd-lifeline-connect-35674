@@ -16,8 +16,6 @@ const TrustedCompanies = () => {
     { src: nagadLogo, alt: "Nagad" },
     { src: upayLogo, alt: "Upay" },
     { src: rocketLogo, alt: "Rocket" },
-    { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" }, // Duplicate for continuous loop
-    { src: dhakaMedicalLogo, alt: "Dhaka Medical College" }, // Duplicate for continuous loop
   ];
 
   return (
