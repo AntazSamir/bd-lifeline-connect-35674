@@ -39,6 +39,8 @@ const AdminPanel = () => {
   });
   const [roleEmail, setRoleEmail] = useState("");
   const [roleActionLoading, setRoleActionLoading] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -47,28 +49,71 @@ const AdminPanel = () => {
     }
   }, [isAdmin, loading, navigate]);
 
+  const fetchStats = async () => {
+    try {
+      const [{ count: usersCount }, { count: donorsCount }, { count: activeReqCount }] = await Promise.all([
+        supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('donors').select('*', { count: 'exact', head: true }),
+        supabase.from('blood_requests').select('*', { count: 'exact', head: true })
+      ]);
+
+      setStats(prev => ({
+        ...prev,
+        totalUsers: usersCount || 0,
+        totalDonors: donorsCount || 0,
+        activeRequests: activeReqCount || 0
+      }));
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [{ count: usersCount }, { count: donorsCount }, { count: activeReqCount }] = await Promise.all([
-          supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('donors').select('*', { count: 'exact', head: true }),
-          supabase.from('blood_requests').select('*', { count: 'exact', head: true })
-        ]);
-
-        setStats(prev => ({
-          ...prev,
-          totalUsers: usersCount || 0,
-          totalDonors: donorsCount || 0,
-          activeRequests: activeReqCount || 0
-        }));
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      }
-    };
-
     if (isAdmin) fetchStats();
   }, [isAdmin]);
+
+  const fetchUsers = async () => {
+    setUsersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Failed to load users');
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdmin) fetchUsers();
+  }, [isAdmin]);
+
+  const deleteUser = async (userId: string) => {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
+
+      if (error) throw error;
+
+      toast.success('User deleted successfully');
+      fetchUsers(); // Refresh the list
+      fetchStats(); // Update stats
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      toast.error(error?.message || 'Failed to delete user');
+    }
+  };
 
   const grantRole = async (email: string, role: 'admin' | 'moderator') => {
     setRoleActionLoading(true);
@@ -243,11 +288,54 @@ const AdminPanel = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>User management interface</p>
-                    <p className="text-sm mt-2">Connect your database to view users</p>
-                  </div>
+                  {usersLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 animate-spin mx-auto text-primary" />
+                      <p className="text-muted-foreground mt-2">Loading users...</p>
+                    </div>
+                  ) : users.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No users found</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {users.map((user) => (
+                            <TableRow key={user.id}>
+                              <TableCell className="font-medium">
+                                {user.full_name || 'N/A'}
+                              </TableCell>
+                              <TableCell>{user.email}</TableCell>
+                              <TableCell>{user.phone || 'N/A'}</TableCell>
+                              <TableCell>
+                                {new Date(user.created_at).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteUser(user.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
