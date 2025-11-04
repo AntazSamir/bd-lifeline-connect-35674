@@ -50,15 +50,15 @@ const Header = () => {
       ? 'bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-sm' 
       : 'bg-transparent'
   }`}>
-      <div className="container flex h-20 items-center justify-between">
+      <div className="container flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img src={bloodLogo} alt="BloodConnect Logo" className="h-9 w-9" />
-          <span className="text-xl font-bold text-foreground">BloodConnect</span>
+        <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 flex-shrink-0">
+          <img src={bloodLogo} alt="BloodConnect Logo" className="h-7 w-7 sm:h-9 sm:w-9" />
+          <span className="text-base sm:text-xl font-bold text-foreground whitespace-nowrap">BloodConnect</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 flex-1 justify-center max-w-2xl">
           <Link to="/" className="text-sm font-medium relative group transition-colors">
             Home
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
@@ -89,7 +89,7 @@ const Header = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           <ThemeToggle />
           
           {isLoggedIn ? (
