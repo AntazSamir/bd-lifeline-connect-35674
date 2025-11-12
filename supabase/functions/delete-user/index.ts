@@ -72,6 +72,25 @@ serve(async (req) => {
 
     console.log(`Admin ${user.email} attempting to delete user ${userId}`);
 
+    // Pre-clean related data to avoid FK constraint errors in case CASCADE is not configured
+    // Using service role client so RLS is bypassed
+    const cleanupTables = [
+      { table: 'user_roles', col: 'user_id' },
+      { table: 'user_profiles', col: 'id' },
+      { table: 'donors', col: 'created_by' },
+      { table: 'blood_requests', col: 'created_by' },
+    ];
+
+    for (const { table, col } of cleanupTables) {
+      const { error: cleanupError } = await supabaseAdmin
+        .from(table)
+        .delete()
+        .eq(col, userId);
+      if (cleanupError) {
+        console.warn(`Cleanup warning on ${table}:`, cleanupError.message);
+      }
+    }
+
     // Delete the user using admin API
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 

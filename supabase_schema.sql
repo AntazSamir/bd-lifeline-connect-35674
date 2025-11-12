@@ -13,7 +13,7 @@ CREATE TABLE blood_requests (
   patient_info TEXT,
   contact_number VARCHAR(20) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id)
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- Create donors table
@@ -26,12 +26,12 @@ CREATE TABLE donors (
   last_donation_date DATE,
   is_available BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id)
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- Create user_profiles table
 CREATE TABLE user_profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name VARCHAR(100),
   phone VARCHAR(20),
   nid VARCHAR(50),

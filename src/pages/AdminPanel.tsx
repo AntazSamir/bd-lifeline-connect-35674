@@ -100,11 +100,14 @@ const AdminPanel = () => {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('delete-user', {
+      const response = await supabase.functions.invoke('delete-user', {
         body: { userId }
       });
 
-      if (error) throw error;
+      if (response.error) {
+        const serverMsg = (response.error as any)?.message || 'Delete failed';
+        throw new Error(serverMsg);
+      }
 
       toast.success('User deleted successfully');
       fetchUsers(); // Refresh the list
