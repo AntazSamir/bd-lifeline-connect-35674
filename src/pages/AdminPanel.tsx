@@ -4,14 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { 
   Users, 
   Droplets, 
@@ -20,13 +14,17 @@ import {
   UserCheck,
   AlertCircle,
   CheckCircle,
-  Clock
+  Clock,
+  FileText,
+  Trash2
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/services/supabaseClient";
 import { toast } from "sonner";
+import { UsersTable } from "@/components/admin/UsersTable";
+import { AuditLogTable } from "@/components/admin/AuditLogTable";
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -41,6 +39,10 @@ const AdminPanel = () => {
   const [roleActionLoading, setRoleActionLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [donors, setDonors] = useState<any[]>([]);
+  const [donorsLoading, setDonorsLoading] = useState(false);
+  const [bloodRequests, setBloodRequests] = useState<any[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -90,8 +92,48 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchDonors = async () => {
+    setDonorsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('donors')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setDonors(data || []);
+    } catch (error) {
+      console.error('Error fetching donors:', error);
+      toast.error('Failed to load donors');
+    } finally {
+      setDonorsLoading(false);
+    }
+  };
+
+  const fetchBloodRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('blood_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBloodRequests(data || []);
+    } catch (error) {
+      console.error('Error fetching blood requests:', error);
+      toast.error('Failed to load blood requests');
+    } finally {
+      setRequestsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (isAdmin) fetchUsers();
+    if (isAdmin) {
+      fetchUsers();
+      fetchDonors();
+      fetchBloodRequests();
+    }
   }, [isAdmin]);
 
   const deleteUser = async (userId: string) => {
@@ -118,6 +160,39 @@ const AdminPanel = () => {
     }
   };
 
+  const adminAction = async (action: string, resourceType: string, resourceId: string, data?: any) => {
+    try {
+      const response = await supabase.functions.invoke('admin-action', {
+        body: { action, resourceType, resourceId, data }
+      });
+
+      if (response.error) {
+        throw new Error((response.error as any)?.message || 'Action failed');
+      }
+
+      toast.success(response.data?.message || 'Action completed successfully');
+      
+      // Refresh data
+      fetchUsers();
+      fetchDonors();
+      fetchBloodRequests();
+      fetchStats();
+    } catch (error: any) {
+      console.error('Admin action error:', error);
+      toast.error(error?.message || 'Failed to perform action');
+    }
+  };
+
+  const deleteDonor = async (donorId: string) => {
+    if (!confirm('Are you sure you want to delete this donor?')) return;
+    await adminAction('DELETE_DONOR', 'donor', donorId);
+  };
+
+  const deleteBloodRequest = async (requestId: string) => {
+    if (!confirm('Are you sure you want to delete this blood request?')) return;
+    await adminAction('DELETE_BLOOD_REQUEST', 'blood_request', requestId);
+  };
+
   const grantRole = async (email: string, role: 'admin' | 'moderator') => {
     setRoleActionLoading(true);
     try {
@@ -129,12 +204,7 @@ const AdminPanel = () => {
 
       if (profileError || !profile) throw profileError || new Error('User not found');
 
-      const { error: insertError } = await supabase
-        .from('user_roles')
-        .upsert({ user_id: profile.id, role });
-
-      if (insertError) throw insertError;
-      toast.success(`Granted ${role} role to ${email}`);
+      await adminAction('GRANT_ROLE', 'user', profile.id, { role });
     } catch (e: any) {
       toast.error(e?.message || 'Failed to grant role');
     } finally {
@@ -153,14 +223,7 @@ const AdminPanel = () => {
 
       if (profileError || !profile) throw profileError || new Error('User not found');
 
-      const { error: deleteError } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', profile.id)
-        .eq('role', role);
-
-      if (deleteError) throw deleteError;
-      toast.success(`Revoked ${role} role from ${email}`);
+      await adminAction('REVOKE_ROLE', 'user', profile.id, { role });
     } catch (e: any) {
       toast.error(e?.message || 'Failed to revoke role');
     } finally {
@@ -263,7 +326,7 @@ const AdminPanel = () => {
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="users">
                 <Users className="h-4 w-4 mr-2" />
                 Users
@@ -280,6 +343,10 @@ const AdminPanel = () => {
                 <Shield className="h-4 w-4 mr-2" />
                 Roles
               </TabsTrigger>
+              <TabsTrigger value="audit">
+                <FileText className="h-4 w-4 mr-2" />
+                Audit Log
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="users" className="space-y-4">
@@ -287,58 +354,15 @@ const AdminPanel = () => {
                 <CardHeader>
                   <CardTitle>User Management</CardTitle>
                   <CardDescription>
-                    View and manage all registered users
+                    View and manage all registered users with advanced search and filtering
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {usersLoading ? (
-                    <div className="text-center py-8">
-                      <Clock className="h-8 w-8 animate-spin mx-auto text-primary" />
-                      <p className="text-muted-foreground mt-2">Loading users...</p>
-                    </div>
-                  ) : users.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No users found</p>
-                    </div>
-                  ) : (
-                    <div className="rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Phone</TableHead>
-                            <TableHead>Created</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {users.map((user) => (
-                            <TableRow key={user.id}>
-                              <TableCell className="font-medium">
-                                {user.full_name || 'N/A'}
-                              </TableCell>
-                              <TableCell>{user.email}</TableCell>
-                              <TableCell>{user.phone || 'N/A'}</TableCell>
-                              <TableCell>
-                                {new Date(user.created_at).toLocaleDateString()}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => deleteUser(user.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  )}
+                  <UsersTable 
+                    users={users} 
+                    onDelete={deleteUser} 
+                    loading={usersLoading} 
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -352,11 +376,60 @@ const AdminPanel = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Droplets className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Donor management interface</p>
-                    <p className="text-sm mt-2">Approve, verify, or manage donor profiles</p>
-                  </div>
+                  {donorsLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 animate-spin mx-auto text-primary" />
+                      <p className="text-muted-foreground mt-2">Loading donors...</p>
+                    </div>
+                  ) : donors.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Droplets className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No donors found</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Blood Type</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Available</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {donors.map((donor) => (
+                            <TableRow key={donor.id}>
+                              <TableCell className="font-medium">{donor.name}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline">{donor.blood_type}</Badge>
+                              </TableCell>
+                              <TableCell>{donor.phone}</TableCell>
+                              <TableCell>{donor.location}</TableCell>
+                              <TableCell>
+                                {donor.is_available ? (
+                                  <Badge variant="default">Available</Badge>
+                                ) : (
+                                  <Badge variant="secondary">Unavailable</Badge>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteDonor(donor.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -370,11 +443,60 @@ const AdminPanel = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Blood request management interface</p>
-                    <p className="text-sm mt-2">Track status and verify requests</p>
-                  </div>
+                  {requestsLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 animate-spin mx-auto text-primary" />
+                      <p className="text-muted-foreground mt-2">Loading requests...</p>
+                    </div>
+                  ) : bloodRequests.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No blood requests found</p>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Blood Type</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Contact</TableHead>
+                            <TableHead>Urgency</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {bloodRequests.map((request) => (
+                            <TableRow key={request.id}>
+                              <TableCell>
+                                <Badge variant="destructive">{request.blood_type}</Badge>
+                              </TableCell>
+                              <TableCell>{request.location}</TableCell>
+                              <TableCell>{request.contact_number}</TableCell>
+                              <TableCell>
+                                <Badge variant={request.urgency === 'critical' ? 'destructive' : 'default'}>
+                                  {request.urgency}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {new Date(request.created_at).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteBloodRequest(request.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -390,8 +512,7 @@ const AdminPanel = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="grid md:grid-cols-3 gap-3">
-                      <input
-                        className="border rounded px-3 py-2"
+                      <Input
                         placeholder="User email"
                         value={roleEmail}
                         onChange={(e) => setRoleEmail(e.target.value)}
@@ -436,6 +557,10 @@ const AdminPanel = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="audit" className="space-y-4">
+              <AuditLogTable />
             </TabsContent>
           </Tabs>
         </div>

@@ -72,6 +72,9 @@ serve(async (req) => {
 
     console.log(`Admin ${user.email} attempting to delete user ${userId}`);
 
+    // Get user details before deletion for audit log
+    const { data: targetUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+
     // Pre-clean related data to avoid FK constraint errors in case CASCADE is not configured
     // Using service role client so RLS is bypassed
     const cleanupTables = [
@@ -101,6 +104,19 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Log the action in audit logs
+    await supabaseAdmin.from('audit_logs').insert({
+      actor_id: user.id,
+      actor_email: user.email,
+      action: 'DELETE_USER',
+      resource_type: 'user',
+      resource_id: userId,
+      details: {
+        deleted_user_email: targetUser?.user?.email,
+        deleted_user_id: userId
+      }
+    });
 
     console.log(`Successfully deleted user ${userId}`);
 
