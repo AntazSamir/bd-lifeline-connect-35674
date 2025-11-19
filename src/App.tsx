@@ -16,7 +16,6 @@ import NotFound from "./pages/NotFound";
 import TestSupabase from "./pages/TestSupabase";
 import TestSupabasePage from "./pages/TestSupabasePage";
 import UserProfile from "./pages/UserProfile";
-import AdminPanel from "./pages/AdminPanel";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
@@ -48,7 +47,6 @@ const App = () => (
             <Route path="/test-supabase" element={<TestSupabase />} />
             <Route path="/test-supabase-page" element={<TestSupabasePage />} />
             <Route path="/profile" element={<UserProfile />} />
-            <Route path="/admin" element={<AdminPanel />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
