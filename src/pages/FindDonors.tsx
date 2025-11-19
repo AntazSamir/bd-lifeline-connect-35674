@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import { 
   Search, 
   MapPin, 
@@ -13,7 +15,15 @@ import {
   Filter,
   Star,
   Calendar,
-  Clock
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  RotateCcw,
+  Droplet,
+  Users,
+  Building2,
+  ShieldCheck,
+  AlertCircle
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,11 +32,17 @@ import { useDonors } from "@/hooks/useDatabase";
 
 const FindDonors = () => {
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [filters, setFilters] = useState({
     bloodGroup: "",
     location: "",
     availability: "",
-    distance: ""
+    distance: "",
+    gender: "",
+    lastDonationDate: "",
+    hospital: "",
+    verifiedOnly: false,
+    urgentOnly: false
   });
 
   const { donors, loading, error } = useDonors();
@@ -38,9 +54,47 @@ const FindDonors = () => {
       const matchesAvailability = filters.availability
         ? (filters.availability === "now" ? d.is_available : true)
         : true;
-      return matchesGroup && matchesLocation && matchesAvailability;
+      
+      // Urgent availability filter
+      const matchesUrgent = filters.urgentOnly ? d.is_available : true;
+      
+      // Last donation date filter
+      let matchesLastDonation = true;
+      if (filters.lastDonationDate && d.last_donation_date) {
+        const lastDonation = new Date(d.last_donation_date);
+        const now = new Date();
+        const daysDiff = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (filters.lastDonationDate === "3months") {
+          matchesLastDonation = daysDiff >= 90;
+        } else if (filters.lastDonationDate === "6months") {
+          matchesLastDonation = daysDiff >= 180;
+        } else if (filters.lastDonationDate === "1year") {
+          matchesLastDonation = daysDiff >= 365;
+        }
+      }
+      
+      return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation;
     });
   }, [donors, filters]);
+  
+  const resetFilters = () => {
+    setFilters({
+      bloodGroup: "",
+      location: "",
+      availability: "",
+      distance: "",
+      gender: "",
+      lastDonationDate: "",
+      hospital: "",
+      verifiedOnly: false,
+      urgentOnly: false
+    });
+  };
+  
+  const hasActiveFilters = Object.values(filters).some(value => 
+    typeof value === 'boolean' ? value : value !== ""
+  );
 
   const getAvailabilityBadgeClass = (isAvailable: boolean | undefined) => {
     return isAvailable ? "bg-success text-white" : "bg-secondary text-secondary-foreground";
@@ -66,79 +120,205 @@ const FindDonors = () => {
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Filter className="h-5 w-5 mr-2" />
-                  Filters
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Blood Group</label>
-                  <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({...filters, bloodGroup: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <Card className={`transition-all ${hasActiveFilters ? 'border-primary/50 bg-accent/5' : 'bg-muted/20'}`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center text-lg">
+                    <Filter className="h-5 w-5 mr-2 text-primary" />
+                    Filters
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-2 h-5 text-xs">
+                        Active
+                      </Badge>
+                    )}
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFiltersOpen(!filtersOpen)}
+                    className="lg:hidden h-8 w-8 p-0"
+                  >
+                    {filtersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
                 </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Location</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="Enter area/district" 
-                      className="pl-10"
-                      value={filters.location}
-                      onChange={(e) => setFilters({...filters, location: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Availability</label>
-                    <Select value={filters.availability} onValueChange={(value) => setFilters({...filters, availability: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select availability" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="now">Available now</SelectItem>
-                      <SelectItem value="24hrs">Within 24 hours</SelectItem>
-                      <SelectItem value="flexible">Flexible</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Distance</label>
-                  <Select value={filters.distance} onValueChange={(value) => setFilters({...filters, distance: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select distance" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5km">Within 5 km</SelectItem>
-                      <SelectItem value="10km">Within 10 km</SelectItem>
-                      <SelectItem value="25km">Within 25 km</SelectItem>
-                      <SelectItem value="50km">Within 50 km</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button className="w-full" variant="outline">
-                  Clear Filters
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="w-full justify-start text-xs text-muted-foreground hover:text-primary mt-2"
+                  disabled={!hasActiveFilters}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Reset all filters
                 </Button>
-              </CardContent>
+              </CardHeader>
+              
+              <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+                <CollapsibleContent>
+                  <CardContent className="space-y-4 pt-0">
+                    {/* Blood Group Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.bloodGroup ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <Droplet className="h-4 w-4 mr-2 text-primary" />
+                        Blood Group
+                      </label>
+                      <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({...filters, bloodGroup: value})}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select blood group" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          <SelectItem value="A+">A+</SelectItem>
+                          <SelectItem value="A-">A-</SelectItem>
+                          <SelectItem value="B+">B+</SelectItem>
+                          <SelectItem value="B-">B-</SelectItem>
+                          <SelectItem value="AB+">AB+</SelectItem>
+                          <SelectItem value="AB-">AB-</SelectItem>
+                          <SelectItem value="O+">O+</SelectItem>
+                          <SelectItem value="O-">O-</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Location Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.location ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <MapPin className="h-4 w-4 mr-2 text-primary" />
+                        Location
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                          placeholder="Enter area/district" 
+                          className="pl-10 bg-background"
+                          value={filters.location}
+                          onChange={(e) => setFilters({...filters, location: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Hospital Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.hospital ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <Building2 className="h-4 w-4 mr-2 text-primary" />
+                        Preferred Hospital
+                      </label>
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                          placeholder="Enter hospital name" 
+                          className="pl-10 bg-background"
+                          value={filters.hospital}
+                          onChange={(e) => setFilters({...filters, hospital: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Gender Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.gender ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <Users className="h-4 w-4 mr-2 text-primary" />
+                        Gender
+                      </label>
+                      <Select value={filters.gender} onValueChange={(value) => setFilters({...filters, gender: value})}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="any">Any</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Last Donation Date Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.lastDonationDate ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-primary" />
+                        Last Donation
+                      </label>
+                      <Select value={filters.lastDonationDate} onValueChange={(value) => setFilters({...filters, lastDonationDate: value})}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select period" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          <SelectItem value="3months">3+ months ago</SelectItem>
+                          <SelectItem value="6months">6+ months ago</SelectItem>
+                          <SelectItem value="1year">1+ year ago</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Availability Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.availability ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <Clock className="h-4 w-4 mr-2 text-primary" />
+                        Availability
+                      </label>
+                      <Select value={filters.availability} onValueChange={(value) => setFilters({...filters, availability: value})}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select availability" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          <SelectItem value="now">Available now</SelectItem>
+                          <SelectItem value="24hrs">Within 24 hours</SelectItem>
+                          <SelectItem value="flexible">Flexible</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Distance Filter */}
+                    <div className={`p-3 rounded-lg transition-colors ${filters.distance ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <label className="text-sm font-medium mb-2 flex items-center">
+                        <MapPin className="h-4 w-4 mr-2 text-primary" />
+                        Distance
+                      </label>
+                      <Select value={filters.distance} onValueChange={(value) => setFilters({...filters, distance: value})}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select distance" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          <SelectItem value="5km">Within 5 km</SelectItem>
+                          <SelectItem value="10km">Within 10 km</SelectItem>
+                          <SelectItem value="25km">Within 25 km</SelectItem>
+                          <SelectItem value="50km">Within 50 km</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Toggle Filters */}
+                    <div className="space-y-3 pt-2 border-t">
+                      <div className={`flex items-center justify-between p-3 rounded-lg transition-colors ${filters.urgentOnly ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-primary" />
+                          <label htmlFor="urgent-only" className="text-sm font-medium cursor-pointer">
+                            Urgent Availability
+                          </label>
+                        </div>
+                        <Switch
+                          id="urgent-only"
+                          checked={filters.urgentOnly}
+                          onCheckedChange={(checked) => setFilters({...filters, urgentOnly: checked})}
+                        />
+                      </div>
+
+                      <div className={`flex items-center justify-between p-3 rounded-lg transition-colors ${filters.verifiedOnly ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="h-4 w-4 text-primary" />
+                          <label htmlFor="verified-only" className="text-sm font-medium cursor-pointer">
+                            Verified Donors
+                          </label>
+                        </div>
+                        <Switch
+                          id="verified-only"
+                          checked={filters.verifiedOnly}
+                          onCheckedChange={(checked) => setFilters({...filters, verifiedOnly: checked})}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
             </Card>
           </div>
 
