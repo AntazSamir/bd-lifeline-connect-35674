@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { 
+import { supabase } from '@/services/supabaseClient'
+import {
   getAllBloodRequests, 
   getBloodRequestById, 
   createBloodRequest, 
@@ -103,6 +104,51 @@ export const useDonors = () => {
 
   useEffect(() => {
     fetchDonors()
+    
+    // Set up real-time subscription for donor updates
+    console.log('🔴 Setting up real-time subscription for donors table')
+    const channel = supabase
+      .channel('donors-realtime-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'donors'
+        },
+        (payload) => {
+          console.log('🔴 Real-time update received:', payload)
+          
+          // Dispatch custom event for status indicator
+          window.dispatchEvent(new CustomEvent('realtime-update'));
+          
+          if (payload.eventType === 'INSERT') {
+            console.log('➕ New donor added:', payload.new)
+            setDonors(prev => [payload.new as Donor, ...prev])
+          } else if (payload.eventType === 'UPDATE') {
+            console.log('✏️ Donor updated:', payload.new)
+            setDonors(prev => 
+              prev.map(donor => 
+                donor.id === payload.new.id ? payload.new as Donor : donor
+              )
+            )
+          } else if (payload.eventType === 'DELETE') {
+            console.log('🗑️ Donor deleted:', payload.old)
+            setDonors(prev => 
+              prev.filter(donor => donor.id !== payload.old.id)
+            )
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('🔴 Subscription status:', status)
+      })
+    
+    // Cleanup subscription on unmount
+    return () => {
+      console.log('🔴 Cleaning up real-time subscription')
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const addDonor = async (donor: Omit<Donor, 'id' | 'created_at'>) => {

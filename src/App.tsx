@@ -20,6 +20,7 @@ import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import ResetPassword from "./pages/ResetPassword";
+import TestRealtime from "./pages/TestRealtime";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/test-realtime" element={<TestRealtime />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
