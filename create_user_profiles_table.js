@@ -1,9 +1,20 @@
 // Script to create the user_profiles table
 import { createClient } from '@supabase/supabase-js';
 
-// Using the provided Supabase credentials
-const supabaseUrl = 'https://fjhtbrdnjhlxrwarcfrr.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqaHRicmRuamhseHJ3YXJjZnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzcxNjgsImV4cCI6MjA3NTA1MzE2OH0.Ox85u9pb2-SwvXQatJ9Qauc22tEVawynOHYXwle57pI';
+// Read Supabase credentials from environment variables for safety.
+try {
+  require('dotenv').config();
+} catch (e) {
+  // dotenv not required; environment variables may be set externally
+}
+
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_KEY / SUPABASE_ANON_KEY environment variables. Aborting.');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

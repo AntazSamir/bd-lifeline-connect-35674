@@ -1,11 +1,24 @@
 // Simple test script to check database setup
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase credentials from your project
-const supabaseUrl = 'https://fjhtbrdnjhlxrwarcfrr.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqaHRicmRuamhseHJ3YXJjZnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzcxNjgsImV4cCI6MjA3NTA1MzE2OH0.Ox85u9pb2-SwvXQatJ9Qauc22tEVawynOHYXwle57pI';
+// Supabase credentials are read from environment variables for safety.
+// Set SUPABASE_URL and SUPABASE_ANON_KEY in your environment or use a .env file when running locally.
+try {
+  // Attempt to load .env for local usage (optional)
+  // eslint-disable-next-line no-undef
+  await import('dotenv/config');
+} catch (e) {
+  // ignore if not available
+}
 
-// Create Supabase client
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables. Aborting.');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function testDatabase() {

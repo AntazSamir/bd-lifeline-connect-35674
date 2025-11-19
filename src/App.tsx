@@ -13,8 +13,6 @@ import FindDonors from "./pages/FindDonors";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
-import TestSupabase from "./pages/TestSupabase";
-import TestSupabasePage from "./pages/TestSupabasePage";
 import UserProfile from "./pages/UserProfile";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
@@ -45,8 +43,7 @@ const App = () => (
             <Route path="/find-donors" element={<FindDonors />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/test-supabase" element={<TestSupabase />} />
-            <Route path="/test-supabase-page" element={<TestSupabasePage />} />
+            {/* Test pages removed from production routes */}
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/contact" element={<Contact />} />
