@@ -28,6 +28,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import { RealtimeStatusIndicator } from "@/components/RealtimeStatusIndicator";
 import { useDonors } from "@/hooks/useDatabase";
 
 const FindDonors = () => {
@@ -108,7 +109,10 @@ const FindDonors = () => {
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Find Blood Donors</h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold text-foreground">Find Blood Donors</h1>
+              <RealtimeStatusIndicator />
+            </div>
             <p className="text-muted-foreground">Connect with verified donors in your area</p>
           </div>
           <Button size="lg" className="gap-2" onClick={() => setRegistrationDialogOpen(true)}>
