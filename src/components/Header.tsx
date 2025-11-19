@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Menu, User, LogOut, Shield } from "lucide-react";
+import { Menu, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bloodLogo from "@/assets/blood_logo.png";
 import { getCurrentUser, signOut } from "@/services/dbService";
-import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
 
 const Header = () => {
@@ -13,7 +12,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isAdmin } = useUserRole();
   
   // Check if user is logged in
   useEffect(() => {
@@ -71,13 +69,6 @@ const Header = () => {
             Request Blood
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium relative group transition-colors flex items-center gap-1">
-              <Shield className="h-4 w-4" />
-              Admin
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          )}
           <Link to="/contact" className="text-sm font-medium relative group transition-colors">
             Contact
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
@@ -142,11 +133,6 @@ const Header = () => {
             <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors">
               Find Donors
             </Link>
-            {isAdmin && (
-              <Link to="/admin" className="block text-sm font-medium hover:text-primary transition-colors">
-                Admin Panel
-              </Link>
-            )}
             <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors">
               Contact
             </Link>
