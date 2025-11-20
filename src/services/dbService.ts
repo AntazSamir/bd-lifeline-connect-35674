@@ -23,6 +23,7 @@ export interface Donor {
   is_available: boolean
   created_at?: string
   created_by?: string
+  profile_id?: string
 }
 
 export interface UserProfile {
