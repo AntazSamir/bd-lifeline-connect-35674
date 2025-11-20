@@ -68,10 +68,10 @@ const CompleteProfile = () => {
 
         if (!user) return;
 
-        if (!formData.blood_group || !formData.district || !formData.phone_number) {
+        if (!formData.blood_group || !formData.district || !formData.phone_number || !formData.nid) {
             toast({
                 title: "Error",
-                description: "Blood Group, District, and Phone Number are required",
+                description: "All fields are required",
                 variant: "destructive",
             });
             return;
@@ -97,14 +97,14 @@ const CompleteProfile = () => {
                     blood_group: formData.blood_group,
                     district: formData.district,
                     phone: formData.phone_number,
-                    nid: formData.nid || "",
+                    nid: formData.nid,
                 });
             } else {
                 await createUserProfile({
                     full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || "User",
                     email: user.email || "",
                     phone: formData.phone_number,
-                    nid: formData.nid || "",
+                    nid: formData.nid,
                     blood_group: formData.blood_group,
                     location: formData.district,
                     is_donor: false,
@@ -209,7 +209,7 @@ const CompleteProfile = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="nid">
-                                    National ID (Optional)
+                                    National ID <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
                                     <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -221,6 +221,7 @@ const CompleteProfile = () => {
                                         value={formData.nid}
                                         onChange={handleChange}
                                         className="pl-10"
+                                        required
                                     />
                                 </div>
                             </div>
