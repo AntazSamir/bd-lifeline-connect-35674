@@ -16,6 +16,10 @@ import {
   Settings,
   Bell
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/services/supabaseClient";
+import { getUserProfile } from "@/services/dbService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
