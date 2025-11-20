@@ -11,6 +11,13 @@ export interface BloodRequest {
   contact_number: string
   created_at?: string
   created_by?: string
+  patient_age?: number
+  hospital_address?: string
+  blood_component?: string
+  date_needed?: string
+  donor_requirements?: string
+  additional_notes?: string
+  status?: string
 }
 
 export interface Donor {
