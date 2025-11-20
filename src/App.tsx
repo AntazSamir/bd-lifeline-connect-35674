@@ -13,7 +13,6 @@ import FindDonors from "./pages/FindDonors";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
-import UserProfile from "./pages/UserProfile";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
@@ -36,7 +35,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            
+
             <Route path="/request-blood" element={<RequestBlood />} />
             <Route path="/create-request" element={<CreateRequest />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -44,7 +43,7 @@ const App = () => (
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             {/* Test pages removed from production routes */}
-            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile" element={<Dashboard />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
