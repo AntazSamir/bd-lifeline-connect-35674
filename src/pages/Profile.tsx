@@ -24,17 +24,58 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        navigate("/sign-in");
+        return;
+      }
+
+      setUser(user);
+
+      const userProfile = await getUserProfile(user.id);
+      setProfile(userProfile);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-12 text-center">
+          <p>Loading...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   const userProfile = {
-    name: "Ahmed Rahman",
-    bloodGroup: "O+",
-    location: "Dhaka, Bangladesh",
-    joinDate: "January 2024",
-    totalDonations: 12,
-    lastDonation: "2 months ago",
-    nextEligible: "1 month",
-    tier: "Gold Donor",
-    phone: "+880 1712-345678",
-    email: "ahmed.rahman@email.com"
+    name: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User",
+    bloodGroup: profile?.blood_group || "Not set",
+    location: profile?.district || profile?.location || "Not set",
+    joinDate: profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently",
+    totalDonations: 0,
+    lastDonation: "No donations yet",
+    nextEligible: "Available now",
+    tier: "New Donor",
+    phone: profile?.phone || "Not set",
+    email: user?.email || "Not set"
   };
 
   const donationHistory = [
