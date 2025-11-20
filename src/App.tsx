@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 
 import RequestBlood from "./pages/RequestBlood";
 import CreateRequest from "./pages/CreateRequest";
-import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import FindDonors from "./pages/FindDonors";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -39,13 +39,13 @@ const App = () => (
 
             <Route path="/request-blood" element={<RequestBlood />} />
             <Route path="/create-request" element={<CreateRequest />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Profile />} />
             <Route path="/find-donors" element={<FindDonors />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/complete-profile" element={<CompleteProfile />} />
             {/* Test pages removed from production routes */}
-            <Route path="/profile" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />

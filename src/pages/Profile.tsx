@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  User, 
-  Droplets, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Calendar, 
+import {
+  User,
+  Droplets,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
   Award,
   Heart,
   Clock,
@@ -23,7 +23,7 @@ import { getUserProfile } from "@/services/dbService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const Dashboard = () => {
+const Profile = () => {
   const userProfile = {
     name: "Ahmed Rahman",
     bloodGroup: "O+",
@@ -69,7 +69,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container py-8">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Sidebar */}
@@ -82,7 +82,7 @@ const Dashboard = () => {
                       {userProfile.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <div>
                     <h3 className="font-semibold text-lg">{userProfile.name}</h3>
                     <Badge variant="secondary" className="mt-1">
@@ -258,14 +258,13 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-4">
                       {achievements.map((achievement, index) => (
-                        <div 
-                          key={index} 
+                        <div
+                          key={index}
                           className={`p-4 rounded-lg border ${achievement.earned ? 'bg-accent/20 border-primary' : 'bg-muted/20'}`}
                         >
                           <div className="flex items-center space-x-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                              achievement.earned ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                            }`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${achievement.earned ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                              }`}>
                               <Award className="h-5 w-5" />
                             </div>
                             <div>
@@ -329,4 +328,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Profile;
