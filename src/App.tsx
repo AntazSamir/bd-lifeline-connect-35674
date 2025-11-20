@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import FindDonors from "./pages/FindDonors";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import CompleteProfile from "./pages/CompleteProfile";
 import NotFound from "./pages/NotFound";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import Contact from "./pages/Contact";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/find-donors" element={<FindDonors />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
             {/* Test pages removed from production routes */}
             <Route path="/profile" element={<Dashboard />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
