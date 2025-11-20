@@ -57,7 +57,7 @@ const RequestBlood = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container py-8 md:py-16">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header Section */}
@@ -73,8 +73,8 @@ const RequestBlood = () => {
                 Find and respond to blood donation requests in your community. Every donation saves lives.
               </p>
             </div>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all mt-4"
               onClick={handleCreateRequest}
             >
@@ -133,11 +133,10 @@ const RequestBlood = () => {
                 {URGENCY_LEVELS.map((level) => (
                   <Badge
                     key={level.value}
-                    className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105 ${
-                      selectedUrgency === level.value 
-                        ? level.color 
+                    className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105 ${selectedUrgency === level.value
+                        ? level.color
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
+                      }`}
                     onClick={() => handleUrgencyFilter(level.value)}
                   >
                     {level.label}
@@ -153,7 +152,7 @@ const RequestBlood = () => {
                 {selectedBloodGroup && (
                   <Badge variant="secondary" className="gap-1">
                     Blood: {selectedBloodGroup}
-                    <button 
+                    <button
                       onClick={() => setSelectedBloodGroup("")}
                       className="ml-1 hover:text-destructive"
                     >
@@ -164,7 +163,7 @@ const RequestBlood = () => {
                 {selectedUrgency && (
                   <Badge variant="secondary" className="gap-1">
                     Urgency: {URGENCY_LEVELS.find(l => l.value === selectedUrgency)?.label}
-                    <button 
+                    <button
                       onClick={() => setSelectedUrgency("")}
                       className="ml-1 hover:text-destructive"
                     >
@@ -175,7 +174,7 @@ const RequestBlood = () => {
                 {searchQuery && (
                   <Badge variant="secondary" className="gap-1">
                     Search: "{searchQuery}"
-                    <button 
+                    <button
                       onClick={() => setSearchQuery("")}
                       className="ml-1 hover:text-destructive"
                     >

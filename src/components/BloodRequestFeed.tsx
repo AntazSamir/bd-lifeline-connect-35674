@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Droplets, 
-  MapPin, 
-  Clock, 
-  AlertTriangle, 
-  Phone, 
+import {
+  Droplets,
+  MapPin,
+  Clock,
+  AlertTriangle,
+  Phone,
   Hospital,
   User,
   Heart,
@@ -57,7 +57,7 @@ const formatTimeAgo = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
-  
+
   if (diffInMinutes < 60) {
     return `${diffInMinutes} minutes ago`;
   } else if (diffInMinutes < 1440) {
@@ -99,7 +99,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
           </Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-3 sm:space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
           <div className="flex items-start space-x-2">
@@ -121,7 +121,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
         </div>
 
         <Separator />
-        
+
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
             <Phone className="h-4 w-4 flex-shrink-0" />
@@ -151,15 +151,15 @@ interface BloodRequestFeedProps {
 
 const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
   const { requests, loading, error } = useBloodRequests();
-  
+
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter requests based on search query
   const filteredRequests = useMemo(() => {
     if (!searchQuery.trim()) return requests;
-    
+
     const query = searchQuery.toLowerCase();
-    return requests.filter(request => 
+    return requests.filter(request =>
       request.blood_group.toLowerCase().includes(query) ||
       request.location.toLowerCase().includes(query) ||
       request.urgency.toLowerCase().includes(query) ||
@@ -254,7 +254,7 @@ const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          
+
           <div className="flex items-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button
