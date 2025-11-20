@@ -58,7 +58,7 @@ export const getAllBloodRequests = async () => {
     .from('blood_requests')
     .select('*')
     .order('created_at', { ascending: false })
-  
+
   if (error) throw error
   return data
 }
@@ -69,7 +69,7 @@ export const getBloodRequestById = async (id: number) => {
     .select('*')
     .eq('id', id)
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -77,18 +77,18 @@ export const getBloodRequestById = async (id: number) => {
 export const createBloodRequest = async (request: Omit<BloodRequest, 'id' | 'created_at'>) => {
   // Get the current user ID if available
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   const requestData = {
     ...request,
     created_by: user?.id
   }
-  
+
   const { data, error } = await supabase
     .from('blood_requests')
     .insert([requestData])
     .select()
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -100,7 +100,7 @@ export const updateBloodRequest = async (id: number, updates: Partial<BloodReque
     .eq('id', id)
     .select()
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -110,7 +110,7 @@ export const deleteBloodRequest = async (id: number) => {
     .from('blood_requests')
     .delete()
     .eq('id', id)
-  
+
   if (error) throw error
   return true
 }
@@ -121,7 +121,7 @@ export const getAllDonors = async () => {
     .from('donors')
     .select('*')
     .order('created_at', { ascending: false })
-  
+
   if (error) throw error
   return data
 }
@@ -132,7 +132,7 @@ export const getDonorById = async (id: number) => {
     .select('*')
     .eq('id', id)
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -140,18 +140,18 @@ export const getDonorById = async (id: number) => {
 export const createDonor = async (donor: Omit<Donor, 'id' | 'created_at'>) => {
   // Get the current user ID if available
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   const donorData = {
     ...donor,
     created_by: user?.id
   }
-  
+
   const { data, error } = await supabase
     .from('donors')
     .insert([donorData])
     .select()
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -163,7 +163,7 @@ export const updateDonor = async (id: number, updates: Partial<Donor>) => {
     .eq('id', id)
     .select()
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -173,7 +173,7 @@ export const deleteDonor = async (id: number) => {
     .from('donors')
     .delete()
     .eq('id', id)
-  
+
   if (error) throw error
   return true
 }
@@ -185,7 +185,7 @@ export const getUserProfile = async (userId: string) => {
     .select('*')
     .eq('id', userId)
     .single()
-  
+
   if (error && error.code !== 'PGRST116') throw error // PGRST116 is "no rows found"
   return data
 }
@@ -193,22 +193,22 @@ export const getUserProfile = async (userId: string) => {
 export const createUserProfile = async (profile: Omit<UserProfile, 'id' | 'created_at' | 'updated_at'>) => {
   // Get the current user ID if available
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) throw new Error('User not authenticated');
-  
+
   const profileData = {
     id: user.id,
     ...profile,
     email: user.email, // Add email from auth user
     updated_at: new Date().toISOString()
   };
-  
+
   const { data, error } = await supabase
     .from('user_profiles')
     .insert([profileData])
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 }
@@ -216,21 +216,21 @@ export const createUserProfile = async (profile: Omit<UserProfile, 'id' | 'creat
 export const updateUserProfile = async (updates: Partial<UserProfile>) => {
   // Get the current user ID if available
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) throw new Error('User not authenticated')
-  
+
   const profileData = {
     ...updates,
     updated_at: new Date().toISOString()
   }
-  
+
   const { data, error } = await supabase
     .from('user_profiles')
     .update(profileData)
     .eq('id', user.id)
     .select()
     .single()
-  
+
   if (error) throw error
   return data
 }
@@ -238,14 +238,14 @@ export const updateUserProfile = async (updates: Partial<UserProfile>) => {
 export const deleteUserProfile = async () => {
   // Get the current user ID if available
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) throw new Error('User not authenticated')
-  
+
   const { error } = await supabase
     .from('user_profiles')
     .delete()
     .eq('id', user.id)
-  
+
   if (error) throw error
   return true
 }
@@ -259,7 +259,7 @@ export const signUp = async (email: string, password: string, metadata?: Record<
       data: metadata
     }
   })
-  
+
   if (error) throw error
   return data
 }
@@ -269,7 +269,19 @@ export const signIn = async (email: string, password: string) => {
     email,
     password,
   })
-  
+
+  if (error) throw error
+  return data
+}
+
+export const signInWithGoogle = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/`,
+    },
+  })
+
   if (error) throw error
   return data
 }
