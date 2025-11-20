@@ -82,7 +82,7 @@ const UserProfile = () => {
         if (!user) return;
 
         try {
-            await updateUserProfile(user.id, formData);
+            await updateUserProfile(formData);
 
             toast({
                 title: "Success",
