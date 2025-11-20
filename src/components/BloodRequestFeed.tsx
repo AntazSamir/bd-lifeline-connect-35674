@@ -1,4 +1,4 @@
-import { useMemo, useState, memo } from "react";
+import { useMemo, useState, memo, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useBloodRequests } from "@/hooks/useDatabase";
-import { BloodRequest } from "@/services/dbService";
+import { BloodRequest, BloodRequestFilters } from "@/services/dbService";
 
 // Utility functions
 const getUrgencyStyle = (urgency: string) => {
@@ -70,7 +70,7 @@ const formatTimeAgo = (dateString: string) => {
 // Memoized request card component for better performance
 const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
   const urgencyStyle = useMemo(() => getUrgencyStyle(request.urgency), [request.urgency]);
-  const timeAgo = useMemo(() => formatTimeAgo(request.created_at), [request.created_at]);
+  const timeAgo = useMemo(() => formatTimeAgo(request.created_at || new Date().toISOString()), [request.created_at]);
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -146,40 +146,16 @@ BloodRequestCard.displayName = "BloodRequestCard";
 const ITEMS_PER_PAGE = 12;
 
 interface BloodRequestFeedProps {
-  searchQuery?: string;
+  filters?: BloodRequestFilters;
 }
 
-const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
-  const { requests, loading, error } = useBloodRequests();
+const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
+  const { requests, loading, error, page, setPage, totalPages } = useBloodRequests(1, ITEMS_PER_PAGE, filters);
 
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Filter requests based on search query
-  const filteredRequests = useMemo(() => {
-    if (!searchQuery.trim()) return requests;
-
-    const query = searchQuery.toLowerCase();
-    return requests.filter(request =>
-      request.blood_group.toLowerCase().includes(query) ||
-      request.location.toLowerCase().includes(query) ||
-      request.urgency.toLowerCase().includes(query) ||
-      (request.patient_info && request.patient_info.toLowerCase().includes(query))
-    );
-  }, [requests, searchQuery]);
-
-  // Reset to page 1 when search changes
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
-
-  // Paginate filtered requests
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredRequests.slice(startIndex, endIndex);
-  }, [filteredRequests, currentPage]);
-
-  const totalPages = Math.ceil(filteredRequests.length / ITEMS_PER_PAGE);
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [JSON.stringify(filters), setPage]);
 
   if (loading) {
     return (
@@ -206,7 +182,7 @@ const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
               <CardContent>
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
                 </div>
               </CardContent>
             </Card>
@@ -231,15 +207,17 @@ const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
       </div>
 
       <div className="space-y-4">
-        {paginatedData.map((request) => (
+        {requests.map((request) => (
           <BloodRequestCard key={request.id} request={request} />
         ))}
       </div>
 
-      {paginatedData.length === 0 && (
+      {requests.length === 0 && (
         <div className="text-center py-8">
           <p className="text-muted-foreground">
-            {searchQuery ? `No blood requests match "${searchQuery}"` : "No blood requests found."}
+            {filters.searchQuery
+              ? `No blood requests match "${filters.searchQuery}"`
+              : "No blood requests found."}
           </p>
         </div>
       )}
@@ -249,22 +227,22 @@ const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
           <div className="flex items-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <Button
-                key={page}
-                variant={currentPage === page ? "default" : "outline"}
+                key={p}
+                variant={page === p ? "default" : "outline"}
                 size="sm"
-                onClick={() => setCurrentPage(page)}
+                onClick={() => setPage(p)}
                 className="w-10"
               >
-                {page}
+                {p}
               </Button>
             ))}
           </div>
@@ -272,8 +250,8 @@ const BloodRequestFeed = ({ searchQuery = "" }: BloodRequestFeedProps) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

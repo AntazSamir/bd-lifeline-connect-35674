@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/services/supabaseClient'
 import {
-  getAllBloodRequests, 
-  getBloodRequestById, 
-  createBloodRequest, 
-  updateBloodRequest, 
+  getAllBloodRequests,
+  getBloodRequestById,
+  createBloodRequest,
+  updateBloodRequest,
   deleteBloodRequest,
   getAllDonors,
   getDonorById,
@@ -18,19 +18,23 @@ import {
   getCurrentUser,
   BloodRequest,
   Donor,
-  UserProfile
+  UserProfile,
+  BloodRequestFilters
 } from '../services/dbService'
 
-export const useBloodRequests = () => {
+export const useBloodRequests = (initialPage = 1, limit = 12, filters: BloodRequestFilters = {}) => {
   const [requests, setRequests] = useState<BloodRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(initialPage)
+  const [totalCount, setTotalCount] = useState(0)
 
   const fetchRequests = async () => {
     try {
       setLoading(true)
-      const data = await getAllBloodRequests()
-      setRequests(data)
+      const { data, count } = await getAllBloodRequests(page, limit, filters)
+      setRequests(data || [])
+      setTotalCount(count || 0)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred')
     } finally {
@@ -40,7 +44,7 @@ export const useBloodRequests = () => {
 
   useEffect(() => {
     fetchRequests()
-  }, [])
+  }, [page, JSON.stringify(filters)])
 
   const addRequest = async (request: Omit<BloodRequest, 'id' | 'created_at'>) => {
     try {
@@ -81,7 +85,11 @@ export const useBloodRequests = () => {
     fetchRequests,
     addRequest,
     updateRequest,
-    removeRequest
+    removeRequest,
+    page,
+    setPage,
+    totalPages: Math.ceil(totalCount / limit),
+    totalCount
   }
 }
 
@@ -104,7 +112,7 @@ export const useDonors = () => {
 
   useEffect(() => {
     fetchDonors()
-    
+
     // Set up real-time subscription for donor updates
     console.log('🔴 Setting up real-time subscription for donors table')
     const channel = supabase
@@ -118,23 +126,23 @@ export const useDonors = () => {
         },
         (payload) => {
           console.log('🔴 Real-time update received:', payload)
-          
+
           // Dispatch custom event for status indicator
           window.dispatchEvent(new CustomEvent('realtime-update'));
-          
+
           if (payload.eventType === 'INSERT') {
             console.log('➕ New donor added:', payload.new)
             setDonors(prev => [payload.new as Donor, ...prev])
           } else if (payload.eventType === 'UPDATE') {
             console.log('✏️ Donor updated:', payload.new)
-            setDonors(prev => 
-              prev.map(donor => 
+            setDonors(prev =>
+              prev.map(donor =>
                 donor.id === payload.new.id ? payload.new as Donor : donor
               )
             )
           } else if (payload.eventType === 'DELETE') {
             console.log('🗑️ Donor deleted:', payload.old)
-            setDonors(prev => 
+            setDonors(prev =>
               prev.filter(donor => donor.id !== payload.old.id)
             )
           }
@@ -143,7 +151,7 @@ export const useDonors = () => {
       .subscribe((status) => {
         console.log('🔴 Subscription status:', status)
       })
-    
+
     // Cleanup subscription on unmount
     return () => {
       console.log('🔴 Cleaning up real-time subscription')

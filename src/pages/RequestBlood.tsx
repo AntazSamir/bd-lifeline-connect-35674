@@ -47,11 +47,12 @@ const RequestBlood = () => {
     setSelectedUrgency(selectedUrgency === urgency ? "" : urgency);
   };
 
-  const getCombinedSearchQuery = () => {
-    const filters = [searchQuery];
-    if (selectedBloodGroup) filters.push(selectedBloodGroup);
-    if (selectedUrgency) filters.push(selectedUrgency);
-    return filters.filter(Boolean).join(" ");
+  const getFilters = () => {
+    return {
+      searchQuery,
+      bloodGroup: selectedBloodGroup,
+      urgency: selectedUrgency
+    };
   };
 
   return (
@@ -134,8 +135,8 @@ const RequestBlood = () => {
                   <Badge
                     key={level.value}
                     className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105 ${selectedUrgency === level.value
-                        ? level.color
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      ? level.color
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}
                     onClick={() => handleUrgencyFilter(level.value)}
                   >
@@ -199,7 +200,7 @@ const RequestBlood = () => {
           </div>
 
           {/* Blood Request Feed */}
-          <BloodRequestFeed searchQuery={getCombinedSearchQuery()} />
+          <BloodRequestFeed filters={getFilters()} />
         </div>
       </main>
 

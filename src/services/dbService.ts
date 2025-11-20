@@ -60,15 +60,40 @@ export interface UserProfile {
   profile_photo_url?: string;
 }
 
+export interface BloodRequestFilters {
+  searchQuery?: string;
+  bloodGroup?: string;
+  urgency?: string;
+}
+
 // Blood Request Functions
-export const getAllBloodRequests = async () => {
-  const { data, error } = await supabase
+export const getAllBloodRequests = async (page: number = 1, limit: number = 10, filters?: BloodRequestFilters) => {
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+
+  let query = supabase
     .from('blood_requests')
-    .select('*')
+    .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (filters?.searchQuery) {
+    const q = filters.searchQuery;
+    query = query.or(`location.ilike.%${q}%,patient_info.ilike.%${q}%,blood_group.ilike.%${q}%`)
+  }
+
+  if (filters?.bloodGroup) {
+    query = query.eq('blood_group', filters.bloodGroup)
+  }
+
+  if (filters?.urgency) {
+    query = query.eq('urgency', filters.urgency)
+  }
+
+  const { data, error, count } = await query
 
   if (error) throw error
-  return data
+  return { data, count }
 }
 
 export const getBloodRequestById = async (id: number) => {
