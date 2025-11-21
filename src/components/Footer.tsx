@@ -60,18 +60,18 @@ const Footer = () => {
           <div className="space-y-5">
             <h4 className="font-semibold text-white text-lg">Support</h4>
             <nav className="space-y-3">
-              <a href="#faq" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
                 → FAQ
-              </a>
-              <a href="#help" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              </Link>
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
                 → Help Center
-              </a>
-              <a href="#privacy" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              </Link>
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
                 → Privacy Policy
-              </a>
-              <a href="#terms" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              </Link>
+              <Link to="/terms-of-service" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
                 → Terms of Service
-              </a>
+              </Link>
             </nav>
           </div>
 
@@ -82,7 +82,7 @@ const Footer = () => {
               Subscribe to receive updates about urgent blood requests and donation drives.
             </p>
             <form onSubmit={handleSubscribe} className="space-y-3">
-              <Input 
+              <Input
                 type="email"
                 placeholder="Your email address"
                 value={email}
@@ -90,7 +90,7 @@ const Footer = () => {
                 className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-primary"
                 required
               />
-              <Button 
+              <Button
                 type="submit"
                 className="w-full bg-[#F05656] hover:opacity-90 transition-opacity"
               >

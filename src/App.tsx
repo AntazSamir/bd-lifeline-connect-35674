@@ -19,6 +19,7 @@ import Contact from "./pages/Contact";
 import About from "./pages/About";
 import ResetPassword from "./pages/ResetPassword";
 import TestRealtime from "./pages/TestRealtime";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/test-realtime" element={<TestRealtime />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
