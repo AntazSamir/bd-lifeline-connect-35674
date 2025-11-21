@@ -23,7 +23,7 @@ const TestSupabaseConnection = () => {
         return;
       }
       
-      let result = `Supabase session: ${session ? 'Active' : 'None'}\n`;
+      const result = `Supabase session: ${session ? 'Active' : 'None'}\n`;
       
       // Test database connection by querying a table (if exists)
       const { data, error } = await supabase

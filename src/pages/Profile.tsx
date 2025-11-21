@@ -22,12 +22,18 @@ import { supabase } from "@/services/supabaseClient";
 import { getUserProfile } from "@/services/dbService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { EditProfileDialog } from "@/components/EditProfileDialog";
+import { AvailabilityDialog } from "@/components/AvailabilityDialog";
+import { NotificationSettingsDialog } from "@/components/NotificationSettingsDialog";
 
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: { full_name?: string }; created_at?: string } | null>(null);
   const [profile, setProfile] = useState<{ full_name?: string; blood_group?: string; district?: string; location?: string; created_at?: string; phone?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -148,7 +154,12 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setEditProfileOpen(true)}
+                  >
                     <Settings className="h-4 w-4 mr-2" />
                     Edit Profile
                   </Button>
@@ -236,10 +247,17 @@ const Profile = () => {
                         </div>
                       </div>
                       <div className="space-y-3">
-                        <Button className="w-full">
+                        <Button
+                          className="w-full"
+                          onClick={() => setAvailabilityOpen(true)}
+                        >
                           Update Availability
                         </Button>
-                        <Button variant="outline" className="w-full">
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setNotificationsOpen(true)}
+                        >
                           <Bell className="h-4 w-4 mr-2" />
                           Notification Settings
                         </Button>
@@ -365,6 +383,32 @@ const Profile = () => {
       </main>
 
       <Footer />
+
+      {/* Dialogs */}
+      {user && (
+        <>
+          <EditProfileDialog
+            open={editProfileOpen}
+            onOpenChange={setEditProfileOpen}
+            currentProfile={profile}
+            userId={user.id}
+            onProfileUpdated={fetchUserData}
+          />
+
+          <AvailabilityDialog
+            open={availabilityOpen}
+            onOpenChange={setAvailabilityOpen}
+            userId={user.id}
+            onAvailabilityUpdated={fetchUserData}
+          />
+
+          <NotificationSettingsDialog
+            open={notificationsOpen}
+            onOpenChange={setNotificationsOpen}
+            userId={user.id}
+          />
+        </>
+      )}
     </div>
   );
 };

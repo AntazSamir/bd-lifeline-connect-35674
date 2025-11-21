@@ -46,7 +46,7 @@ export function NotificationSettingsDialog({
         setLoadingSettings(true);
         try {
             const { data, error } = await supabase
-                .from("profiles")
+                .from("user_profiles")
                 .select("notification_preferences")
                 .eq("id", userId)
                 .single();
@@ -70,7 +70,7 @@ export function NotificationSettingsDialog({
 
         try {
             const { error } = await supabase
-                .from("profiles")
+                .from("user_profiles")
                 .update({
                     notification_preferences: settings,
                     updated_at: new Date().toISOString(),

@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 // Set SUPABASE_URL and SUPABASE_ANON_KEY in your environment or use a .env file when running locally.
 try {
   // Attempt to load .env for local usage (optional)
-  // eslint-disable-next-line no-undef
+   
   await import('dotenv/config');
 } catch (e) {
   // ignore if not available

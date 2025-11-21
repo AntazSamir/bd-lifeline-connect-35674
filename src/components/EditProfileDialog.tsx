@@ -75,7 +75,7 @@ export function EditProfileDialog({
         try {
             // Update profile in database
             const { error } = await supabase
-                .from("profiles")
+                .from("user_profiles")
                 .update({
                     full_name: formData.full_name,
                     phone: formData.phone,
