@@ -36,10 +36,11 @@ const SignIn = () => {
         description: "Signed in successfully!",
       });
       navigate("/");
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to sign in";
       toast({
         title: "Error",
-        description: error.message || "Failed to sign in",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -50,10 +51,11 @@ const SignIn = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to sign in with Google";
       toast({
         title: "Error",
-        description: error.message || "Failed to sign in with Google",
+        description: message,
         variant: "destructive",
       });
     }
@@ -83,10 +85,11 @@ const SignIn = () => {
       });
       setResetDialogOpen(false);
       setResetEmail("");
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to send reset email";
       toast({
         title: "Error",
-        description: error.message || "Failed to send reset email",
+        description: message,
         variant: "destructive",
       });
     } finally {

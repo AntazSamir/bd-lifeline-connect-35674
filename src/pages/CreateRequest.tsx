@@ -13,6 +13,8 @@ import { useBloodRequests } from "@/hooks/useDatabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/services/supabaseClient";
+import { BLOOD_GROUPS, URGENCY_OPTIONS, URGENCY_LEVELS } from "@/lib/constants";
+import { bloodRequestSchema, formatZodErrors } from "@/lib/validations";
 
 const CreateRequest = () => {
   const navigate = useNavigate();
@@ -38,28 +40,14 @@ const CreateRequest = () => {
   }, [navigate]);
 
   const getUrgencyInfo = (level: string) => {
-    switch (level) {
-      case "immediate":
-        return {
-          color: "bg-urgent text-white",
-          icon: <AlertTriangle className="h-4 w-4" />,
-          description: "Required within 6 hours - Critical emergency"
-        };
-      case "urgent":
-        return {
-          color: "bg-primary text-white",
-          icon: <Clock className="h-4 w-4" />,
-          description: "Required within 24 hours - Urgent medical need"
-        };
-      case "flexible":
-        return {
-          color: "bg-muted text-foreground",
-          icon: <Clock className="h-4 w-4" />,
-          description: "Required within 3 days - Planned procedure"
-        };
-      default:
-        return null;
-    }
+    const option = URGENCY_OPTIONS.find(opt => opt.value === level);
+    if (!option) return null;
+    
+    return {
+      color: option.color,
+      icon: level === URGENCY_LEVELS.IMMEDIATE ? <AlertTriangle className="h-4 w-4" /> : <Clock className="h-4 w-4" />,
+      description: option.description
+    };
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -80,24 +68,29 @@ const CreateRequest = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.blood_group || !formData.location || !formData.contact_number || !urgency) {
+    // Validate with Zod
+    const validation = bloodRequestSchema.safeParse({
+      blood_group: formData.blood_group,
+      location: formData.location,
+      units_needed: formData.units_needed,
+      urgency: urgency,
+      patient_info: formData.patient_info,
+      contact_number: formData.contact_number
+    });
+
+    if (!validation.success) {
+      const errors = formatZodErrors(validation.error);
+      const firstError = Object.values(errors)[0];
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Validation Error",
+        description: firstError || "Please check your input",
         variant: "destructive"
       });
       return;
     }
     
     try {
-      await addRequest({
-        blood_group: formData.blood_group,
-        location: formData.location,
-        units_needed: formData.units_needed,
-        urgency: urgency as "immediate" | "urgent" | "flexible",
-        patient_info: formData.patient_info,
-        contact_number: formData.contact_number
-      });
+      await addRequest(validation.data);
       
       toast({
         title: "Request Submitted",
@@ -175,14 +168,9 @@ const CreateRequest = () => {
                           <SelectValue placeholder="Select blood group" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="A+">A+</SelectItem>
-                          <SelectItem value="A-">A-</SelectItem>
-                          <SelectItem value="B+">B+</SelectItem>
-                          <SelectItem value="B-">B-</SelectItem>
-                          <SelectItem value="AB+">AB+</SelectItem>
-                          <SelectItem value="AB-">AB-</SelectItem>
-                          <SelectItem value="O+">O+</SelectItem>
-                          <SelectItem value="O-">O-</SelectItem>
+                          {BLOOD_GROUPS.map((bg) => (
+                            <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -193,11 +181,7 @@ const CreateRequest = () => {
                 <div className="space-y-4">
                   <h3 className="font-semibold text-foreground">Urgency Level</h3>
                   <div className="grid gap-3">
-                    {[
-                      { value: "immediate", label: "Immediate", desc: "Within 6 hours" },
-                      { value: "urgent", label: "Urgent", desc: "Within 24 hours" },
-                      { value: "flexible", label: "Flexible", desc: "Within 3 days" }
-                    ].map((option) => (
+                    {URGENCY_OPTIONS.map((option) => (
                       <Button
                         key={option.value}
                         variant={urgency === option.value ? "default" : "outline"}
@@ -211,7 +195,7 @@ const CreateRequest = () => {
                       >
                         <div className="text-left">
                           <div className="font-medium">{option.label}</div>
-                          <div className="text-sm opacity-70">{option.desc}</div>
+                          <div className="text-sm opacity-70">{option.description}</div>
                         </div>
                       </Button>
                     ))}

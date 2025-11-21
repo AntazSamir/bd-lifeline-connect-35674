@@ -46,6 +46,7 @@ const SignUp = () => {
       const result = await signUp(formData.email, formData.password);
       
       // Create user profile with all registration data
+      let profileCreated = false;
       try {
         await createUserProfile({
           full_name: formData.name,
@@ -56,37 +57,49 @@ const SignUp = () => {
           is_donor: false, // Will be updated in profile later
           email: formData.email, // Add email to profile
         });
-      } catch (profileError: any) {
+        profileCreated = true;
+      } catch (profileError) {
         console.error("Profile creation error:", profileError);
+        const errorMessage = profileError instanceof Error ? profileError.message : String(profileError);
         // If it's a table not found error, show a specific message
-        if (profileError.message && (profileError.message.includes('user_profiles') || profileError.message.includes('table') || profileError.message.includes('relation'))) {
+        if (errorMessage && (errorMessage.includes('user_profiles') || errorMessage.includes('table') || errorMessage.includes('relation'))) {
           toast({
             title: "Database Setup Required",
             description: "The user_profiles table doesn't exist in the database. Please run the SQL script from create-user-profiles-table.sql in your Supabase SQL editor.",
             variant: "destructive",
           });
         } else {
-          // For other errors, still show success but note the profile issue
+          // For other errors, show notice about profile issue
           toast({
             title: "Notice",
-            description: "Account created successfully! Profile creation had an issue but your account is still active.",
+            description: "Account created successfully! Profile creation had an issue but your account is still active. You can complete your profile later.",
           });
         }
+        // Don't show duplicate success message - we've already informed the user
+        // Redirect to sign in page after a delay to allow user to read the message
+        setTimeout(() => {
+          navigate("/sign-in");
+        }, 3000);
+        return;
       }
       
-      toast({
-        title: "Success",
-        description: "Account created successfully! Please check your email to confirm your address.",
-      });
-      
-      // Redirect to sign in page after a delay to allow user to read the message
-      setTimeout(() => {
-        navigate("/sign-in");
-      }, 3000);
-    } catch (error: any) {
+      // Only show success toast if profile was created successfully
+      if (profileCreated) {
+        toast({
+          title: "Success",
+          description: "Account created successfully! Please check your email to confirm your address.",
+        });
+        
+        // Redirect to sign in page after a delay to allow user to read the message
+        setTimeout(() => {
+          navigate("/sign-in");
+        }, 3000);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create account";
       toast({
         title: "Error",
-        description: error.message || "Failed to create account",
+        description: message,
         variant: "destructive",
       });
     } finally {

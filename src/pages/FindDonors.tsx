@@ -30,6 +30,8 @@ import Footer from "@/components/Footer";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
 import { RealtimeStatusIndicator } from "@/components/RealtimeStatusIndicator";
 import { useDonors } from "@/hooks/useDatabase";
+import { Donor } from "@/services/dbService";
+import { BLOOD_GROUPS, DISTANCE_OPTIONS, GENDER_OPTIONS, LAST_DONATION_OPTIONS, AVAILABILITY_OPTIONS } from "@/lib/constants";
 
 const FindDonors = () => {
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
@@ -63,19 +65,38 @@ const FindDonors = () => {
       let matchesLastDonation = true;
       if (filters.lastDonationDate && d.last_donation_date) {
         const lastDonation = new Date(d.last_donation_date);
-        const now = new Date();
-        const daysDiff = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
-        
-        if (filters.lastDonationDate === "3months") {
-          matchesLastDonation = daysDiff >= 90;
-        } else if (filters.lastDonationDate === "6months") {
-          matchesLastDonation = daysDiff >= 180;
-        } else if (filters.lastDonationDate === "1year") {
-          matchesLastDonation = daysDiff >= 365;
+        if (!isNaN(lastDonation.getTime())) {
+          const now = new Date();
+          const daysDiff = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (filters.lastDonationDate === "3months") {
+            matchesLastDonation = daysDiff >= 90;
+          } else if (filters.lastDonationDate === "6months") {
+            matchesLastDonation = daysDiff >= 180;
+          } else if (filters.lastDonationDate === "1year") {
+            matchesLastDonation = daysDiff >= 365;
+          }
         }
       }
       
-      return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation;
+      // Gender filter
+      const matchesGender = filters.gender ? (filters.gender === "any" || (d as Donor & { gender?: string }).gender === filters.gender) : true;
+      
+      // Hospital filter (if donor has hospital preference field)
+      const matchesHospital = filters.hospital 
+        ? (() => {
+            const preferredHospital = (d as Donor & { preferred_hospital?: string }).preferred_hospital;
+            return preferredHospital ? preferredHospital.toLowerCase().includes(filters.hospital.toLowerCase()) : false;
+          })()
+        : true;
+      
+      // Verified only filter
+      const matchesVerified = filters.verifiedOnly ? ((d as Donor & { verified?: boolean }).verified === true) : true;
+      
+      // Distance filter (placeholder - would need actual location data to calculate)
+      const matchesDistance = filters.distance ? true : true; // TODO: Implement distance calculation when location data is available
+      
+      return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation && matchesGender && matchesHospital && matchesVerified && matchesDistance;
     });
   }, [donors, filters]);
   
@@ -171,14 +192,9 @@ const FindDonors = () => {
                           <SelectValue placeholder="Select blood group" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
-                          <SelectItem value="A+">A+</SelectItem>
-                          <SelectItem value="A-">A-</SelectItem>
-                          <SelectItem value="B+">B+</SelectItem>
-                          <SelectItem value="B-">B-</SelectItem>
-                          <SelectItem value="AB+">AB+</SelectItem>
-                          <SelectItem value="AB-">AB-</SelectItem>
-                          <SelectItem value="O+">O+</SelectItem>
-                          <SelectItem value="O-">O-</SelectItem>
+                          {BLOOD_GROUPS.map((bg) => (
+                            <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -228,8 +244,9 @@ const FindDonors = () => {
                           <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
+                          {GENDER_OPTIONS.map((gender) => (
+                            <SelectItem key={gender.value} value={gender.value}>{gender.label}</SelectItem>
+                          ))}
                           <SelectItem value="any">Any</SelectItem>
                         </SelectContent>
                       </Select>
@@ -246,9 +263,9 @@ const FindDonors = () => {
                           <SelectValue placeholder="Select period" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
-                          <SelectItem value="3months">3+ months ago</SelectItem>
-                          <SelectItem value="6months">6+ months ago</SelectItem>
-                          <SelectItem value="1year">1+ year ago</SelectItem>
+                          {LAST_DONATION_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -264,9 +281,9 @@ const FindDonors = () => {
                           <SelectValue placeholder="Select availability" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
-                          <SelectItem value="now">Available now</SelectItem>
-                          <SelectItem value="24hrs">Within 24 hours</SelectItem>
-                          <SelectItem value="flexible">Flexible</SelectItem>
+                          {AVAILABILITY_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -282,10 +299,9 @@ const FindDonors = () => {
                           <SelectValue placeholder="Select distance" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
-                          <SelectItem value="5km">Within 5 km</SelectItem>
-                          <SelectItem value="10km">Within 10 km</SelectItem>
-                          <SelectItem value="25km">Within 25 km</SelectItem>
-                          <SelectItem value="50km">Within 50 km</SelectItem>
+                          {DISTANCE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>

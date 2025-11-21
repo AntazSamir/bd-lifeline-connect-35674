@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/services/supabaseClient'
 import {
   getAllBloodRequests,
@@ -29,7 +29,7 @@ export const useBloodRequests = (initialPage = 1, limit = 12, filters: BloodRequ
   const [page, setPage] = useState(initialPage)
   const [totalCount, setTotalCount] = useState(0)
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true)
       const { data, count } = await getAllBloodRequests(page, limit, filters)
@@ -40,11 +40,11 @@ export const useBloodRequests = (initialPage = 1, limit = 12, filters: BloodRequ
     } finally {
       setLoading(false)
     }
-  }
+  }, [page, limit, filters])
 
   useEffect(() => {
     fetchRequests()
-  }, [page, JSON.stringify(filters)])
+  }, [fetchRequests])
 
   const addRequest = async (request: Omit<BloodRequest, 'id' | 'created_at'>) => {
     try {

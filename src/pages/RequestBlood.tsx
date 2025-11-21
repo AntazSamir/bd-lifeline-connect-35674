@@ -8,13 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BloodRequestFeed from "@/components/BloodRequestFeed";
 import { supabase } from "@/services/supabaseClient";
-
-const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-const URGENCY_LEVELS = [
-  { value: "immediate", label: "Immediate", color: "bg-destructive text-destructive-foreground" },
-  { value: "urgent", label: "Urgent", color: "bg-primary text-primary-foreground" },
-  { value: "flexible", label: "Flexible", color: "bg-secondary text-secondary-foreground" }
-];
+import { BLOOD_GROUPS, URGENCY_OPTIONS } from "@/lib/constants";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
@@ -131,7 +125,7 @@ const RequestBlood = () => {
             <div className="space-y-3">
               <label className="text-sm font-medium text-foreground">Filter by Urgency</label>
               <div className="flex flex-wrap gap-2">
-                {URGENCY_LEVELS.map((level) => (
+                {URGENCY_OPTIONS.map((level) => (
                   <Badge
                     key={level.value}
                     className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105 ${selectedUrgency === level.value
@@ -163,7 +157,7 @@ const RequestBlood = () => {
                 )}
                 {selectedUrgency && (
                   <Badge variant="secondary" className="gap-1">
-                    Urgency: {URGENCY_LEVELS.find(l => l.value === selectedUrgency)?.label}
+                    Urgency: {URGENCY_OPTIONS.find(l => l.value === selectedUrgency)?.label}
                     <button
                       onClick={() => setSelectedUrgency("")}
                       className="ml-1 hover:text-destructive"

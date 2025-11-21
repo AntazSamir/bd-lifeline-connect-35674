@@ -143,7 +143,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
 
 BloodRequestCard.displayName = "BloodRequestCard";
 
-const ITEMS_PER_PAGE = 12;
+import { ITEMS_PER_PAGE } from '@/lib/constants';
 
 interface BloodRequestFeedProps {
   filters?: BloodRequestFilters;
@@ -155,7 +155,7 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [JSON.stringify(filters), setPage]);
+  }, [filters.searchQuery, filters.bloodGroup, filters.urgency]);
 
   if (loading) {
     return (
@@ -234,17 +234,60 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
           </Button>
 
           <div className="flex items-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button
-                key={p}
-                variant={page === p ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPage(p)}
-                className="w-10"
-              >
-                {p}
-              </Button>
-            ))}
+            {(() => {
+              const pages: (number | string)[] = [];
+              const maxVisible = 7;
+              
+              if (totalPages <= maxVisible) {
+                // Show all pages if total is small
+                for (let i = 1; i <= totalPages; i++) {
+                  pages.push(i);
+                }
+              } else {
+                // Always show first page
+                pages.push(1);
+                
+                if (page > 3) {
+                  pages.push('...');
+                }
+                
+                // Show pages around current page
+                const start = Math.max(2, page - 1);
+                const end = Math.min(totalPages - 1, page + 1);
+                
+                for (let i = start; i <= end; i++) {
+                  pages.push(i);
+                }
+                
+                if (page < totalPages - 2) {
+                  pages.push('...');
+                }
+                
+                // Always show last page
+                pages.push(totalPages);
+              }
+              
+              return pages.map((p, idx) => {
+                if (p === '...') {
+                  return (
+                    <span key={`ellipsis-${idx}`} className="px-2 text-muted-foreground">
+                      ...
+                    </span>
+                  );
+                }
+                return (
+                  <Button
+                    key={p}
+                    variant={page === p ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setPage(p as number)}
+                    className="w-10"
+                  >
+                    {p}
+                  </Button>
+                );
+              });
+            })()}
           </div>
 
           <Button

@@ -16,8 +16,8 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string; email?: string; created_at?: string } | null>(null);
+    const [profile, setProfile] = useState<{ full_name?: string; phone_number?: string; blood_group?: string; district?: string } | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         full_name: "",
@@ -52,7 +52,7 @@ const UserProfile = () => {
                     district: userProfile.district || "",
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error fetching user:", error);
             toast({
                 title: "Error",
@@ -91,10 +91,11 @@ const UserProfile = () => {
 
             setIsEditing(false);
             checkUser(); // Refresh profile data
-        } catch (error: any) {
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to update profile";
             toast({
                 title: "Error",
-                description: error.message || "Failed to update profile",
+                description: message,
                 variant: "destructive",
             });
         }

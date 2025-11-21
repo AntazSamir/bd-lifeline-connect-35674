@@ -11,12 +11,14 @@ import { updateUserProfile, getUserProfile, createUserProfile } from "@/services
 import { Droplets, MapPin, Phone, CreditCard } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BLOOD_GROUPS, DISTRICTS } from "@/lib/constants";
+import { completeProfileSchema, formatZodErrors } from "@/lib/validations";
 
 const CompleteProfile = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: { full_name?: string } } | null>(null);
 
     const [formData, setFormData] = useState({
         blood_group: "",
@@ -68,20 +70,20 @@ const CompleteProfile = () => {
 
         if (!user) return;
 
-        if (!formData.blood_group || !formData.district || !formData.phone_number || !formData.nid) {
-            toast({
-                title: "Error",
-                description: "All fields are required",
-                variant: "destructive",
-            });
-            return;
-        }
+        // Validate with Zod
+        const validation = completeProfileSchema.safeParse({
+            blood_group: formData.blood_group,
+            district: formData.district,
+            phone_number: formData.phone_number,
+            nid: formData.nid
+        });
 
-        const phoneRegex = /^[0-9+\-\s()]+$/;
-        if (!phoneRegex.test(formData.phone_number)) {
+        if (!validation.success) {
+            const errors = formatZodErrors(validation.error);
+            const firstError = Object.values(errors)[0];
             toast({
-                title: "Error",
-                description: "Please enter a valid phone number",
+                title: "Validation Error",
+                description: firstError || "Please check your input",
                 variant: "destructive",
             });
             return;
@@ -117,10 +119,11 @@ const CompleteProfile = () => {
             });
 
             navigate("/dashboard");
-        } catch (error: any) {
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to update profile";
             toast({
                 title: "Error",
-                description: error.message || "Failed to update profile",
+                description: message,
                 variant: "destructive",
             });
         } finally {
@@ -157,14 +160,9 @@ const CompleteProfile = () => {
                                         <SelectValue placeholder="Select your blood group" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="A+">A+</SelectItem>
-                                        <SelectItem value="A-">A-</SelectItem>
-                                        <SelectItem value="B+">B+</SelectItem>
-                                        <SelectItem value="B-">B-</SelectItem>
-                                        <SelectItem value="O+">O+</SelectItem>
-                                        <SelectItem value="O-">O-</SelectItem>
-                                        <SelectItem value="AB+">AB+</SelectItem>
-                                        <SelectItem value="AB-">AB-</SelectItem>
+                                        {BLOOD_GROUPS.map((bg) => (
+                                            <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>

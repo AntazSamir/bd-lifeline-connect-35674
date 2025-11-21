@@ -97,10 +97,11 @@ const ResetPassword = () => {
       
       // Redirect to sign in page
       navigate("/sign-in");
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to reset password";
       toast({
         title: "Error",
-        description: error.message || "Failed to reset password",
+        description: message,
         variant: "destructive",
       });
     } finally {

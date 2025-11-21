@@ -9,6 +9,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Heart, User, MapPin, Phone, Mail, CreditCard } from 'lucide-react';
 import { createDonor } from '@/services/dbService';
 import { useToast } from '@/hooks/use-toast';
+import { BLOOD_GROUPS, DISTRICTS, GENDER_OPTIONS, MIN_DONOR_AGE, MAX_DONOR_AGE, MIN_DONOR_WEIGHT } from '@/lib/constants';
+import { donorRegistrationSchema, formatZodErrors } from '@/lib/validations';
 
 type FormData = {
   name: string;
@@ -68,36 +70,30 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
   ];
 
   const validate = () => {
-    const e: Record<string, string> = {};
+    // Convert form data to match schema
+    const validation = donorRegistrationSchema.safeParse({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      age: Number(formData.age),
+      gender: formData.gender,
+      bloodGroup: formData.bloodGroup,
+      weight: Number(formData.weight),
+      address: formData.address,
+      district: formData.district,
+      emergencyContact: formData.emergencyContact,
+      agreedToTerms: formData.agreedToTerms,
+      agreedToPrivacy: formData.agreedToPrivacy
+    });
 
-    if (!formData.name.trim()) e.name = 'Full name is required';
+    if (!validation.success) {
+      const formattedErrors = formatZodErrors(validation.error);
+      setErrors(formattedErrors);
+      return false;
+    }
 
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) e.email = 'Email is required';
-    else if (!emailRe.test(formData.email)) e.email = 'Invalid email address';
-
-    const phoneRe = /^\+?[0-9\s\-()]{7,}$/;
-    if (!formData.phone.trim()) e.phone = 'Phone number is required';
-    else if (!phoneRe.test(formData.phone)) e.phone = 'Invalid phone number';
-
-    const ageNum = Number(formData.age);
-    if (!formData.age) e.age = 'Age is required';
-    else if (Number.isNaN(ageNum) || ageNum < 18 || ageNum > 60) e.age = 'Age must be between 18 and 60';
-
-    const weightNum = Number(formData.weight);
-    if (!formData.weight) e.weight = 'Weight is required';
-    else if (Number.isNaN(weightNum) || weightNum < 50) e.weight = 'Weight must be at least 50 kg';
-
-    if (!formData.gender) e.gender = 'Gender is required';
-    if (!formData.bloodGroup) e.bloodGroup = 'Blood group is required';
-    if (!formData.address.trim()) e.address = 'Address is required';
-    if (!formData.district) e.district = 'District is required';
-
-    if (!formData.agreedToTerms) e.agreedToTerms = 'You must agree to the Terms';
-    if (!formData.agreedToPrivacy) e.agreedToPrivacy = 'You must agree to the Privacy Policy';
-
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleChange = (field: keyof FormData, value: string | boolean) => {
@@ -126,16 +122,17 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         district: sanitize(formData.district),
         emergency_contact: sanitize(formData.emergencyContact),
         is_available: true,
-      } as any;
+      };
 
-      const created = await createDonor(payload as any);
+      const created = await createDonor(payload);
       toast({ title: 'Registration saved', description: 'Thank you for registering as a donor.' });
       setFormData(initial);
       onSubmit?.();
       return created;
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error saving donor:', err);
-      toast({ title: 'Save error', description: err?.message || 'Unable to save registration' });
+      const message = err instanceof Error ? err.message : 'Unable to save registration';
+      toast({ title: 'Save error', description: message });
       throw err;
     } finally {
       setIsSubmitting(false);
@@ -168,7 +165,7 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
             </div>
             <div>
               <Label htmlFor="age">Age *</Label>
-              <Input id="age" type="number" value={formData.age} onChange={(e) => handleChange('age', e.target.value)} placeholder="18-60" min={18} max={60} />
+              <Input id="age" type="number" value={formData.age} onChange={(e) => handleChange('age', e.target.value)} placeholder={`${MIN_DONOR_AGE}-${MAX_DONOR_AGE}`} min={MIN_DONOR_AGE} max={MAX_DONOR_AGE} />
               {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
             </div>
           </div>
@@ -200,9 +197,9 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {GENDER_OPTIONS.map((gender) => (
+                    <SelectItem key={gender.value} value={gender.value}>{gender.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
@@ -214,21 +211,16 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
                   <SelectValue placeholder="Select blood group" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="A+">A+</SelectItem>
-                  <SelectItem value="A-">A-</SelectItem>
-                  <SelectItem value="B+">B+</SelectItem>
-                  <SelectItem value="B-">B-</SelectItem>
-                  <SelectItem value="AB+">AB+</SelectItem>
-                  <SelectItem value="AB-">AB-</SelectItem>
-                  <SelectItem value="O+">O+</SelectItem>
-                  <SelectItem value="O-">O-</SelectItem>
+                  {BLOOD_GROUPS.map((bg) => (
+                    <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.bloodGroup && <p className="text-red-500 text-sm mt-1">{errors.bloodGroup}</p>}
             </div>
             <div>
               <Label htmlFor="weight">Weight (kg) *</Label>
-              <Input id="weight" type="number" value={formData.weight} onChange={(e) => handleChange('weight', e.target.value)} placeholder="50+" min={50} />
+              <Input id="weight" type="number" value={formData.weight} onChange={(e) => handleChange('weight', e.target.value)} placeholder={`${MIN_DONOR_WEIGHT}+`} min={MIN_DONOR_WEIGHT} />
               {errors.weight && <p className="text-red-500 text-sm mt-1">{errors.weight}</p>}
             </div>
           </div>
@@ -249,14 +241,9 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
                 <SelectValue placeholder="Select your district" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="dhaka">Dhaka</SelectItem>
-                <SelectItem value="chittagong">Chittagong</SelectItem>
-                <SelectItem value="sylhet">Sylhet</SelectItem>
-                <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                <SelectItem value="khulna">Khulna</SelectItem>
-                <SelectItem value="barisal">Barisal</SelectItem>
-                <SelectItem value="rangpur">Rangpur</SelectItem>
-                <SelectItem value="mymensingh">Mymensingh</SelectItem>
+                {DISTRICTS.map((district) => (
+                  <SelectItem key={district} value={district}>{district}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.district && <p className="text-red-500 text-sm mt-1">{errors.district}</p>}

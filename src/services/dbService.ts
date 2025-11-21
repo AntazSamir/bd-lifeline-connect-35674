@@ -52,9 +52,9 @@ export interface UserProfile {
   full_address?: string;
   weight?: number;
   height?: number;
-  medical_history?: Record<string, any>;
-  lifestyle_info?: Record<string, any>;
-  recent_activities?: Record<string, any>;
+  medical_history?: Record<string, unknown>;
+  lifestyle_info?: Record<string, unknown>;
+  recent_activities?: Record<string, unknown>;
   email_verified?: boolean;
   phone_verified?: boolean;
   profile_photo_url?: string;
@@ -284,7 +284,7 @@ export const deleteUserProfile = async () => {
 }
 
 // Authentication Functions
-export const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
+export const signUp = async (email: string, password: string, metadata?: Record<string, unknown>) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,

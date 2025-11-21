@@ -20,7 +20,7 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, info: any) {
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error('Unhandled error caught by ErrorBoundary:', error, info);
   }
