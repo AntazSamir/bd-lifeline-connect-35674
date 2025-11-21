@@ -203,7 +203,7 @@ const Contact = () => {
         </div>
 
         {/* Blood Donor Telephone Enquiries Section */}
-        <Card className="mb-16 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+        <Card className="mb-16">
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -304,7 +304,7 @@ const Contact = () => {
 
         {/* Email Us Section */}
         <div className="max-w-2xl mx-auto mb-16">
-          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background hover:shadow-lg transition-all duration-300">
+          <Card className="hover:shadow-lg transition-all duration-300">
             <CardContent className="p-8">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -332,7 +332,7 @@ const Contact = () => {
 
         {/* Contact Form - Full Width */}
         <div className="max-w-4xl mx-auto mb-16">
-          <Card className="animate-fade-in border-primary/20 bg-gradient-to-br from-primary/5 to-background" style={{ animationDelay: "400ms" }}>
+          <Card className="animate-fade-in" style={{ animationDelay: "400ms" }}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
