@@ -21,7 +21,6 @@ import ResetPassword from "./pages/ResetPassword";
 import TestRealtime from "./pages/TestRealtime";
 import TermsOfService from "./pages/TermsOfService";
 
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,8 +53,6 @@ const App = () => (
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/test-realtime" element={<TestRealtime />} />
-
-
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
