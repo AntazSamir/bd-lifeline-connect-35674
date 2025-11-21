@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/services/supabaseClient";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface EditProfileDialogProps {
     open: boolean;
@@ -30,6 +31,7 @@ interface EditProfileDialogProps {
         blood_group?: string;
         district?: string;
         location?: string;
+        avatar_url?: string;
     } | null;
     userId: string;
     onProfileUpdated: () => void;
@@ -60,6 +62,9 @@ export function EditProfileDialog({
 }: EditProfileDialogProps) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(currentProfile?.avatar_url || null);
     const [formData, setFormData] = useState({
         full_name: currentProfile?.full_name || "",
         phone: currentProfile?.phone || "",
@@ -68,11 +73,86 @@ export function EditProfileDialog({
         location: currentProfile?.location || "",
     });
 
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast({
+                title: "Invalid file type",
+                description: "Please select an image file.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            toast({
+                title: "File too large",
+                description: "Please select an image smaller than 2MB.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const removeAvatar = () => {
+        setAvatarFile(null);
+        setAvatarPreview(currentProfile?.avatar_url || null);
+    };
+
+    const uploadAvatar = async (): Promise<string | null> => {
+        if (!avatarFile) return currentProfile?.avatar_url || null;
+
+        setUploading(true);
+        try {
+            const fileExt = avatarFile.name.split('.').pop();
+            const fileName = `${userId}/${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, avatarFile, {
+                    cacheControl: '3600',
+                    upsert: true,
+                });
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+
+            return data.publicUrl;
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            toast({
+                title: "Upload failed",
+                description: "Failed to upload profile picture.",
+                variant: "destructive",
+            });
+            return null;
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
+            // Upload avatar if changed
+            const avatarUrl = await uploadAvatar();
+
             // Update profile in database
             const { error } = await supabase
                 .from("user_profiles")
@@ -82,6 +162,7 @@ export function EditProfileDialog({
                     blood_group: formData.blood_group,
                     district: formData.district,
                     location: formData.location,
+                    avatar_url: avatarUrl,
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", userId);
@@ -118,6 +199,50 @@ export function EditProfileDialog({
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
+                        {/* Avatar Upload */}
+                        <div className="flex flex-col items-center gap-4">
+                            <Avatar className="w-24 h-24">
+                                <AvatarImage src={avatarPreview || undefined} />
+                                <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
+                                    {formData.full_name.split(' ').map(n => n[0]).join('') || 'U'}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="flex gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                                    disabled={uploading}
+                                >
+                                    <Upload className="h-4 w-4 mr-2" />
+                                    {uploading ? 'Uploading...' : 'Upload Photo'}
+                                </Button>
+                                {avatarPreview && (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={removeAvatar}
+                                        disabled={uploading}
+                                    >
+                                        <X className="h-4 w-4 mr-2" />
+                                        Remove
+                                    </Button>
+                                )}
+                            </div>
+                            <input
+                                id="avatar-upload"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleAvatarChange}
+                            />
+                            <p className="text-xs text-muted-foreground text-center">
+                                Recommended: Square image, max 2MB
+                            </p>
+                        </div>
+
                         <div className="grid gap-2">
                             <Label htmlFor="full_name">Full Name</Label>
                             <Input
@@ -209,9 +334,9 @@ export function EditProfileDialog({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Changes
+                        <Button type="submit" disabled={isLoading || uploading}>
+                            {(isLoading || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {uploading ? 'Uploading...' : 'Save Changes'}
                         </Button>
                     </DialogFooter>
                 </form>
