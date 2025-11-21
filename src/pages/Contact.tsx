@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
   Send,
   Heart,
   MessageCircle,
@@ -85,13 +85,13 @@ const Contact = () => {
     try {
       // Validate form data
       const validatedData = contactSchema.parse(formData);
-
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-
+      
       // In a real app, you would send the data to your backend here
       // Example: await sendContactEmail(validatedData);
-
+      
       toast({
         title: "Message Sent!",
         description: "Thank you for contacting us. We'll get back to you soon.",
@@ -186,7 +186,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
+      
       <main className="container py-16">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-in">
@@ -202,279 +202,139 @@ const Contact = () => {
           </p>
         </div>
 
-        {/* Blood Donor Telephone Enquiries Section */}
-        <Card className="mb-16">
-          <CardHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Phone className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl">Blood Donor Telephone Enquiries</CardTitle>
-                <CardDescription className="text-base mt-1">
-                  Our dedicated helpline for all blood donation queries
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Hotline Number */}
-            <div className="bg-primary/10 rounded-lg p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Call us at</p>
-              <a
-                href="tel:03459090999"
-                className="text-3xl md:text-4xl font-bold text-primary hover:text-primary/80 transition-colors"
+        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+          {/* Contact Information Cards */}
+          <div className="lg:col-span-1 space-y-6">
+            {contactInfo.map((info, index) => (
+              <Card 
+                key={index} 
+                className="hover-scale animate-fade-in hover:shadow-lg transition-all duration-300"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                0345 90 90 999
-              </a>
-              <p className="text-sm text-muted-foreground mt-3 flex items-center justify-center gap-2">
-                <Clock className="h-4 w-4" />
-                Monday - Friday: 9:00 AM - 5:00 PM
-              </p>
-            </div>
-
-            {/* Services List */}
-            <div>
-              <h3 className="font-semibold text-lg mb-4 text-foreground">Give us a ring if you:</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {[
-                  {
-                    title: "Want to sign up as a blood donor",
-                    description: "Register to become a life-saving donor"
-                  },
-                  {
-                    title: "Have questions about giving blood",
-                    description: "Get answers to your donation queries"
-                  },
-                  {
-                    title: "Make or cancel an appointment",
-                    description: "Until 5pm the day before the session"
-                  },
-                  {
-                    title: "Need medical advice",
-                    description: "Consult with our medical team"
-                  },
-                  {
-                    title: "Feel unwell after giving blood",
-                    description: "Medical team on-call 24 hours",
-                    highlight: true
-                  },
-                  {
-                    title: "Suffer discomfort after donation",
-                    description: "Medical team on-call 24 hours",
-                    highlight: true
-                  },
-                  {
-                    title: "Have doubts about blood usage",
-                    description: "Concerns after donation"
-                  }
-                ].map((service, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg border ${service.highlight
-                      ? 'border-destructive/30 bg-destructive/5'
-                      : 'border-border bg-card'
-                      }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${service.highlight ? 'bg-destructive/20' : 'bg-primary/20'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full ${service.highlight ? 'bg-destructive' : 'bg-primary'
-                          }`} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground text-sm">{service.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{service.description}</p>
-                      </div>
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <info.icon className={`h-6 w-6 ${info.color}`} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">{info.title}</h3>
+                      <p className="text-foreground font-medium mb-1">{info.content}</p>
+                      <p className="text-sm text-muted-foreground">{info.description}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-            {/* Important Note */}
-            <div className="bg-muted/50 rounded-lg p-4 border border-border">
-              <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Note:</strong> For medical emergencies after donation,
-                our medical team is available 24/7. Don't hesitate to call if you experience any discomfort or concerns.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Email Us Section */}
-        <div className="max-w-2xl mx-auto mb-16">
-          <Card className="hover:shadow-lg transition-all duration-300">
-            <CardContent className="p-8">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Mail className="h-7 w-7 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Email Us</h3>
-                  <a
-                    href="mailto:support@bloodconnect.bd"
-                    className="text-lg font-semibold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    support@bloodconnect.bd
-                  </a>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    We'll respond within 24 hours
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-
-
-
-        {/* Contact Form - Full Width */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <Card className="animate-fade-in" style={{ animationDelay: "400ms" }}>
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MessageCircle className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                  <CardDescription className="text-base mt-1">
-                    Fill out the form below and we'll get back to you as soon as possible.
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-semibold">Full Name *</Label>
-                    <Input
-                      id="name"
-                      placeholder="Enter your full name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className={`h-11 ${errors.name ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-destructive" />
-                        {errors.name}
-                      </p>
-                    )}
+          {/* Contact Form */}
+          <div className="lg:col-span-2">
+            <Card className="animate-fade-in" style={{ animationDelay: "400ms" }}>
+              <CardHeader>
+                <CardTitle>Send us a Message</CardTitle>
+                <CardDescription>
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name *</Label>
+                      <Input
+                        id="name"
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className={errors.name ? "border-destructive" : ""}
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-destructive">{errors.name}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={errors.email ? "border-destructive" : ""}
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-destructive">{errors.email}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`h-11 ${errors.email ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
-                    />
-                    {errors.email && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-destructive" />
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-semibold">Phone Number (Optional)</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+880 1XXX-XXXXXX"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`h-11 ${errors.phone ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
-                    />
-                    {errors.phone && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-destructive" />
-                        {errors.phone}
-                      </p>
-                    )}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number (Optional)</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+880 1XXX-XXXXXX"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={errors.phone ? "border-destructive" : ""}
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-destructive">{errors.phone}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">Subject *</Label>
+                      <Input
+                        id="subject"
+                        placeholder="What is this regarding?"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        className={errors.subject ? "border-destructive" : ""}
+                      />
+                      {errors.subject && (
+                        <p className="text-sm text-destructive">{errors.subject}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject" className="text-sm font-semibold">Subject *</Label>
-                    <Input
-                      id="subject"
-                      placeholder="What is this regarding?"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      className={`h-11 ${errors.subject ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
-                    />
-                    {errors.subject && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-destructive" />
-                        {errors.subject}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="message" className="text-sm font-semibold">Message *</Label>
-                  <Textarea
-                    id="message"
-                    placeholder="Tell us more about your inquiry..."
-                    rows={6}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    className={`resize-none ${errors.message ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
-                  />
-                  <div className="flex items-center justify-between">
-                    {errors.message ? (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-destructive" />
-                        {errors.message}
-                      </p>
-                    ) : (
-                      <span />
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message *</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Tell us more about your inquiry..."
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      className={errors.message ? "border-destructive" : ""}
+                    />
+                    {errors.message && (
+                      <p className="text-sm text-destructive">{errors.message}</p>
                     )}
                     <p className="text-sm text-muted-foreground">
                       {formData.message.length}/1000 characters
                     </p>
                   </div>
-                </div>
 
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                        Sending Message...
-                      </>
+                      <>Sending Message...</>
                     ) : (
                       <>
-                        <Send className="h-5 w-5 mr-2" />
+                        <Send className="h-4 w-4 mr-2" />
                         Send Message
                       </>
                     )}
                   </Button>
-                </div>
-
-                {/* Success/Info Message */}
-                <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                  <p className="text-sm text-muted-foreground">
-                    <strong className="text-foreground">Response Time:</strong> We typically respond to all inquiries within 24 hours during business days.
-                  </p>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Quick Links Section */}
@@ -490,7 +350,7 @@ const Contact = () => {
 
           <div className="grid md:grid-cols-3 gap-6">
             {quickLinks.map((link, index) => (
-              <Card
+              <Card 
                 key={index}
                 className="hover-scale cursor-pointer animate-fade-in hover:shadow-lg transition-all duration-300"
                 style={{ animationDelay: `${600 + index * 100}ms` }}
