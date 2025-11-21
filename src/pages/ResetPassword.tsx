@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,6 @@ import Footer from "@/components/Footer";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,31 +20,58 @@ const ResetPassword = () => {
     password: "",
     confirmPassword: "",
   });
-  const [token, setToken] = useState<string | null>(null);
+  const [isValidToken, setIsValidToken] = useState(false);
 
   useEffect(() => {
-    // Get token from URL parameters
-    const token_hash = searchParams.get("token_hash");
-    const type = searchParams.get("type");
-    
-    // Verify this is a valid password reset request
-    if (!token_hash || type !== "recovery") {
+    // Supabase sends recovery tokens in URL hash fragments
+    // Format: #access_token=xxx&type=recovery
+    const checkToken = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+      const type = hashParams.get("type");
+
+      console.log("Reset password - access_token:", accessToken ? "present" : "missing");
+      console.log("Reset password - type:", type);
+
+      // Verify this is a valid password reset request
+      if (!accessToken || type !== "recovery") {
+        toast({
+          title: "Invalid reset link",
+          description: "This password reset link is invalid or has expired. Please request a new password reset.",
+          variant: "destructive",
+        });
+        // Don't redirect immediately - let user see the error
+        setTimeout(() => navigate("/sign-in"), 3000);
+        return;
+      }
+
+      // Verify the session is valid
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error || !data.session) {
+        toast({
+          title: "Session expired",
+          description: "Your reset link has expired. Please request a new one.",
+          variant: "destructive",
+        });
+        setTimeout(() => navigate("/sign-in"), 3000);
+        return;
+      }
+
+      setIsValidToken(true);
       toast({
-        title: "Invalid reset link",
-        description: "This password reset link is invalid or has expired.",
-        variant: "destructive",
+        title: "Ready to reset",
+        description: "Please enter your new password below.",
       });
-      navigate("/sign-in");
-      return;
-    }
-    
-    setToken(token_hash);
-  }, [searchParams, navigate, toast]);
+    };
+
+    checkToken();
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!token) {
+
+    if (!isValidToken) {
       toast({
         title: "Error",
         description: "Invalid reset token",
@@ -53,7 +79,7 @@ const ResetPassword = () => {
       });
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Error",
@@ -63,40 +89,33 @@ const ResetPassword = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (formData.password.length < 8) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 8 characters long",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
-      // Verify the token and update password
-      const { error } = await supabase.auth.verifyOtp({
-        type: "recovery",
-        token_hash: token,
-      });
-      
-      if (error) throw error;
-      
       // Update the user's password
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: formData.password,
       });
-      
-      if (updateError) throw updateError;
-      
+
+      if (error) throw error;
+
       toast({
-        title: "Success",
-        description: "Your password has been reset successfully!",
+        title: "Success!",
+        description: "Your password has been reset successfully. You can now sign in with your new password.",
       });
-      
-      // Redirect to sign in page
-      navigate("/sign-in");
+
+      // Sign out and redirect to sign in page
+      await supabase.auth.signOut();
+      setTimeout(() => navigate("/sign-in"), 2000);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to reset password";
       toast({
@@ -139,10 +158,11 @@ const ResetPassword = () => {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter new password"
+                    placeholder="Enter new password (min 8 characters)"
                     value={formData.password}
                     onChange={handleChange}
                     required
+                    minLength={8}
                   />
                   <Button
                     type="button"
@@ -170,6 +190,7 @@ const ResetPassword = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
+                    minLength={8}
                   />
                   <Button
                     type="button"
@@ -188,7 +209,7 @@ const ResetPassword = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={isLoading || !token}>
+              <Button type="submit" className="w-full" disabled={isLoading || !isValidToken}>
                 {isLoading ? "Resetting..." : "Reset Password"}
               </Button>
             </CardFooter>
