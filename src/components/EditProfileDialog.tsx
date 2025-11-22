@@ -132,11 +132,11 @@ export function EditProfileDialog({
                 .getPublicUrl(fileName);
 
             return data.publicUrl;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error uploading avatar:', error);
             toast({
                 title: "Upload failed",
-                description: "Failed to upload profile picture.",
+                description: error.message || "Failed to upload profile picture.",
                 variant: "destructive",
             });
             return null;
