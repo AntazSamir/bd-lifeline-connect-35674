@@ -20,6 +20,7 @@ import About from "./pages/About";
 import ResetPassword from "./pages/ResetPassword";
 import TestRealtime from "./pages/TestRealtime";
 import TermsOfService from "./pages/TermsOfService";
+import { AuthListener } from "./components/AuthListener";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AuthListener />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
