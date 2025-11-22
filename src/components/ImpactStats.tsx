@@ -46,7 +46,7 @@ const ImpactStats = () => {
             return (
               <div
                 key={index}
-                className="text-center group transition-all duration-300 hover:scale-105 sm:hover:scale-110"
+                className="text-center group transition-all duration-300"
               >
                 <div className="flex justify-center mb-3 sm:mb-4">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-background shadow-lg flex items-center justify-center group-hover:shadow-xl transition-shadow duration-300">

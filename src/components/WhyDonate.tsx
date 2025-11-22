@@ -61,7 +61,7 @@ const WhyDonate = () => {
               <Card
                 key={index}
                 className={cn(
-                  "relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer",
+                  "relative overflow-hidden group transition-all duration-300 hover:shadow-xl cursor-pointer",
                   benefit.span
                 )}
               >
@@ -70,8 +70,8 @@ const WhyDonate = () => {
                   benefit.gradient
                 )} />
                 <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
-                  <img 
-                    src={benefit.image} 
+                  <img
+                    src={benefit.image}
                     alt={benefit.title}
                     className="w-full h-full object-cover"
                   />

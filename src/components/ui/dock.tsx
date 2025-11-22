@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils"
 
 const dockVariants = cva("flex gap-2 p-2 bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700")
 
-export interface DockProps 
+export interface DockProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof dockVariants> {}
+  VariantProps<typeof dockVariants> { }
 
 const Dock = React.forwardRef<HTMLDivElement, DockProps>(
   ({ className, ...props }, ref) => (
@@ -21,14 +21,14 @@ Dock.displayName = "Dock"
 
 const DockItem = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { 
+  React.HTMLAttributes<HTMLDivElement> & {
     active?: boolean
     size?: "sm" | "md" | "lg"
   }
 >(({ className, active, size = "md", children, ...props }, ref) => {
   const sizeClasses = {
     sm: "w-8 h-8",
-    md: "w-12 h-12", 
+    md: "w-12 h-12",
     lg: "w-16 h-16"
   }
 
@@ -37,7 +37,7 @@ const DockItem = React.forwardRef<
       ref={ref}
       className={cn(
         "flex items-center justify-center rounded-xl transition-all duration-300 cursor-pointer",
-        "hover:bg-primary/20 hover:scale-110 active:scale-95",
+        "hover:bg-primary/20 active:scale-95",
         sizeClasses[size],
         active && "bg-primary/30 scale-110",
         className

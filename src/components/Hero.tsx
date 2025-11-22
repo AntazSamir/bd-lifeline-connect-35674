@@ -33,8 +33,8 @@ const Hero = () => {
   };
 
   return (
-    <section 
-      id="home" 
+    <section
+      id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%), linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${heroBackground})`,
@@ -56,7 +56,7 @@ const Hero = () => {
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto font-light px-4">
               Join BloodConnect and help patients find life-saving blood donors in minutes across Bangladesh.
             </p>
-            
+
             {/* Stats */}
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 px-2">
               <div className="text-center animate-slide-up min-w-[90px]">
@@ -76,19 +76,19 @@ const Hero = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-10 sm:mb-16 animate-slide-up px-4">
-            <Button 
-              size="lg" 
-              className="bg-[#F05656] text-white px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] w-full sm:w-auto"
+            <Button
+              size="lg"
+              className="bg-[#F05656] text-white px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl w-full sm:w-auto"
               onClick={handleBecomeDonor}
             >
               <Heart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Become a Donor
             </Button>
             <Link to="/find-donors" className="w-full sm:w-auto">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] w-full"
+              <Button
+                size="lg"
+                variant="outline"
+                className="px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 w-full"
               >
                 Find Donor Now
               </Button>
@@ -163,7 +163,7 @@ const Hero = () => {
               </div>
 
               <Link to="/find-donors" className="block mt-6 sm:mt-8">
-                <Button className="w-full bg-[#F05656] text-white py-4 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                <Button className="w-full bg-[#F05656] text-white py-4 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                   Search Donors
                 </Button>
               </Link>
@@ -171,10 +171,10 @@ const Hero = () => {
           </Card>
         </div>
       </div>
-      
+
       {/* Donor Registration Dialog */}
-      <DonorRegistrationDialog 
-        open={registrationDialogOpen} 
+      <DonorRegistrationDialog
+        open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
       />
     </section>

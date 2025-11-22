@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Search, 
-  MapPin, 
-  Phone, 
-  Heart, 
+import {
+  Search,
+  MapPin,
+  Phone,
+  Heart,
   Filter,
   Star,
   Calendar,
@@ -32,10 +32,13 @@ import { RealtimeStatusIndicator } from "@/components/RealtimeStatusIndicator";
 import { useDonors } from "@/hooks/useDatabase";
 import { Donor } from "@/services/dbService";
 import { BLOOD_GROUPS, DISTANCE_OPTIONS, GENDER_OPTIONS, LAST_DONATION_OPTIONS, AVAILABILITY_OPTIONS } from "@/lib/constants";
+import { supabase } from "@/services/supabaseClient";
 
 const FindDonors = () => {
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
+  const [checkingDonorStatus, setCheckingDonorStatus] = useState(true);
   const [filters, setFilters] = useState({
     bloodGroup: "",
     location: "",
@@ -50,6 +53,30 @@ const FindDonors = () => {
 
   const { donors, loading, error } = useDonors();
 
+  // Check if current user is already a donor
+  useEffect(() => {
+    const checkDonorStatus = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: donorData } = await supabase
+            .from('donors')
+            .select('id')
+            .eq('profile_id', user.id)
+            .single();
+
+          setIsCurrentUserDonor(!!donorData);
+        }
+      } catch (error) {
+        console.error('Error checking donor status:', error);
+      } finally {
+        setCheckingDonorStatus(false);
+      }
+    };
+
+    checkDonorStatus();
+  }, []);
+
   const filteredDonors = useMemo(() => {
     return donors.filter((d) => {
       const matchesGroup = filters.bloodGroup ? d.blood_group === filters.bloodGroup : true;
@@ -57,10 +84,10 @@ const FindDonors = () => {
       const matchesAvailability = filters.availability
         ? (filters.availability === "now" ? d.is_available : true)
         : true;
-      
+
       // Urgent availability filter
       const matchesUrgent = filters.urgentOnly ? d.is_available : true;
-      
+
       // Last donation date filter
       let matchesLastDonation = true;
       if (filters.lastDonationDate && d.last_donation_date) {
@@ -68,7 +95,7 @@ const FindDonors = () => {
         if (!isNaN(lastDonation.getTime())) {
           const now = new Date();
           const daysDiff = Math.floor((now.getTime() - lastDonation.getTime()) / (1000 * 60 * 60 * 24));
-          
+
           if (filters.lastDonationDate === "3months") {
             matchesLastDonation = daysDiff >= 90;
           } else if (filters.lastDonationDate === "6months") {
@@ -78,28 +105,28 @@ const FindDonors = () => {
           }
         }
       }
-      
+
       // Gender filter
       const matchesGender = filters.gender ? (filters.gender === "any" || (d as Donor & { gender?: string }).gender === filters.gender) : true;
-      
+
       // Hospital filter (if donor has hospital preference field)
-      const matchesHospital = filters.hospital 
+      const matchesHospital = filters.hospital
         ? (() => {
-            const preferredHospital = (d as Donor & { preferred_hospital?: string }).preferred_hospital;
-            return preferredHospital ? preferredHospital.toLowerCase().includes(filters.hospital.toLowerCase()) : false;
-          })()
+          const preferredHospital = (d as Donor & { preferred_hospital?: string }).preferred_hospital;
+          return preferredHospital ? preferredHospital.toLowerCase().includes(filters.hospital.toLowerCase()) : false;
+        })()
         : true;
-      
+
       // Verified only filter
       const matchesVerified = filters.verifiedOnly ? ((d as Donor & { verified?: boolean }).verified === true) : true;
-      
+
       // Distance filter (placeholder - would need actual location data to calculate)
       const matchesDistance = filters.distance ? true : true; // TODO: Implement distance calculation when location data is available
-      
+
       return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation && matchesGender && matchesHospital && matchesVerified && matchesDistance;
     });
   }, [donors, filters]);
-  
+
   const resetFilters = () => {
     setFilters({
       bloodGroup: "",
@@ -113,8 +140,8 @@ const FindDonors = () => {
       urgentOnly: false
     });
   };
-  
-  const hasActiveFilters = Object.values(filters).some(value => 
+
+  const hasActiveFilters = Object.values(filters).some(value =>
     typeof value === 'boolean' ? value : value !== ""
   );
 
@@ -125,7 +152,7 @@ const FindDonors = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container py-8">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
@@ -136,10 +163,12 @@ const FindDonors = () => {
             </div>
             <p className="text-muted-foreground">Connect with verified donors in your area</p>
           </div>
-          <Button size="lg" className="gap-2" onClick={() => setRegistrationDialogOpen(true)}>
-            <Heart className="h-5 w-5" />
-            Register as Donor
-          </Button>
+          {!checkingDonorStatus && !isCurrentUserDonor && (
+            <Button size="lg" className="gap-2" onClick={() => setRegistrationDialogOpen(true)}>
+              <Heart className="h-5 w-5" />
+              Register as Donor
+            </Button>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6">
@@ -177,7 +206,7 @@ const FindDonors = () => {
                   Reset all filters
                 </Button>
               </CardHeader>
-              
+
               <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
                 <CollapsibleContent>
                   <CardContent className="space-y-4 pt-0">
@@ -187,7 +216,7 @@ const FindDonors = () => {
                         <Droplet className="h-4 w-4 mr-2 text-primary" />
                         Blood Group
                       </label>
-                      <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({...filters, bloodGroup: value})}>
+                      <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({ ...filters, bloodGroup: value })}>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Select blood group" />
                         </SelectTrigger>
@@ -207,11 +236,11 @@ const FindDonors = () => {
                       </label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="Enter area/district" 
+                        <Input
+                          placeholder="Enter area/district"
                           className="pl-10 bg-background"
                           value={filters.location}
-                          onChange={(e) => setFilters({...filters, location: e.target.value})}
+                          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                         />
                       </div>
                     </div>
@@ -224,11 +253,11 @@ const FindDonors = () => {
                       </label>
                       <div className="relative">
                         <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="Enter hospital name" 
+                        <Input
+                          placeholder="Enter hospital name"
                           className="pl-10 bg-background"
                           value={filters.hospital}
-                          onChange={(e) => setFilters({...filters, hospital: e.target.value})}
+                          onChange={(e) => setFilters({ ...filters, hospital: e.target.value })}
                         />
                       </div>
                     </div>
@@ -239,7 +268,7 @@ const FindDonors = () => {
                         <Users className="h-4 w-4 mr-2 text-primary" />
                         Gender
                       </label>
-                      <Select value={filters.gender} onValueChange={(value) => setFilters({...filters, gender: value})}>
+                      <Select value={filters.gender} onValueChange={(value) => setFilters({ ...filters, gender: value })}>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
@@ -258,7 +287,7 @@ const FindDonors = () => {
                         <Calendar className="h-4 w-4 mr-2 text-primary" />
                         Last Donation
                       </label>
-                      <Select value={filters.lastDonationDate} onValueChange={(value) => setFilters({...filters, lastDonationDate: value})}>
+                      <Select value={filters.lastDonationDate} onValueChange={(value) => setFilters({ ...filters, lastDonationDate: value })}>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Select period" />
                         </SelectTrigger>
@@ -276,7 +305,7 @@ const FindDonors = () => {
                         <Clock className="h-4 w-4 mr-2 text-primary" />
                         Availability
                       </label>
-                      <Select value={filters.availability} onValueChange={(value) => setFilters({...filters, availability: value})}>
+                      <Select value={filters.availability} onValueChange={(value) => setFilters({ ...filters, availability: value })}>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Select availability" />
                         </SelectTrigger>
@@ -294,7 +323,7 @@ const FindDonors = () => {
                         <MapPin className="h-4 w-4 mr-2 text-primary" />
                         Distance
                       </label>
-                      <Select value={filters.distance} onValueChange={(value) => setFilters({...filters, distance: value})}>
+                      <Select value={filters.distance} onValueChange={(value) => setFilters({ ...filters, distance: value })}>
                         <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Select distance" />
                         </SelectTrigger>
@@ -318,7 +347,7 @@ const FindDonors = () => {
                         <Switch
                           id="urgent-only"
                           checked={filters.urgentOnly}
-                          onCheckedChange={(checked) => setFilters({...filters, urgentOnly: checked})}
+                          onCheckedChange={(checked) => setFilters({ ...filters, urgentOnly: checked })}
                         />
                       </div>
 
@@ -332,7 +361,7 @@ const FindDonors = () => {
                         <Switch
                           id="verified-only"
                           checked={filters.verifiedOnly}
-                          onCheckedChange={(checked) => setFilters({...filters, verifiedOnly: checked})}
+                          onCheckedChange={(checked) => setFilters({ ...filters, verifiedOnly: checked })}
                         />
                       </div>
                     </div>
@@ -342,14 +371,14 @@ const FindDonors = () => {
             </Card>
           </div>
 
-            {/* Donors List */}
+          {/* Donors List */}
           <div className="lg:col-span-3">
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search donors by name or location..." 
+                <Input
+                  placeholder="Search donors by name or location..."
                   className="pl-10"
                 />
               </div>
@@ -391,7 +420,7 @@ const FindDonors = () => {
                             {(donor.name || '').split(' ').map(n => n[0]).join('') || 'D'}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
                             <h3 className="font-semibold text-lg">{donor.name || 'Anonymous Donor'}</h3>
@@ -451,9 +480,9 @@ const FindDonors = () => {
       </main>
 
       <Footer />
-      
-      <DonorRegistrationDialog 
-        open={registrationDialogOpen} 
+
+      <DonorRegistrationDialog
+        open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
       />
     </div>

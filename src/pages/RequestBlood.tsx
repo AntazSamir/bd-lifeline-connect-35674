@@ -112,7 +112,7 @@ const RequestBlood = () => {
                   <Badge
                     key={group}
                     variant={selectedBloodGroup === group ? "default" : "outline"}
-                    className="cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105"
+                    className="cursor-pointer px-4 py-2 text-sm font-semibold transition-all"
                     onClick={() => handleBloodGroupFilter(group)}
                   >
                     {group}
@@ -128,7 +128,7 @@ const RequestBlood = () => {
                 {URGENCY_OPTIONS.map((level) => (
                   <Badge
                     key={level.value}
-                    className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all hover:scale-105 ${selectedUrgency === level.value
+                    className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all ${selectedUrgency === level.value
                       ? level.color
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}

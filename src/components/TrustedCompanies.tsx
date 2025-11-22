@@ -25,11 +25,11 @@ const TrustedCompanies = () => {
           <h2 className="text-lg md:text-xl font-semibold mb-2 text-foreground">Trusted by leading partners</h2>
           <p className="text-sm text-muted-foreground">We collaborate with top organizations to save lives</p>
         </div>
-        
-        <Marquee 
-          pauseOnHover={false} 
-          gradient={false} 
-          speed={20} 
+
+        <Marquee
+          pauseOnHover={false}
+          gradient={false}
+          speed={20}
           className="w-full py-4"
         >
           {logos.map((logo, idx) => (
@@ -40,7 +40,7 @@ const TrustedCompanies = () => {
               <img
                 src={logo.src}
                 alt={logo.alt}
-                className="h-12 w-auto max-w-[100px] mx-auto object-contain opacity-100 hover:opacity-80 hover:scale-110 transition duration-300"
+                className="h-12 w-auto max-w-[100px] mx-auto object-contain opacity-100 hover:opacity-80 transition duration-300"
               />
             </div>
           ))}
