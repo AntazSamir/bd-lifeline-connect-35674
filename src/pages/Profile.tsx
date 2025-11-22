@@ -19,17 +19,32 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
-import { getUserProfile } from "@/services/dbService";
+import { getUserProfile, getAllBloodRequests, BloodRequest } from "@/services/dbService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { AvailabilityDialog } from "@/components/AvailabilityDialog";
 import { NotificationSettingsDialog } from "@/components/NotificationSettingsDialog";
 
+function getTimeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (seconds < 60) return `${seconds} seconds ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} days ago`;
+}
+
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: { full_name?: string }; created_at?: string } | null>(null);
   const [profile, setProfile] = useState<{ full_name?: string; blood_group?: string; district?: string; location?: string; created_at?: string; phone?: string } | null>(null);
+  const [matchingRequests, setMatchingRequests] = useState<BloodRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
@@ -52,6 +67,11 @@ const Profile = () => {
 
       const userProfile = await getUserProfile(user.id);
       setProfile(userProfile);
+
+      if (userProfile?.blood_group) {
+        const { data } = await getAllBloodRequests(1, 10, { bloodGroup: userProfile.blood_group });
+        setMatchingRequests(data || []);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -84,34 +104,23 @@ const Profile = () => {
     email: user?.email || "Not set"
   };
 
-  const donationHistory = [
-    { id: 1, date: "2024-01-15", recipient: "Emergency Patient", location: "Dhaka Medical", status: "Completed" },
-    { id: 2, date: "2024-03-20", recipient: "Surgery Patient", location: "Square Hospital", status: "Completed" },
-    { id: 3, date: "2024-06-10", recipient: "Accident Victim", location: "BIRDEM Hospital", status: "Completed" },
-    { id: 4, date: "2024-09-05", recipient: "Cancer Patient", location: "Labaid Hospital", status: "Completed" },
-    { id: 5, date: "2024-11-12", recipient: "Child Patient", location: "Shishu Hospital", status: "Completed" }
-  ];
+  const donationHistory: any[] = []; // TODO: Fetch real history when available
 
   const achievements = [
-    { title: "Bronze Donor", description: "5 successful donations", earned: true },
-    { title: "Silver Donor", description: "10 successful donations", earned: true },
-    { title: "Gold Donor", description: "15 successful donations", earned: true },
+    { title: "Bronze Donor", description: "5 successful donations", earned: false },
+    { title: "Silver Donor", description: "10 successful donations", earned: false },
+    { title: "Gold Donor", description: "15 successful donations", earned: false },
     { title: "Platinum Donor", description: "25 successful donations", earned: false },
     { title: "Life Saver", description: "50 successful donations", earned: false }
   ];
 
-  const urgentRequests = [
-    { id: 1, bloodGroup: "O+", location: "Chittagong Medical", urgency: "immediate", timeAgo: "2 hours ago" },
-    { id: 2, bloodGroup: "O-", location: "Dhaka Medical", urgency: "urgent", timeAgo: "4 hours ago" },
-    { id: 3, bloodGroup: "B+", location: "Sylhet Hospital", urgency: "immediate", timeAgo: "1 hour ago" },
-    { id: 4, bloodGroup: "A-", location: "Rajshahi Medical", urgency: "urgent", timeAgo: "3 hours ago" },
-    { id: 5, bloodGroup: "AB+", location: "Khulna Medical", urgency: "immediate", timeAgo: "30 minutes ago" },
-    { id: 6, bloodGroup: "B-", location: "Barisal Medical", urgency: "urgent", timeAgo: "5 hours ago" },
-    { id: 7, bloodGroup: "A+", location: "Rangpur Medical", urgency: "flexible", timeAgo: "6 hours ago" },
-    { id: 8, bloodGroup: "O+", location: "Comilla Medical", urgency: "immediate", timeAgo: "1 hour ago" },
-    { id: 9, bloodGroup: "AB-", location: "Mymensingh Medical", urgency: "urgent", timeAgo: "2 hours ago" },
-    { id: 10, bloodGroup: "O-", location: "Faridpur Medical", urgency: "immediate", timeAgo: "45 minutes ago" }
-  ];
+  const urgentRequests = matchingRequests.map(req => ({
+    id: req.id!,
+    bloodGroup: req.blood_group,
+    location: req.location,
+    urgency: req.urgency,
+    timeAgo: req.created_at ? getTimeAgo(req.created_at) : 'Recently'
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,7 +202,7 @@ const Profile = () => {
                       <Heart className="h-6 w-6 text-secondary" />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-secondary">36</div>
+                      <div className="text-2xl font-bold text-secondary">0</div>
                       <div className="text-sm text-muted-foreground">Lives Impacted</div>
                     </div>
                   </div>
@@ -207,7 +216,7 @@ const Profile = () => {
                       <Award className="h-6 w-6 text-hope-green" />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-hope-green">4</div>
+                      <div className="text-2xl font-bold text-hope-green">0</div>
                       <div className="text-sm text-muted-foreground">Achievements</div>
                     </div>
                   </div>
@@ -291,19 +300,23 @@ const Profile = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {donationHistory.map((donation) => (
-                        <div key={donation.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="space-y-1">
-                            <div className="font-medium">{donation.recipient}</div>
-                            <div className="text-sm text-muted-foreground">{donation.location}</div>
-                            <div className="text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3 inline mr-1" />
-                              {donation.date}
+                      {donationHistory.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-4">No donation history yet.</p>
+                      ) : (
+                        donationHistory.map((donation) => (
+                          <div key={donation.id} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="space-y-1">
+                              <div className="font-medium">{donation.recipient}</div>
+                              <div className="text-sm text-muted-foreground">{donation.location}</div>
+                              <div className="text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3 inline mr-1" />
+                                {donation.date}
+                              </div>
                             </div>
+                            <Badge className="bg-success text-white">{donation.status}</Badge>
                           </div>
-                          <Badge className="bg-success text-white">{donation.status}</Badge>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -348,31 +361,35 @@ const Profile = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {urgentRequests.map((request) => (
-                        <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="space-y-1">
-                            <div className="flex items-center space-x-2">
-                              <Badge variant="outline" className="text-primary border-primary">
-                                {request.bloodGroup}
-                              </Badge>
-                              <Badge className={request.urgency === 'immediate' ? 'bg-urgent' : 'bg-primary'}>
-                                {request.urgency}
-                              </Badge>
+                      {urgentRequests.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-4">No matching requests found.</p>
+                      ) : (
+                        urgentRequests.map((request) => (
+                          <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="space-y-1">
+                              <div className="flex items-center space-x-2">
+                                <Badge variant="outline" className="text-primary border-primary">
+                                  {request.bloodGroup}
+                                </Badge>
+                                <Badge className={request.urgency === 'immediate' ? 'bg-urgent' : 'bg-primary'}>
+                                  {request.urgency}
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                <MapPin className="h-3 w-3 inline mr-1" />
+                                {request.location}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                <Clock className="h-3 w-3 inline mr-1" />
+                                {request.timeAgo}
+                              </div>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              <MapPin className="h-3 w-3 inline mr-1" />
-                              {request.location}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              <Clock className="h-3 w-3 inline mr-1" />
-                              {request.timeAgo}
-                            </div>
+                            <Button size="sm">
+                              Respond
+                            </Button>
                           </div>
-                          <Button size="sm">
-                            Respond
-                          </Button>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
