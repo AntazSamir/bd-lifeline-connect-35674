@@ -109,6 +109,18 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
 
     setIsSubmitting(true);
     try {
+      // Get the current authenticated user
+      const { supabase } = await import('@/services/supabaseClient');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        toast({
+          title: 'Authentication required',
+          description: 'Please sign in to register as a donor.'
+        });
+        return;
+      }
+
       // sanitize inputs
       const payload = {
         name: sanitize(formData.name),
@@ -118,13 +130,20 @@ const DonorRegistrationForm = ({ onSubmit }: { onSubmit?: () => void }) => {
         gender: sanitize(formData.gender),
         blood_group: sanitize(formData.bloodGroup),
         weight: Number(formData.weight),
+        location: sanitize(formData.district), // Required field for Donor interface
         full_address: sanitize(formData.address),
         district: sanitize(formData.district),
         emergency_contact: sanitize(formData.emergencyContact),
         is_available: true,
+        profile_id: user.id, // Link to user profile
       };
 
       const created = await createDonor(payload);
+
+      // Update user_profiles to mark user as donor
+      const { updateUserProfile } = await import('@/services/dbService');
+      await updateUserProfile({ is_donor: true });
+
       toast({ title: 'Registration saved', description: 'Thank you for registering as a donor.' });
       setFormData(initial);
       onSubmit?.();

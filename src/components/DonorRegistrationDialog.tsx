@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,17 +6,33 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { Calendar, Heart, Shield, AlertCircle, Activity } from "lucide-react";
+import { Calendar, Heart, Shield, AlertCircle, Activity, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { supabase } from "@/services/supabaseClient";
+
+interface UserProfile {
+  id?: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  blood_group?: string;
+  district?: string;
+  location?: string;
+}
 
 interface DonorRegistrationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userProfile?: UserProfile;
 }
 
-export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistrationDialogProps) {
+export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: DonorRegistrationDialogProps) {
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = 3;
 
   // Form data
@@ -34,6 +50,7 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
   const [healthInfo, setHealthInfo] = useState({
     weight: "",
     height: "",
+    isFirstTimeDonor: false,
     lastDonationDate: "",
     medicalHistory: {
       heartDisease: false,
@@ -70,21 +87,238 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
     profileSharing: false,
   });
 
-  const progress = (step / totalSteps) * 100;
+  // Reset state when dialog opens/closes
+  useEffect(() => {
+    if (!open) {
+      setTimeout(() => {
+        setStep(1);
+        setIsSuccess(false);
+      }, 300);
+    }
+  }, [open]);
+
+  // Pre-fill form with user profile data when dialog opens
+  useEffect(() => {
+    if (open && userProfile) {
+      setPersonalInfo(prev => ({
+        ...prev,
+        fullName: userProfile.full_name || prev.fullName,
+        email: userProfile.email || prev.email,
+        phoneNumber: userProfile.phone || prev.phoneNumber,
+        bloodGroup: userProfile.blood_group || prev.bloodGroup,
+        district: userProfile.district || userProfile.location || prev.district,
+      }));
+    }
+  }, [open, userProfile]);
+
+  const validateStep = (currentStep: number) => {
+    if (currentStep === 1) {
+      const { fullName, phoneNumber, email, dateOfBirth, bloodGroup, division, district, fullAddress } = personalInfo;
+      if (!fullName || !phoneNumber || !email || !dateOfBirth || !bloodGroup || !division || !district || !fullAddress) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields marked with *",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      // Basic phone validation (BD format)
+      const phoneRegex = /^(\+88)?01[3-9]\d{8}$/;
+      if (!phoneRegex.test(phoneNumber.replace(/\s/g, ''))) {
+        toast({
+          title: "Invalid Phone Number",
+          description: "Please enter a valid Bangladeshi phone number",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      return true;
+    }
+
+    if (currentStep === 2) {
+      const { weight, height, confirmAccuracy, lastDonationDate, isFirstTimeDonor } = healthInfo;
+      if (!weight || !height) {
+        toast({
+          title: "Missing Information",
+          description: "Please enter your weight and height",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!isFirstTimeDonor && !lastDonationDate) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide your last donation date or indicate if you are a first-time donor",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!confirmAccuracy) {
+        toast({
+          title: "Confirmation Required",
+          description: "Please confirm that the information provided is accurate",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      return true;
+    }
+
+    if (currentStep === 3) {
+      const { termsOfService, privacyPolicy, profileSharing } = agreements;
+      if (!termsOfService || !privacyPolicy || !profileSharing) {
+        toast({
+          title: "Agreements Required",
+          description: "Please accept the Terms of Service, Privacy Policy, and Profile Sharing consent",
+          variant: "destructive",
+        });
+        return false;
+      }
+      return true;
+    }
+
+    return true;
+  };
 
   const handleNext = () => {
-    if (step < totalSteps) setStep(step + 1);
+    if (validateStep(step)) {
+      if (step < totalSteps) setStep(step + 1);
+    }
   };
 
   const handlePrevious = () => {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
-    console.log("Donor Registration:", { personalInfo, healthInfo, agreements });
-    // TODO: Submit to backend
+  const handleSubmit = async () => {
+    if (validateStep(step)) {
+      setIsSubmitting(true);
+      try {
+        // 1. Update user profile with personal info
+        if (userProfile?.id) {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .update({
+              full_name: personalInfo.fullName,
+              phone: personalInfo.phoneNumber,
+              blood_group: personalInfo.bloodGroup,
+              division: personalInfo.division,
+              district: personalInfo.district,
+              location: personalInfo.fullAddress, // Storing full address in location for now
+              date_of_birth: personalInfo.dateOfBirth,
+              is_donor: true
+            })
+            .eq('id', userProfile.id);
+
+          if (profileError) throw profileError;
+
+          // 2. Insert into donors table
+          const { error: donorError } = await supabase
+            .from('donors')
+            .insert({
+              profile_id: userProfile.id,
+              name: personalInfo.fullName,
+              blood_group: personalInfo.bloodGroup,
+              location: `${personalInfo.district}, ${personalInfo.division}`,
+              contact_number: personalInfo.phoneNumber,
+              last_donation_date: healthInfo.lastDonationDate || null,
+              is_available: true, // Default to available
+              availability_notes: "Newly registered donor",
+              medical_info: {
+                weight: healthInfo.weight,
+                height: healthInfo.height,
+                medicalHistory: healthInfo.medicalHistory,
+                lifestyle: healthInfo.lifestyle,
+                recentActivities: healthInfo.recentActivities,
+                otherConditions: healthInfo.otherConditions
+              }
+            });
+
+          if (donorError) throw donorError;
+
+          setIsSuccess(true);
+        } else {
+          throw new Error("User profile ID not found");
+        }
+      } catch (error: any) {
+        console.error("Registration error:", error);
+        toast({
+          title: "Registration Failed",
+          description: error.message || "An error occurred while registering. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
+  const handleClose = () => {
     onOpenChange(false);
   };
+
+  if (isSuccess) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md">
+          <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20
+              }}
+              className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-2"
+            >
+              <CheckCircle2 className="w-12 h-12 text-primary" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <DialogTitle className="text-2xl font-bold text-primary mb-2">
+                Registration Successful!
+              </DialogTitle>
+              <p className="text-muted-foreground">
+                Thank you for becoming a donor. Your commitment helps save lives.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="w-full pt-4"
+            >
+              <Button onClick={handleClose} className="w-full bg-primary hover:bg-primary/90">
+                Done
+              </Button>
+            </motion.div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,8 +336,44 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
           </p>
         </DialogHeader>
 
-        <div className="mb-6">
-          <Progress value={progress} className="h-2" />
+        <div className="mb-8">
+          <div className="relative flex justify-between">
+            {/* Connecting Line */}
+            <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 -z-10">
+              <div
+                className="h-full bg-primary transition-all duration-300 ease-in-out"
+                style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+              />
+            </div>
+
+            {/* Steps */}
+            {[
+              { num: 1, title: "Personal Info", sub: "Basic Details" },
+              { num: 2, title: "Health Screening", sub: "Medical History" },
+              { num: 3, title: "Terms & Privacy", sub: "Legal Agreement" }
+            ].map((s, i) => (
+              <div key={s.num} className="flex flex-col items-center bg-background px-2">
+                <div
+                  className={`
+                    w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors duration-300
+                    ${step >= s.num
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-background border-gray-300 text-gray-400"}
+                  `}
+                >
+                  {step > s.num ? <CheckCircle2 className="h-6 w-6" /> : s.num}
+                </div>
+                <div className="mt-2 text-center">
+                  <p className={`text-xs font-semibold ${step >= s.num ? "text-primary" : "text-gray-500"}`}>
+                    {s.title}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground hidden sm:block">
+                    {s.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Step 1: Personal Info */}
@@ -119,7 +389,12 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                   placeholder="Enter your full name"
                   value={personalInfo.fullName}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
+                  disabled={!!userProfile?.full_name}
+                  className={userProfile?.full_name ? "bg-muted" : ""}
                 />
+                {userProfile?.full_name && (
+                  <p className="text-xs text-muted-foreground">From your profile</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber">
@@ -130,8 +405,14 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                   placeholder="+880 1XXX-XXXXXX"
                   value={personalInfo.phoneNumber}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, phoneNumber: e.target.value })}
+                  disabled={!!userProfile?.phone}
+                  className={userProfile?.phone ? "bg-muted" : ""}
                 />
-                <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
+                {userProfile?.phone ? (
+                  <p className="text-xs text-muted-foreground">From your profile</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
+                )}
               </div>
             </div>
 
@@ -146,8 +427,14 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                   placeholder="your.email@example.com"
                   value={personalInfo.email}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
+                  disabled={!!userProfile?.email}
+                  className={userProfile?.email ? "bg-muted" : ""}
                 />
-                <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
+                {userProfile?.email ? (
+                  <p className="text-xs text-muted-foreground">From your profile</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="dateOfBirth">
@@ -168,8 +455,12 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                 <Label htmlFor="bloodGroup">
                   Blood Group <span className="text-destructive">*</span>
                 </Label>
-                <Select value={personalInfo.bloodGroup} onValueChange={(value) => setPersonalInfo({ ...personalInfo, bloodGroup: value })}>
-                  <SelectTrigger>
+                <Select
+                  value={personalInfo.bloodGroup}
+                  onValueChange={(value) => setPersonalInfo({ ...personalInfo, bloodGroup: value })}
+                  disabled={!!userProfile?.blood_group}
+                >
+                  <SelectTrigger className={userProfile?.blood_group ? "bg-muted" : ""}>
                     <SelectValue placeholder="Select your blood group" />
                   </SelectTrigger>
                   <SelectContent>
@@ -183,6 +474,9 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                     <SelectItem value="O-">O-</SelectItem>
                   </SelectContent>
                 </Select>
+                {userProfile?.blood_group && (
+                  <p className="text-xs text-muted-foreground">From your profile</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="division">
@@ -215,7 +509,12 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                 placeholder="Enter your district"
                 value={personalInfo.district}
                 onChange={(e) => setPersonalInfo({ ...personalInfo, district: e.target.value })}
+                disabled={!!(userProfile?.district || userProfile?.location)}
+                className={(userProfile?.district || userProfile?.location) ? "bg-muted" : ""}
               />
+              {(userProfile?.district || userProfile?.location) && (
+                <p className="text-xs text-muted-foreground">From your profile</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -275,14 +574,35 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastDonationDate">Last Donation Date</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="lastDonationDate">
+                    Last Donation Date {!healthInfo.isFirstTimeDonor && <span className="text-destructive">*</span>}
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="isFirstTimeDonor"
+                      checked={healthInfo.isFirstTimeDonor}
+                      onCheckedChange={(checked) => {
+                        setHealthInfo(prev => ({
+                          ...prev,
+                          isFirstTimeDonor: checked as boolean,
+                          lastDonationDate: checked ? "" : prev.lastDonationDate
+                        }));
+                      }}
+                      className="h-4 w-4"
+                    />
+                    <label htmlFor="isFirstTimeDonor" className="text-xs cursor-pointer text-muted-foreground">
+                      First Time?
+                    </label>
+                  </div>
+                </div>
                 <Input
                   id="lastDonationDate"
                   type="date"
                   value={healthInfo.lastDonationDate}
                   onChange={(e) => setHealthInfo({ ...healthInfo, lastDonationDate: e.target.value })}
+                  disabled={healthInfo.isFirstTimeDonor}
                 />
-                <p className="text-xs text-muted-foreground">Leave blank if first time</p>
               </div>
             </div>
 
@@ -498,22 +818,11 @@ export function DonorRegistrationDialog({ open, onOpenChange }: DonorRegistratio
           {step < totalSteps ? (
             <Button onClick={handleNext}>Next</Button>
           ) : (
-            <Button onClick={handleSubmit} className="gap-2">
-              Complete Registration
-              <Heart className="h-4 w-4" />
+            <Button onClick={handleSubmit} className="gap-2" disabled={isSubmitting}>
+              {isSubmitting ? "Registering..." : "Complete Registration"}
+              {!isSubmitting && <Heart className="h-4 w-4" />}
             </Button>
           )}
-        </div>
-
-        <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            <span>Phone Pending</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <AlertCircle className="h-3 w-3" />
-            <span>Email Pending</span>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
