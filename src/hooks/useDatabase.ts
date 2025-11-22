@@ -21,6 +21,8 @@ import {
   UserProfile,
   BloodRequestFilters
 } from '../services/dbService'
+import { logger } from '@/lib/logger'
+import { toast } from '@/hooks/use-toast'
 
 export const useBloodRequests = (initialPage = 1, limit = 12, filters: BloodRequestFilters = {}) => {
   const [requests, setRequests] = useState<BloodRequest[]>([])
@@ -40,7 +42,8 @@ export const useBloodRequests = (initialPage = 1, limit = 12, filters: BloodRequ
     } finally {
       setLoading(false)
     }
-  }, [page, limit, filters])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, JSON.stringify(filters)])
 
   useEffect(() => {
     fetchRequests()
@@ -114,7 +117,7 @@ export const useDonors = () => {
     fetchDonors()
 
     // Set up real-time subscription for donor updates
-    console.log('🔴 Setting up real-time subscription for donors table')
+    logger.debug('Setting up real-time subscription for donors table')
     const channel = supabase
       .channel('donors-realtime-channel')
       .on(
@@ -125,36 +128,44 @@ export const useDonors = () => {
           table: 'donors'
         },
         (payload) => {
-          console.log('🔴 Real-time update received:', payload)
+          logger.debug('Real-time update received:', payload)
 
           // Dispatch custom event for status indicator
           window.dispatchEvent(new CustomEvent('realtime-update'));
 
           if (payload.eventType === 'INSERT') {
-            console.log('➕ New donor added:', payload.new)
+            logger.debug('New donor added:', payload.new)
             setDonors(prev => [payload.new as Donor, ...prev])
           } else if (payload.eventType === 'UPDATE') {
-            console.log('✏️ Donor updated:', payload.new)
+            logger.debug('Donor updated:', payload.new)
             setDonors(prev =>
               prev.map(donor =>
                 donor.id === payload.new.id ? payload.new as Donor : donor
               )
             )
           } else if (payload.eventType === 'DELETE') {
-            console.log('🗑️ Donor deleted:', payload.old)
+            logger.debug('Donor deleted:', payload.old)
             setDonors(prev =>
               prev.filter(donor => donor.id !== payload.old.id)
             )
           }
         }
       )
-      .subscribe((status) => {
-        console.log('🔴 Subscription status:', status)
+      .subscribe((status, err) => {
+        logger.debug('Subscription status:', status)
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          logger.error('Real-time subscription error:', err)
+          toast({
+            title: "Connection Issue",
+            description: "Unable to receive live updates. Refresh the page.",
+            variant: "destructive"
+          })
+        }
       })
 
     // Cleanup subscription on unmount
     return () => {
-      console.log('🔴 Cleaning up real-time subscription')
+      logger.debug('Cleaning up real-time subscription')
       supabase.removeChannel(channel)
     }
   }, [])
