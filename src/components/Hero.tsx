@@ -17,6 +17,7 @@ const Hero = () => {
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
   const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
   const [checkingDonorStatus, setCheckingDonorStatus] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   // Check if user is logged in
   useEffect(() => {
@@ -39,6 +40,15 @@ const Hero = () => {
             .select('id')
             .eq('profile_id', user.id)
             .single();
+
+          // Fetch user profile for pre-filling registration form
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (profile) setUserProfile(profile);
 
           if (donorData) {
             // User is already a donor, show thank you dialog
@@ -205,6 +215,7 @@ const Hero = () => {
       <DonorRegistrationDialog
         open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
+        userProfile={userProfile}
       />
 
       {/* Thank You Dialog for existing donors */}

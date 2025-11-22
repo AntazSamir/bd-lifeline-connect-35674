@@ -39,6 +39,7 @@ const FindDonors = () => {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
   const [checkingDonorStatus, setCheckingDonorStatus] = useState(true);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [filters, setFilters] = useState({
     bloodGroup: "",
     location: "",
@@ -66,6 +67,15 @@ const FindDonors = () => {
             .single();
 
           setIsCurrentUserDonor(!!donorData);
+
+          // Fetch user profile for pre-filling registration form
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (profile) setUserProfile(profile);
         }
       } catch (error) {
         console.error('Error checking donor status:', error);
@@ -484,6 +494,7 @@ const FindDonors = () => {
       <DonorRegistrationDialog
         open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
+        userProfile={userProfile}
       />
     </div>
   );

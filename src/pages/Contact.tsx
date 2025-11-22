@@ -59,6 +59,7 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -148,6 +149,15 @@ const Contact = () => {
           .select('id')
           .eq('profile_id', user.id)
           .single();
+
+        // Fetch user profile for pre-filling registration form
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profile) setUserProfile(profile);
 
         if (donorData) {
           // User is already a donor, show thank you dialog
@@ -556,6 +566,7 @@ const Contact = () => {
       <DonorRegistrationDialog
         open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
+        userProfile={userProfile}
       />
 
       {/* Thank You Dialog for existing donors */}
