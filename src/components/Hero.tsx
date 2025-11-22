@@ -6,12 +6,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/services/dbService";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import { ThankYouDialog } from "@/components/ThankYouDialog";
 import heroBackground from "@/assets/hero-background.jpg";
+import { supabase } from "@/services/supabaseClient";
 
 const Hero = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
+  const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
+  const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
+  const [checkingDonorStatus, setCheckingDonorStatus] = useState(false);
 
   // Check if user is logged in
   useEffect(() => {
@@ -22,10 +27,34 @@ const Hero = () => {
     });
   }, []);
 
-  const handleBecomeDonor = () => {
+  const handleBecomeDonor = async () => {
     if (isLoggedIn) {
-      // If user is logged in, open the donor registration dialog
-      setRegistrationDialogOpen(true);
+      // Check if user is already a donor
+      setCheckingDonorStatus(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: donorData } = await supabase
+            .from('donors')
+            .select('id')
+            .eq('profile_id', user.id)
+            .single();
+
+          if (donorData) {
+            // User is already a donor, show thank you dialog
+            setThankYouDialogOpen(true);
+          } else {
+            // User is not a donor, open registration dialog
+            setRegistrationDialogOpen(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking donor status:', error);
+        // If error, assume not a donor and show registration dialog
+        setRegistrationDialogOpen(true);
+      } finally {
+        setCheckingDonorStatus(false);
+      }
     } else {
       // If user is not logged in, redirect to signup page
       navigate("/sign-up");
@@ -176,6 +205,12 @@ const Hero = () => {
       <DonorRegistrationDialog
         open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
+      />
+
+      {/* Thank You Dialog for existing donors */}
+      <ThankYouDialog
+        open={thankYouDialogOpen}
+        onOpenChange={setThankYouDialogOpen}
       />
     </section>
   );

@@ -19,6 +19,10 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { z } from "zod";
+import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import { ThankYouDialog } from "@/components/ThankYouDialog";
+import { getCurrentUser } from "@/services/dbService";
+import { supabase } from "@/services/supabaseClient";
 
 // Validation schema
 const contactSchema = z.object({
@@ -53,6 +57,8 @@ const Contact = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
+  const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -131,6 +137,36 @@ const Contact = () => {
     }
   };
 
+  const handleBecomeDonor = async () => {
+    try {
+      const user = await getCurrentUser();
+
+      if (user) {
+        // User is logged in, check if they're already a donor
+        const { data: donorData } = await supabase
+          .from('donors')
+          .select('id')
+          .eq('profile_id', user.id)
+          .single();
+
+        if (donorData) {
+          // User is already a donor, show thank you dialog
+          setThankYouDialogOpen(true);
+        } else {
+          // User is not a donor, open registration dialog
+          setRegistrationDialogOpen(true);
+        }
+      } else {
+        // User is not logged in, redirect to signup
+        navigate("/sign-up");
+      }
+    } catch (error) {
+      console.error('Error checking donor status:', error);
+      // If error, redirect to signup
+      navigate("/sign-up");
+    }
+  };
+
   const contactInfo = [
     {
       icon: Phone,
@@ -167,7 +203,7 @@ const Contact = () => {
       icon: Heart,
       title: "Become a Donor",
       description: "Join our life-saving community",
-      action: () => navigate("/sign-up")
+      action: handleBecomeDonor
     },
     {
       icon: MessageCircle,
@@ -182,6 +218,7 @@ const Contact = () => {
       action: () => navigate("/find-donors")
     }
   ];
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -514,6 +551,18 @@ const Contact = () => {
       </main>
 
       <Footer />
+
+      {/* Donor Registration Dialog */}
+      <DonorRegistrationDialog
+        open={registrationDialogOpen}
+        onOpenChange={setRegistrationDialogOpen}
+      />
+
+      {/* Thank You Dialog for existing donors */}
+      <ThankYouDialog
+        open={thankYouDialogOpen}
+        onOpenChange={setThankYouDialogOpen}
+      />
     </div>
   );
 };
