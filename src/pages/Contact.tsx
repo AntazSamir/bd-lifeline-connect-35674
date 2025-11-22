@@ -167,13 +167,13 @@ const Contact = () => {
           setRegistrationDialogOpen(true);
         }
       } else {
-        // User is not logged in, redirect to signup
-        navigate("/sign-up");
+        // User is not logged in, redirect to signin
+        navigate("/sign-in");
       }
     } catch (error) {
       console.error('Error checking donor status:', error);
-      // If error, redirect to signup
-      navigate("/sign-up");
+      // If error, redirect to signin
+      navigate("/sign-in");
     }
   };
 

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ import { BLOOD_GROUPS, DISTANCE_OPTIONS, GENDER_OPTIONS, LAST_DONATION_OPTIONS, 
 import { supabase } from "@/services/supabaseClient";
 
 const FindDonors = () => {
+  const navigate = useNavigate();
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
@@ -159,6 +161,15 @@ const FindDonors = () => {
     return isAvailable ? "bg-success text-white" : "bg-secondary text-secondary-foreground";
   };
 
+  const handleRegisterClick = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/sign-in");
+    } else {
+      setRegistrationDialogOpen(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -174,7 +185,7 @@ const FindDonors = () => {
             <p className="text-muted-foreground">Connect with verified donors in your area</p>
           </div>
           {!checkingDonorStatus && !isCurrentUserDonor && (
-            <Button size="lg" className="gap-2" onClick={() => setRegistrationDialogOpen(true)}>
+            <Button size="lg" className="gap-2" onClick={handleRegisterClick}>
               <Heart className="h-5 w-5" />
               Register as Donor
             </Button>

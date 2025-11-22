@@ -66,8 +66,8 @@ const Hero = () => {
         setCheckingDonorStatus(false);
       }
     } else {
-      // If user is not logged in, redirect to signup page
-      navigate("/sign-up");
+      // If user is not logged in, redirect to signin page
+      navigate("/sign-in");
     }
   };
 
@@ -223,7 +223,7 @@ const Hero = () => {
         open={thankYouDialogOpen}
         onOpenChange={setThankYouDialogOpen}
       />
-    </section>
+    </section >
   );
 };
 
