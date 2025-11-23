@@ -34,6 +34,7 @@ interface EditProfileDialogProps {
         avatar_url?: string;
     } | null;
     userId: string;
+    email?: string;
     onProfileUpdated: () => void;
 }
 
@@ -58,6 +59,7 @@ export function EditProfileDialog({
     onOpenChange,
     currentProfile,
     userId,
+    email,
     onProfileUpdated,
 }: EditProfileDialogProps) {
     const { toast } = useToast();
@@ -68,6 +70,7 @@ export function EditProfileDialog({
     const [formData, setFormData] = useState({
         full_name: currentProfile?.full_name || "",
         phone: currentProfile?.phone || "",
+        email: email || "",
         blood_group: currentProfile?.blood_group || "",
         district: currentProfile?.district || "",
         location: currentProfile?.location || "",
@@ -169,6 +172,26 @@ export function EditProfileDialog({
 
             if (error) throw error;
 
+            // Update email if changed
+            if (email && formData.email !== email) {
+                const { error: emailError } = await supabase.auth.updateUser({
+                    email: formData.email,
+                });
+
+                if (emailError) {
+                    toast({
+                        title: "Email Update Failed",
+                        description: emailError.message,
+                        variant: "destructive",
+                    });
+                } else {
+                    toast({
+                        title: "Check your email",
+                        description: "We sent a confirmation link to your new email address.",
+                    });
+                }
+            }
+
             toast({
                 title: "Success!",
                 description: "Your profile has been updated successfully.",
@@ -253,6 +276,19 @@ export function EditProfileDialog({
                                 }
                                 placeholder="Enter your full name"
                                 required
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, email: e.target.value })
+                                }
+                                placeholder="your@email.com"
                             />
                         </div>
 

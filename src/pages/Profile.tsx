@@ -161,6 +161,14 @@ const Profile = () => {
                       <Calendar className="h-4 w-4 mr-2" />
                       Joined {userProfile.joinDate}
                     </div>
+                    <div className="flex items-center text-muted-foreground">
+                      <Phone className="h-4 w-4 mr-2" />
+                      {userProfile.phone}
+                    </div>
+                    <div className="flex items-center text-muted-foreground">
+                      <Mail className="h-4 w-4 mr-2" />
+                      {userProfile.email}
+                    </div>
                   </div>
 
                   <Button
@@ -271,23 +279,6 @@ const Profile = () => {
                           Notification Settings
                         </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Contact Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Contact Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{userProfile.phone}</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{userProfile.email}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -409,6 +400,7 @@ const Profile = () => {
             onOpenChange={setEditProfileOpen}
             currentProfile={profile}
             userId={user.id}
+            email={user.email}
             onProfileUpdated={fetchUserData}
           />
 
