@@ -160,13 +160,6 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-            <Heart className="h-6 w-6 text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Active Blood Requests</h2>
-          <p className="text-muted-foreground">Help save lives by responding to urgent blood requests in your area</p>
-        </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
@@ -198,14 +191,6 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-          <Heart className="h-6 w-6 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">Active Blood Requests</h2>
-        <p className="text-muted-foreground">Help save lives by responding to urgent blood requests in your area</p>
-      </div>
-
       <div className="space-y-4">
         {requests.map((request) => (
           <BloodRequestCard key={request.id} request={request} />
@@ -237,7 +222,7 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
             {(() => {
               const pages: (number | string)[] = [];
               const maxVisible = 7;
-              
+
               if (totalPages <= maxVisible) {
                 // Show all pages if total is small
                 for (let i = 1; i <= totalPages; i++) {
@@ -246,27 +231,27 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
               } else {
                 // Always show first page
                 pages.push(1);
-                
+
                 if (page > 3) {
                   pages.push('...');
                 }
-                
+
                 // Show pages around current page
                 const start = Math.max(2, page - 1);
                 const end = Math.min(totalPages - 1, page + 1);
-                
+
                 for (let i = start; i <= end; i++) {
                   pages.push(i);
                 }
-                
+
                 if (page < totalPages - 2) {
                   pages.push('...');
                 }
-                
+
                 // Always show last page
                 pages.push(totalPages);
               }
-              
+
               return pages.map((p, idx) => {
                 if (p === '...') {
                   return (

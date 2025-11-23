@@ -41,16 +41,16 @@ const Footer = () => {
           <div className="space-y-5">
             <h4 className="font-semibold text-white text-lg">Quick Links</h4>
             <nav className="space-y-3">
-              <Link to="/" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Home
               </Link>
-              <Link to="/find-donors" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/find-donors" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Find Donors
               </Link>
-              <Link to="/request-blood" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/request-blood" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Request Blood
               </Link>
-              <Link to="/#about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/#about" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → How It Works
               </Link>
             </nav>
@@ -60,16 +60,16 @@ const Footer = () => {
           <div className="space-y-5">
             <h4 className="font-semibold text-white text-lg">Support</h4>
             <nav className="space-y-3">
-              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → FAQ
               </Link>
-              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Help Center
               </Link>
-              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/about" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Privacy Policy
               </Link>
-              <Link to="/terms-of-service" className="text-slate-300 hover:text-primary text-sm block transition-colors hover:translate-x-1 transform duration-200">
+              <Link to="/terms-of-service" className="text-slate-300 hover:text-primary text-sm block transition-all duration-300 hover:translate-x-2">
                 → Terms of Service
               </Link>
             </nav>

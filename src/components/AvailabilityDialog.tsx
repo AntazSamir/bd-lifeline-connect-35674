@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/services/supabaseClient";
-import { Loader2, CheckCircle2, XCircle, Heart } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Heart, Activity, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -280,7 +280,7 @@ export function AvailabilityDialog({
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>Update Availability</DialogTitle>
                         <DialogDescription>
@@ -393,6 +393,78 @@ export function AvailabilityDialog({
                                                         setMedicalInfo({
                                                             ...medicalInfo,
                                                             medicalHistory: { ...medicalInfo.medicalHistory, [key]: checked },
+                                                        })
+                                                    }
+                                                />
+                                                <label htmlFor={key} className="text-sm leading-tight cursor-pointer">
+                                                    {label}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="space-y-2 mt-3">
+                                        <Label htmlFor="otherConditions">Other Medical Conditions</Label>
+                                        <Textarea
+                                            id="otherConditions"
+                                            placeholder="Please specify any other conditions"
+                                            value={medicalInfo.otherConditions || ""}
+                                            onChange={(e) => setMedicalInfo({ ...medicalInfo, otherConditions: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 border rounded-lg p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Activity className="h-5 w-5 text-primary" />
+                                        <h3 className="font-semibold">Lifestyle & Medications</h3>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {Object.entries({
+                                            prescriptionMedications: "I am currently taking prescription medications",
+                                            smokeTobacco: "I smoke tobacco products",
+                                            consumeAlcohol: "I consume alcohol regularly",
+                                        }).map(([key, label]) => (
+                                            <div key={key} className="flex items-start space-x-2">
+                                                <Checkbox
+                                                    id={key}
+                                                    checked={medicalInfo.lifestyle?.[key] || false}
+                                                    onCheckedChange={(checked) =>
+                                                        setMedicalInfo({
+                                                            ...medicalInfo,
+                                                            lifestyle: { ...medicalInfo.lifestyle, [key]: checked },
+                                                        })
+                                                    }
+                                                />
+                                                <label htmlFor={key} className="text-sm leading-tight cursor-pointer">
+                                                    {label}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 border rounded-lg p-4">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Calendar className="h-5 w-5 text-primary" />
+                                        <h3 className="font-semibold">Recent Activities</h3>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-3">In the past 3 months, have you:</p>
+                                    <div className="space-y-3">
+                                        {Object.entries({
+                                            vaccinations: "Had any vaccinations or immunizations",
+                                            dentalWork: "Had any dental work or surgery",
+                                            traveledOutside: "Traveled outside Bangladesh",
+                                            tattoosPiercings: "Had any tattoos or piercings",
+                                            beenSick: "Been sick with fever, cold, or flu",
+                                        }).map(([key, label]) => (
+                                            <div key={key} className="flex items-start space-x-2">
+                                                <Checkbox
+                                                    id={key}
+                                                    checked={medicalInfo.recentActivities?.[key] || false}
+                                                    onCheckedChange={(checked) =>
+                                                        setMedicalInfo({
+                                                            ...medicalInfo,
+                                                            recentActivities: { ...medicalInfo.recentActivities, [key]: checked },
                                                         })
                                                     }
                                                 />

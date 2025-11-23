@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Droplets, Plus, LogIn, Search, Filter } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Droplets, Plus, LogIn, Search, Filter, X } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BloodRequestFeed from "@/components/BloodRequestFeed";
 import { supabase } from "@/services/supabaseClient";
 import { BLOOD_GROUPS, URGENCY_OPTIONS } from "@/lib/constants";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const RequestBlood = () => {
   const navigate = useNavigate();
@@ -16,6 +19,7 @@ const RequestBlood = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<string>("");
   const [selectedUrgency, setSelectedUrgency] = useState<string>("");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -41,6 +45,12 @@ const RequestBlood = () => {
     setSelectedUrgency(selectedUrgency === urgency ? "" : urgency);
   };
 
+  const clearFilters = () => {
+    setSelectedBloodGroup("");
+    setSelectedUrgency("");
+    setSearchQuery("");
+  };
+
   const getFilters = () => {
     return {
       searchQuery,
@@ -49,152 +59,186 @@ const RequestBlood = () => {
     };
   };
 
+  const activeFiltersCount = [selectedBloodGroup, selectedUrgency, searchQuery].filter(Boolean).length;
+
+  const FilterContent = () => (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Search</label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Location, patient info..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Blood Group */}
+      <div className="space-y-3">
+        <label className="text-sm font-medium">Blood Group</label>
+        <div className="grid grid-cols-4 gap-2">
+          {BLOOD_GROUPS.map((group) => (
+            <Button
+              key={group}
+              variant={selectedBloodGroup === group ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleBloodGroupFilter(group)}
+              className={`h-9 ${selectedBloodGroup === group ? "" : "hover:border-primary/50"}`}
+            >
+              {group}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Urgency */}
+      <div className="space-y-3">
+        <label className="text-sm font-medium">Urgency</label>
+        <div className="flex flex-col gap-2">
+          {URGENCY_OPTIONS.map((level) => (
+            <div
+              key={level.value}
+              onClick={() => handleUrgencyFilter(level.value)}
+              className={`
+                flex items-center justify-between p-2 rounded-md cursor-pointer border transition-all
+                ${selectedUrgency === level.value
+                  ? "bg-accent border-primary"
+                  : "hover:bg-muted border-input hover:border-border"}
+              `}
+            >
+              <div className="flex items-center gap-2">
+                <Badge className={level.color}>{level.label}</Badge>
+              </div>
+              {selectedUrgency === level.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Clear Filters */}
+      {activeFiltersCount > 0 && (
+        <Button
+          variant="outline"
+          className="w-full mt-4"
+          onClick={clearFilters}
+        >
+          <X className="h-4 w-4 mr-2" />
+          Clear Filters
+        </Button>
+      )}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
 
-      <main className="container py-8 md:py-16">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Header Section */}
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 mb-2">
-              <Droplets className="h-10 w-10 text-primary" />
+      <main className="flex-1 container py-8">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Blood Requests</h1>
+            <p className="text-muted-foreground mt-1">
+              Find and respond to urgent blood needs in your community
+            </p>
+          </div>
+          <Button onClick={handleCreateRequest} size="lg" className="shadow-sm">
+            {isLoggedIn ? (
+              <>
+                <Plus className="h-5 w-5 mr-2" />
+                Create Request
+              </>
+            ) : (
+              <>
+                <LogIn className="h-5 w-5 mr-2" />
+                Login to Request
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-24">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    Filters
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FilterContent />
+                </CardContent>
+              </Card>
             </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-                Blood Requests
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Find and respond to blood donation requests in your community. Every donation saves lives.
-              </p>
-            </div>
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all mt-4"
-              onClick={handleCreateRequest}
-            >
-              {isLoggedIn ? (
-                <>
-                  <Plus className="h-5 w-5 mr-2" />
-                  Create New Request
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Sign In to Request Blood
-                </>
-              )}
-            </Button>
           </div>
 
-          {/* Filters Section */}
-          <div className="bg-card border rounded-xl p-6 space-y-6 shadow-sm">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search by location, patient info..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 text-base border-2 focus-visible:ring-offset-0"
-              />
-            </div>
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden mb-4">
+            <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <div className="py-4">
+                  <h2 className="text-lg font-semibold mb-4">Filters</h2>
+                  <FilterContent />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
 
-            {/* Blood Group Filter */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <label className="text-sm font-medium text-foreground">Filter by Blood Group</label>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {BLOOD_GROUPS.map((group) => (
-                  <Badge
-                    key={group}
-                    variant={selectedBloodGroup === group ? "default" : "outline"}
-                    className="cursor-pointer px-4 py-2 text-sm font-semibold transition-all"
-                    onClick={() => handleBloodGroupFilter(group)}
-                  >
-                    {group}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Urgency Filter */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-foreground">Filter by Urgency</label>
-              <div className="flex flex-wrap gap-2">
-                {URGENCY_OPTIONS.map((level) => (
-                  <Badge
-                    key={level.value}
-                    className={`cursor-pointer px-4 py-2 text-sm font-semibold transition-all ${selectedUrgency === level.value
-                      ? level.color
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                      }`}
-                    onClick={() => handleUrgencyFilter(level.value)}
-                  >
-                    {level.label}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Active Filters Display */}
-            {(selectedBloodGroup || selectedUrgency || searchQuery) && (
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
-                <span className="text-sm text-muted-foreground">Active filters:</span>
+          {/* Main Content Feed */}
+          <div className="lg:col-span-3">
+            {/* Active Filters Summary (Mobile/Desktop) */}
+            {activeFiltersCount > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
                 {selectedBloodGroup && (
-                  <Badge variant="secondary" className="gap-1">
-                    Blood: {selectedBloodGroup}
-                    <button
+                  <Badge variant="secondary" className="h-7">
+                    Group: {selectedBloodGroup}
+                    <X
+                      className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSelectedBloodGroup("")}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      ×
-                    </button>
+                    />
                   </Badge>
                 )}
                 {selectedUrgency && (
-                  <Badge variant="secondary" className="gap-1">
-                    Urgency: {URGENCY_OPTIONS.find(l => l.value === selectedUrgency)?.label}
-                    <button
+                  <Badge variant="secondary" className="h-7">
+                    Urgency: {URGENCY_OPTIONS.find(u => u.value === selectedUrgency)?.label}
+                    <X
+                      className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSelectedUrgency("")}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      ×
-                    </button>
+                    />
                   </Badge>
                 )}
                 {searchQuery && (
-                  <Badge variant="secondary" className="gap-1">
+                  <Badge variant="secondary" className="h-7">
                     Search: "{searchQuery}"
-                    <button
+                    <X
+                      className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSearchQuery("")}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      ×
-                    </button>
+                    />
                   </Badge>
                 )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedBloodGroup("");
-                    setSelectedUrgency("");
-                    setSearchQuery("");
-                  }}
-                  className="text-xs h-7"
-                >
-                  Clear All
-                </Button>
               </div>
             )}
-          </div>
 
-          {/* Blood Request Feed */}
-          <BloodRequestFeed filters={getFilters()} />
+            <BloodRequestFeed filters={getFilters()} />
+          </div>
         </div>
       </main>
 

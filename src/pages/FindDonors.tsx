@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import {
   Search,
   MapPin,
-  Phone,
   Heart,
   Filter,
   Star,
@@ -22,13 +21,14 @@ import {
   RotateCcw,
   Droplet,
   Users,
-  Building2,
+
   ShieldCheck,
   AlertCircle
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
+import { DonorProfileDialog } from "@/components/DonorProfileDialog";
 import { RealtimeStatusIndicator } from "@/components/RealtimeStatusIndicator";
 import { useDonors } from "@/hooks/useDatabase";
 import { Donor } from "@/services/dbService";
@@ -38,6 +38,8 @@ import { supabase } from "@/services/supabaseClient";
 const FindDonors = () => {
   const navigate = useNavigate();
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
   const [checkingDonorStatus, setCheckingDonorStatus] = useState(true);
@@ -49,7 +51,6 @@ const FindDonors = () => {
     distance: "",
     gender: "",
     lastDonationDate: "",
-    hospital: "",
     verifiedOnly: false,
     urgentOnly: false
   });
@@ -121,13 +122,7 @@ const FindDonors = () => {
       // Gender filter
       const matchesGender = filters.gender ? (filters.gender === "any" || (d as Donor & { gender?: string }).gender === filters.gender) : true;
 
-      // Hospital filter (if donor has hospital preference field)
-      const matchesHospital = filters.hospital
-        ? (() => {
-          const preferredHospital = (d as Donor & { preferred_hospital?: string }).preferred_hospital;
-          return preferredHospital ? preferredHospital.toLowerCase().includes(filters.hospital.toLowerCase()) : false;
-        })()
-        : true;
+
 
       // Verified only filter
       const matchesVerified = filters.verifiedOnly ? ((d as Donor & { verified?: boolean }).verified === true) : true;
@@ -135,7 +130,7 @@ const FindDonors = () => {
       // Distance filter (placeholder - would need actual location data to calculate)
       const matchesDistance = filters.distance ? true : true; // TODO: Implement distance calculation when location data is available
 
-      return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation && matchesGender && matchesHospital && matchesVerified && matchesDistance;
+      return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation && matchesGender && matchesVerified && matchesDistance;
     });
   }, [donors, filters]);
 
@@ -147,7 +142,6 @@ const FindDonors = () => {
       distance: "",
       gender: "",
       lastDonationDate: "",
-      hospital: "",
       verifiedOnly: false,
       urgentOnly: false
     });
@@ -266,22 +260,7 @@ const FindDonors = () => {
                       </div>
                     </div>
 
-                    {/* Hospital Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.hospital ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
-                      <label className="text-sm font-medium mb-2 flex items-center">
-                        <Building2 className="h-4 w-4 mr-2 text-primary" />
-                        Preferred Hospital
-                      </label>
-                      <div className="relative">
-                        <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Enter hospital name"
-                          className="pl-10 bg-background"
-                          value={filters.hospital}
-                          onChange={(e) => setFilters({ ...filters, hospital: e.target.value })}
-                        />
-                      </div>
-                    </div>
+
 
                     {/* Gender Filter */}
                     <div className={`p-3 rounded-lg transition-colors ${filters.gender ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
@@ -473,11 +452,18 @@ const FindDonors = () => {
                       </div>
 
                       <div className="flex flex-col space-y-2">
-                        <Button size="sm">
-                          <Phone className="h-4 w-4 mr-2" />
-                          {donor.contact_number || 'Contact'}
+                        <Button size="sm" onClick={() => navigate("/request-blood")}>
+                          <Droplet className="h-4 w-4 mr-2" />
+                          Request Blood
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedDonor(donor);
+                            setProfileDialogOpen(true);
+                          }}
+                        >
                           View Profile
                         </Button>
                       </div>
@@ -506,6 +492,11 @@ const FindDonors = () => {
         open={registrationDialogOpen}
         onOpenChange={setRegistrationDialogOpen}
         userProfile={userProfile}
+      />
+      <DonorProfileDialog
+        open={profileDialogOpen}
+        onOpenChange={setProfileDialogOpen}
+        donor={selectedDonor}
       />
     </div>
   );
