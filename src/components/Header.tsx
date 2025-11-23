@@ -72,11 +72,11 @@ const Header = () => {
             {isLoggedIn ? (
               <>
                 <Link to="/profile" className="hidden sm:block">
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" className="rounded-full">
                     <User className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="icon" onClick={handleSignOut} className="hidden sm:flex">
+                <Button variant="outline" size="icon" onClick={handleSignOut} className="hidden sm:flex rounded-full">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </>

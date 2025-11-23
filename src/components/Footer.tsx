@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Send, Twitter, Youtube } from "lucide-react";
+import { motion } from "framer-motion";
 import bloodLogo from "@/assets/blood_logo.png";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -31,9 +32,27 @@ const Footer = () => {
             <p className="text-slate-300 text-sm leading-relaxed">
               Connecting blood donors and recipients across Bangladesh to save lives and build a healthier community.
             </p>
-            {/* Social Media Dock - visually prominent (already implemented) */}
-            <div className="pt-2">
-              {/* Social icons are Dock/DockItem, see ui/dock.tsx for effect */}
+            <div className="pt-4 flex gap-3">
+              {[
+                { icon: Facebook, href: "#", label: "Facebook" },
+                { icon: Twitter, href: "#", label: "Twitter" },
+                { icon: Instagram, href: "#", label: "Instagram" },
+                { icon: Linkedin, href: "#", label: "LinkedIn" },
+              ].map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  aria-label={social.label}
+                  className="inline-flex items-center justify-center p-2.5 rounded-lg border border-slate-700 bg-slate-800/50 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <social.icon size={18} />
+                </motion.a>
+              ))}
             </div>
           </div>
 
