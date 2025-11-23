@@ -322,3 +322,8 @@ find src -name "*.tsx" -o -name "*.ts" | xargs sed -i "1i import { logger } from
 ```
 
 Then manually replace console.log/error/warn with logger.debug/error/warn.
+
+### 8. Database Schema Fix (Applied)
+**Issue:** Donor registration failed with "Could not find the 'medical_info' column".
+**Fix:** Applied migration `add_medical_info_to_donors.sql` to add the missing `medical_info` JSONB column to the `donors` table.
+**Status:** ✅ COMPLETE (Applied via MCP)
