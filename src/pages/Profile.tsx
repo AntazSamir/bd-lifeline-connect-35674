@@ -25,6 +25,7 @@ import Footer from "@/components/Footer";
 import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { AvailabilityDialog } from "@/components/AvailabilityDialog";
 import { NotificationSettingsDialog } from "@/components/NotificationSettingsDialog";
+import { RespondToRequestDialog } from "@/components/RespondToRequestDialog";
 
 function getTimeAgo(dateString: string) {
   const date = new Date(dateString);
@@ -49,6 +50,8 @@ const Profile = () => {
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [respondDialogOpen, setRespondDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<BloodRequest | null>(null);
 
   useEffect(() => {
     fetchUserData();
@@ -375,7 +378,13 @@ const Profile = () => {
                                 {request.timeAgo}
                               </div>
                             </div>
-                            <Button size="sm">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setSelectedRequest(matchingRequests.find(r => r.id === request.id) || null);
+                                setRespondDialogOpen(true);
+                              }}
+                            >
                               Respond
                             </Button>
                           </div>
@@ -415,6 +424,14 @@ const Profile = () => {
             open={notificationsOpen}
             onOpenChange={setNotificationsOpen}
             userId={user.id}
+          />
+
+          <RespondToRequestDialog
+            open={respondDialogOpen}
+            onOpenChange={setRespondDialogOpen}
+            request={selectedRequest}
+            donorId={user.id}
+            onResponseSubmitted={fetchUserData}
           />
         </>
       )}
