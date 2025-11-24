@@ -90,10 +90,10 @@ const SignUp = () => {
           description: "Account created successfully! Please check your email to confirm your address.",
         });
 
-        // Redirect to sign in page after a delay to allow user to read the message
+        // Redirect to check email page
         setTimeout(() => {
-          navigate("/sign-in");
-        }, 3000);
+          navigate("/check-email", { state: { email: formData.email } });
+        }, 1000);
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to create account";

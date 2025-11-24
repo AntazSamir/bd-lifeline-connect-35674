@@ -16,6 +16,7 @@ import SignUp from "./pages/SignUp";
 import CompleteProfile from "./pages/CompleteProfile";
 import NotFound from "./pages/NotFound";
 import EmailConfirmation from "./pages/EmailConfirmation";
+import CheckEmail from "./pages/CheckEmail";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import ResetPassword from "./pages/ResetPassword";
@@ -52,6 +53,7 @@ const App = () => (
               {/* Test pages removed from production routes */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/confirm-email" element={<EmailConfirmation />} />
+              <Route path="/check-email" element={<CheckEmail />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />

@@ -83,9 +83,42 @@ export function AuthListener() {
             }
         };
 
+        const checkProfileCompletion = async (session: any) => {
+            if (!session?.user) return;
+
+            // Skip check if already on complete-profile page
+            if (window.location.pathname === "/complete-profile") return;
+
+            try {
+                const { data: profile, error } = await supabase
+                    .from("user_profiles")
+                    .select("phone, blood_group, district, division")
+                    .eq("id", session.user.id)
+                    .single();
+
+                if (error) {
+                    logger.error("AuthListener: Error checking profile completion:", error);
+                    return;
+                }
+
+                // Check if essential fields are missing
+                if (!profile?.phone || !profile?.blood_group || !profile?.district) {
+                    logger.info("AuthListener: Profile incomplete, redirecting to completion page");
+                    navigate("/complete-profile");
+                    toast({
+                        title: "Complete Your Profile",
+                        description: "Please provide your contact details to continue.",
+                    });
+                }
+            } catch (err) {
+                logger.error("Error in checkProfileCompletion:", err);
+            }
+        };
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
                 checkAndUpdateAvatar(session);
+                checkProfileCompletion(session);
             }
 
             if (event === "PASSWORD_RECOVERY") {
