@@ -298,12 +298,13 @@ export function EditProfileDialog({
                                 id="phone"
                                 type="tel"
                                 value={formData.phone}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, phone: e.target.value })
-                                }
-                                placeholder="01XXXXXXXXX"
-                                required
+                                readOnly
+                                className="bg-muted text-muted-foreground cursor-not-allowed"
+                                title="Phone number cannot be changed currently"
                             />
+                            <p className="text-xs text-muted-foreground">
+                                To change your phone number, please contact support.
+                            </p>
                         </div>
 
                         <div className="grid gap-2">
