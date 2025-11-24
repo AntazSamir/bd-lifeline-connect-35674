@@ -411,7 +411,9 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                 {userProfile?.phone ? (
                   <p className="text-xs text-muted-foreground">From your profile</p>
                 ) : (
-                  <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
+                  <p className="text-xs text-muted-foreground text-red-500">
+                    Note: You cannot change this number later.
+                  </p>
                 )}
               </div>
             </div>

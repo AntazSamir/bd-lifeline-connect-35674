@@ -16,7 +16,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,7 +28,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -38,13 +38,13 @@ const SignUp = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       // Sign up the user
       const result = await signUp(formData.email, formData.password);
-      
+
       // Create user profile with all registration data
       let profileCreated = false;
       try {
@@ -82,14 +82,14 @@ const SignUp = () => {
         }, 3000);
         return;
       }
-      
+
       // Only show success toast if profile was created successfully
       if (profileCreated) {
         toast({
           title: "Success",
           description: "Account created successfully! Please check your email to confirm your address.",
         });
-        
+
         // Redirect to sign in page after a delay to allow user to read the message
         setTimeout(() => {
           navigate("/sign-in");
@@ -130,7 +130,7 @@ const SignUp = () => {
               Join the blood donation service
             </CardDescription>
           </CardHeader>
-          
+
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -168,6 +168,9 @@ const SignUp = () => {
                   onChange={handleChange}
                   required
                 />
+                <p className="text-xs text-muted-foreground text-red-500">
+                  Note: You cannot change your phone number after registration.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="nid">National ID Number</Label>
@@ -236,16 +239,16 @@ const SignUp = () => {
                 </div>
               </div>
             </CardContent>
-            
+
             <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
-              
+
               <div className="text-center text-sm">
                 Already have an account?{" "}
                 <Link to="/sign-in" className="text-primary hover:underline font-medium">
