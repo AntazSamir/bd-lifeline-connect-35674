@@ -30,7 +30,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
-      const result = await signIn(formData.email, formData.password);
+      await signIn(formData.email, formData.password);
       toast({
         title: "Success",
         description: "Signed in successfully!",
@@ -70,6 +70,7 @@ const SignIn = () => {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isResetLoading) return;
     setIsResetLoading(true);
 
     try {
@@ -77,11 +78,23 @@ const SignIn = () => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (error) throw error;
+      // Handle "User not found" specifically to avoid leaking user existence
+      // and to prevent confusing error messages. We treat it as a success.
+      if (error) {
+        const isUserNotFound =
+          error.message.toLowerCase().includes("not found") ||
+          error.status === 404 ||
+          error.code === "user_not_found";
+
+        if (!isUserNotFound) {
+          throw error;
+        }
+        console.log("User not found for password reset, simulating success for security");
+      }
 
       toast({
-        title: "Success",
-        description: "Password reset email sent! Please check your inbox.",
+        title: "Check your email",
+        description: "If an account exists with this email, you will receive a password reset link.",
       });
       setResetDialogOpen(false);
       setResetEmail("");
