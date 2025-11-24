@@ -90,19 +90,39 @@ export function AuthListener() {
             if (window.location.pathname === "/complete-profile") return;
 
             try {
-                const { data: profile, error } = await supabase
-                    .from("user_profiles")
-                    .select("phone, blood_group, district, division")
-                    .eq("id", session.user.id)
-                    .single();
+                let profile = null;
+                let retries = 3;
 
-                if (error) {
-                    logger.error("AuthListener: Error checking profile completion:", error);
+                // Retry fetching profile in case trigger hasn't finished yet
+                while (retries > 0 && !profile) {
+                    const { data, error } = await supabase
+                        .from("user_profiles")
+                        .select("phone, blood_group, district, division")
+                        .eq("id", session.user.id)
+                        .single();
+
+                    if (!error && data) {
+                        profile = data;
+                    } else {
+                        // Wait a bit if profile not found
+                        logger.debug(`AuthListener: Profile not found for completion check, retrying in 1s... (${retries - 1} retries left)`);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        retries--;
+                    }
+                }
+
+                if (!profile) {
+                    logger.error("AuthListener: Profile not found after retries (completion check)");
+                    // If we still can't find the profile, we probably should redirect to complete profile anyway
+                    // because it means they definitely don't have the data we need.
+                    // However, if the table insert failed entirely, this page might also fail.
+                    // Let's try redirecting as a fallback if it's a new user.
+                    navigate("/complete-profile");
                     return;
                 }
 
                 // Check if essential fields are missing
-                if (!profile?.phone || !profile?.blood_group || !profile?.district) {
+                if (!profile.phone || !profile.blood_group || !profile.district) {
                     logger.info("AuthListener: Profile incomplete, redirecting to completion page");
                     navigate("/complete-profile");
                     toast({

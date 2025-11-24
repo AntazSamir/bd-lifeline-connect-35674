@@ -43,8 +43,22 @@ const CompleteProfile = () => {
             setUser(user);
 
             const profile = await getUserProfile(user.id);
+
+            // If profile is fully complete, go to dashboard
             if (profile && profile.blood_group && profile.district && profile.phone) {
                 navigate("/dashboard");
+                return;
+            }
+
+            // Pre-fill form with existing data
+            if (profile) {
+                setFormData(prev => ({
+                    ...prev,
+                    phone_number: profile.phone || prev.phone_number,
+                    nid: profile.nid || prev.nid,
+                    district: profile.district || profile.location || prev.district,
+                    blood_group: profile.blood_group || prev.blood_group
+                }));
             }
         } catch (error) {
             console.error("Error checking user:", error);
