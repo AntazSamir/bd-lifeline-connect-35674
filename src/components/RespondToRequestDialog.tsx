@@ -14,29 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/services/supabaseClient";
 import { Loader2, MapPin, Calendar, Hospital, AlertCircle, User } from "lucide-react";
-
-interface BloodRequestDetails {
-    id: string;
-    blood_group: string;
-    location: string;
-    urgency: string;
-    hospital_name?: string;
-    hospital_address?: string;
-    patient_name?: string;
-    patient_age?: number;
-    contact_number?: string;
-    blood_component?: string;
-    date_needed?: string;
-    units_needed?: number;
-    donor_requirements?: string;
-    additional_notes?: string;
-    created_at: string;
-}
+import { BloodRequest } from "@/services/dbService";
 
 interface RespondToRequestDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    request: BloodRequestDetails | null;
+    request: BloodRequest | null;
     donorId: string;
     onResponseSubmitted?: () => void;
 }
@@ -54,7 +37,7 @@ export function RespondToRequestDialog({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!request) return;
+        if (!request || !request.id) return;
 
         setIsLoading(true);
 
@@ -134,30 +117,30 @@ export function RespondToRequestDialog({
                         </div>
 
                         {/* Patient Information */}
-                        {request.patient_name && (
+                        {request.patient_info && (
                             <div className="space-y-1">
                                 <Label className="flex items-center gap-2">
                                     <User className="h-4 w-4" />
                                     Patient Information
                                 </Label>
                                 <p className="text-sm">
-                                    {request.patient_name}
+                                    {request.patient_info}
                                     {request.patient_age && `, ${request.patient_age} years old`}
                                 </p>
                             </div>
                         )}
 
                         {/* Hospital Information */}
-                        <div className="space-y-1">
-                            <Label className="flex items-center gap-2">
-                                <Hospital className="h-4 w-4" />
-                                Hospital
-                            </Label>
-                            <p className="text-sm font-medium">{request.hospital_name || "Not specified"}</p>
-                            {request.hospital_address && (
-                                <p className="text-sm text-muted-foreground">{request.hospital_address}</p>
-                            )}
-                        </div>
+                        {(request.hospital_address) && (
+                            <div className="space-y-1">
+                                <Label className="flex items-center gap-2">
+                                    <Hospital className="h-4 w-4" />
+                                    Hospital
+                                </Label>
+                                {/* Since hospital_name is not in BloodRequest, we only show address if available */}
+                                <p className="text-sm font-medium">{request.hospital_address}</p>
+                            </div>
+                        )}
 
                         {/* Location */}
                         <div className="space-y-1">
