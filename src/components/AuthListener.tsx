@@ -1,10 +1,13 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
 
 export function AuthListener() {
     const { toast } = useToast();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const checkAndUpdateAvatar = async (session: any) => {
@@ -84,12 +87,17 @@ export function AuthListener() {
             if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
                 checkAndUpdateAvatar(session);
             }
+
+            if (event === "PASSWORD_RECOVERY") {
+                logger.info("AuthListener: Password recovery event detected");
+                navigate("/reset-password");
+            }
         });
 
         return () => {
             subscription.unsubscribe();
         };
-    }, [toast]);
+    }, [toast, navigate]);
 
     return null; // This component doesn't render anything
 }
