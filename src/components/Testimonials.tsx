@@ -1,100 +1,173 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Quote } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Quote, BadgeCheck, MapPin } from "lucide-react";
 import Marquee from "react-fast-marquee";
+import { motion } from "framer-motion";
 
 const testimonials = [
   {
     id: 1,
-    name: "Sarah Johnson",
+    name: "Rahim Ahmed",
     role: "Regular Donor",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+    bloodGroup: "O+",
+    location: "Dhaka",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
     quote: "Donating blood through BloodConnect has been incredibly easy. I've saved multiple lives and it feels amazing!",
+    verified: true,
+    type: "donor"
   },
   {
     id: 2,
-    name: "Michael Chen",
+    name: "Fatima Begum",
     role: "Emergency Recipient",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    bloodGroup: "A-",
+    location: "Chittagong",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
     quote: "When my father needed urgent blood, BloodConnect connected us with donors within hours. This platform is a lifesaver!",
+    verified: true,
+    type: "recipient"
   },
   {
     id: 3,
-    name: "Priya Sharma",
+    name: "Karim Hassan",
     role: "Monthly Donor",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    bloodGroup: "B+",
+    location: "Sylhet",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
     quote: "The process is seamless and the community is wonderful. I'm proud to be part of this life-saving network.",
+    verified: true,
+    type: "donor"
   },
   {
     id: 4,
-    name: "Imran Hossain",
-    role: "Donor & Volunteer",
-    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&h=150&fit=crop",
-    quote: "BloodConnect encourages me to donate regularly and volunteering has given me a great sense of purpose.",
+    name: "Ayesha Rahman",
+    role: "Mother & Recipient",
+    bloodGroup: "AB+",
+    location: "Rajshahi",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    quote: "My child urgently needed blood. Thanks to the wonderful donors found here, she's healthy again.",
+    verified: true,
+    type: "recipient"
   },
   {
     id: 5,
-    name: "Ayesha Rahman",
-    role: "Mother & Recipient",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop",
-    quote: "My child urgently needed blood. Thanks to the wonderful donors found here, she’s healthy again.",
+    name: "Imran Hossain",
+    role: "First-time Donor",
+    bloodGroup: "O-",
+    location: "Khulna",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+    quote: "Giving blood for the first time made me realize how easy it is to make a real difference in someone's life.",
+    verified: true,
+    type: "donor"
   },
   {
     id: 6,
-    name: "James Wilson",
-    role: "First-time Donor",
-    image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop",
-    quote: "Giving blood for the first time made me realize how easy it is to make a real difference in someone’s life.",
-  },
-  {
-    id: 7,
-    name: "Tanvi Patel",
+    name: "Nasrin Akter",
     role: "Community Organizer",
-    image: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=150&h=150&fit=crop",
-    quote: "Our community drives with BloodConnect foster unity and kindness. It’s wonderful to save lives together!",
+    bloodGroup: "A+",
+    location: "Barisal",
+    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop",
+    quote: "Our community drives with BloodConnect foster unity and kindness. It's wonderful to save lives together!",
+    verified: true,
+    type: "donor"
   },
 ];
 
 const Testimonials = () => {
   return (
-    <section className="py-16 px-0 bg-muted/30 w-full">
-      <div className="w-full max-w-full">
-        <div className="text-center mb-12 px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            What People Say About Us
+    <section className="py-16 md:py-24 bg-muted/30 w-full overflow-hidden">
+      <div className="container mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
+            <Quote className="h-4 w-4" />
+            <span className="text-sm font-semibold">Real Stories</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            What Our Community Says
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Real stories from donors and recipients who have experienced the power of community
+            Real stories from verified donors and recipients who experienced the power of community
           </p>
-        </div>
+        </motion.div>
+      </div>
 
-        <Marquee pauseOnHover gradient={false} speed={30} className="w-full gap-8">
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="flex items-stretch flex-shrink-0 w-96 min-w-[24rem] mx-4"
-            >
-              <Card className="flex flex-col justify-between h-full w-full bg-rose-500/10 shadow-xl border border-rose-500/20">
-                <CardContent className="p-6 flex flex-col h-full">
-                  <div className="flex items-center gap-4 mb-4">
+      <Marquee 
+        pauseOnHover 
+        gradient={false} 
+        speed={40} 
+        className="w-full py-4"
+      >
+        {testimonials.map((testimonial) => (
+          <div
+            key={testimonial.id}
+            className="flex-shrink-0 w-96 mx-4"
+          >
+            <Card className="h-full bg-card hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/30 group">
+              <CardContent className="p-6">
+                {/* Header with photo and info */}
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="relative">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-rose-200/70"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 group-hover:border-primary/50 transition-colors"
                     />
-                    <div>
-                      <p className="font-semibold text-rose-900 leading-tight dark:text-rose-100">{testimonial.name}</p>
-                      <p className="text-xs opacity-80 text-rose-800 -mt-0.5 dark:text-rose-200/80">{testimonial.role}</p>
+                    {testimonial.verified && (
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-hope-green rounded-full flex items-center justify-center border-2 border-background">
+                        <BadgeCheck className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-primary/10 text-primary text-xs font-bold"
+                      >
+                        {testimonial.bloodGroup}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <MapPin className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">{testimonial.location}</span>
                     </div>
                   </div>
-                  <p className="text-rose-900/90 dark:text-rose-50 text-base font-normal mt-1">
-                    {testimonial.quote}
+                </div>
+
+                {/* Quote */}
+                <div className="relative">
+                  <Quote className="absolute -top-2 -left-2 h-8 w-8 text-primary/10" />
+                  <p className="text-foreground/90 pl-4 leading-relaxed italic">
+                    "{testimonial.quote}"
                   </p>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </Marquee>
-      </div>
+                </div>
+
+                {/* Badge */}
+                <div className="mt-4 pt-4 border-t border-border/50">
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${
+                      testimonial.type === 'donor' 
+                        ? 'border-hope-green/50 text-hope-green' 
+                        : 'border-trust-blue/50 text-trust-blue'
+                    }`}
+                  >
+                    {testimonial.verified ? '✓ ' : ''}
+                    Verified {testimonial.type === 'donor' ? 'Donor' : 'Patient'}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+      </Marquee>
     </section>
   );
 };

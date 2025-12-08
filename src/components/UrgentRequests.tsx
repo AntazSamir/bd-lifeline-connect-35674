@@ -2,32 +2,36 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Clock, Droplets, Phone, AlertCircle } from "lucide-react";
+import { MapPin, Clock, Droplets, Phone, RefreshCw, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useBloodRequests } from "@/hooks/useDatabase";
 import { useMemo, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const UrgentRequests = () => {
   const [showTimeout, setShowTimeout] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  // Use useMemo to prevent creating a new filters object on every render
   const filters = useMemo(() => ({}), []);
-
-  // Fetch only 6 requests to optimize performance
   const { requests, loading, error } = useBloodRequests(1, 6, filters);
 
-  // Set timeout to show empty state if loading takes too long
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRetryCount(prev => prev + 1);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (loading) {
         setShowTimeout(true);
       }
-    }, 3000); // Show empty state after 3 seconds
-
+    }, 3000);
     return () => clearTimeout(timer);
   }, [loading]);
 
-  // Filter for only urgent and immediate requests
   const urgentOnly = useMemo(() => {
     return requests
       .filter(req => req.urgency === 'urgent' || req.urgency === 'immediate')
@@ -51,73 +55,50 @@ const UrgentRequests = () => {
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
 
     if (diffInMinutes < 60) {
-      return `${diffInMinutes} minutes ago`;
+      return `${diffInMinutes} min ago`;
     } else if (diffInMinutes < 1440) {
-      return `${Math.floor(diffInMinutes / 60)} hours ago`;
+      return `${Math.floor(diffInMinutes / 60)}h ago`;
     } else {
-      return `${Math.floor(diffInMinutes / 1440)} days ago`;
+      return `${Math.floor(diffInMinutes / 1440)}d ago`;
     }
   };
 
-  const formatDistrict = (district: string) => {
-    return district.charAt(0).toUpperCase() + district.slice(1);
-  };
-
-  // Show timeout message if loading takes too long
-  if (showTimeout && loading) {
-    return (
-      <section className="py-12 sm:py-16 bg-accent/30">
-        <div className="container px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
-              Urgent Blood Requests
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              Loading requests... This is taking longer than expected.
-            </p>
-          </div>
-          <div className="text-center">
-            <Link to="/request-blood">
-              <Button variant="outline" size="lg">
-                View All Requests
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // Loading state (only show for first 3 seconds)
+  // Loading state with skeleton shimmer
   if (loading && !showTimeout) {
     return (
-      <section className="py-12 sm:py-16 bg-accent/30">
+      <section className="py-16 md:py-20 bg-accent/30">
         <div className="container px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-urgent/10 text-urgent px-4 py-2 rounded-full mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm font-semibold">Emergency Requests</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Urgent Blood Requests
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              These patients need blood donations immediately. Your quick response can save a life.
+            <p className="text-muted-foreground flex items-center justify-center gap-2">
+              <RefreshCw className="h-4 w-4 animate-spin" />
+              Fetching latest emergency blood requests...
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <Card key={i}>
-                <CardHeader>
+              <Card key={i} className="overflow-hidden">
+                <CardHeader className="pb-3">
                   <div className="flex items-center space-x-3">
-                    <Skeleton className="w-12 h-12 rounded-full" />
+                    <Skeleton className="w-14 h-14 rounded-xl" />
                     <div className="space-y-2">
-                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-5 w-16" />
                       <Skeleton className="h-3 w-24" />
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-10 w-full" />
                   </div>
                 </CardContent>
               </Card>
@@ -128,24 +109,30 @@ const UrgentRequests = () => {
     );
   }
 
-  // Error state
-  if (error) {
+  // Timeout/Error state - never show ugly errors
+  if ((showTimeout && loading) || error) {
     return (
-      <section className="py-12 sm:py-16 bg-accent/30">
+      <section className="py-16 md:py-20 bg-accent/30">
         <div className="container px-4">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              Unable to Load Requests
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-urgent/10 text-urgent px-4 py-2 rounded-full mb-4">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm font-semibold">Emergency Requests</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Urgent Blood Requests
             </h2>
-            <p className="text-muted-foreground mb-4">
-              {error}
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Having trouble loading requests. Please try again.
             </p>
-            <Link to="/request-blood">
-              <Button variant="outline">
-                View All Requests
-              </Button>
-            </Link>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </Button>
           </div>
         </div>
       </section>
@@ -155,17 +142,19 @@ const UrgentRequests = () => {
   // Empty state
   if (urgentOnly.length === 0) {
     return (
-      <section className="py-12 sm:py-16 bg-accent/30">
+      <section className="py-16 md:py-20 bg-accent/30">
         <div className="container px-4">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
-              Urgent Blood Requests
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-hope-green/10 text-hope-green px-4 py-2 rounded-full mb-4">
+              <Droplets className="h-4 w-4" />
+              <span className="text-sm font-semibold">All Clear</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              No Urgent Requests Right Now
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-              No urgent blood requests at the moment. Check back later or view all requests.
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Good news! There are no urgent blood requests at the moment. Check back later or browse all requests.
             </p>
-          </div>
-          <div className="text-center">
             <Link to="/request-blood">
               <Button variant="outline" size="lg">
                 View All Requests
@@ -178,79 +167,102 @@ const UrgentRequests = () => {
   }
 
   return (
-    <section className="py-12 sm:py-16 bg-accent/30">
+    <section className="py-16 md:py-20 bg-accent/30">
       <div className="container px-4">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
+        <div className="text-center mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 bg-urgent/10 text-urgent px-4 py-2 rounded-full mb-4"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-urgent opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-urgent"></span>
+            </span>
+            <span className="text-sm font-semibold">Live Emergency Requests</span>
+          </motion.div>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Urgent Blood Requests
           </h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             These patients need blood donations immediately. Your quick response can save a life.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {urgentOnly.map((request) => (
-            <Card key={request.id} className="hover:shadow-medium transition-shadow duration-300">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Droplets className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {urgentOnly.map((request, index) => (
+            <motion.div
+              key={request.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 group border-border/50 hover:border-primary/30 overflow-hidden">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <span className="text-2xl font-bold text-primary">{request.blood_group}</span>
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Blood Needed</CardTitle>
+                        <p className="text-sm text-muted-foreground">{request.units_needed} units required</p>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">{request.blood_group}</CardTitle>
-                      <p className="text-sm text-muted-foreground">Blood Type Needed</p>
-                    </div>
+                    <Badge className={`${getUrgencyColor(request.urgency)} uppercase text-xs`}>
+                      {request.urgency}
+                    </Badge>
                   </div>
-                  <Badge className={getUrgencyColor(request.urgency)}>
-                    {request.urgency}
-                  </Badge>
-                </div>
-              </CardHeader>
+                </CardHeader>
 
-              <CardContent className="space-y-4">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  {formatDistrict(request.location)}
-                </div>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-2 text-primary/70" />
+                    {request.location}
+                  </div>
 
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Posted {formatTimeAgo(request.created_at || new Date().toISOString())}
-                </div>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4 mr-2 text-primary/70" />
+                    Posted {formatTimeAgo(request.created_at || new Date().toISOString())}
+                  </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium">Patient:</span> {request.patient_info || "Information not provided"}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-medium">Units needed:</span> {request.units_needed}
-                  </p>
-                </div>
+                  {request.patient_info && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {request.patient_info}
+                    </p>
+                  )}
 
-                <div className="flex gap-2 pt-2">
-                  <a href={`tel:${request.contact_number}`} className="flex-1">
-                    <Button size="sm" className="w-full">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Contact
-                    </Button>
-                  </a>
-                  <Link to="/request-blood" className="flex-1">
-                    <Button size="sm" variant="outline" className="w-full">
-                      View Details
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex gap-2 pt-2">
+                    <a href={`tel:${request.contact_number}`} className="flex-1">
+                      <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
+                        <Phone className="h-4 w-4 mr-2" />
+                        Call Now
+                      </Button>
+                    </a>
+                    <a 
+                      href={`https://wa.me/${request.contact_number?.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1"
+                    >
+                      <Button size="sm" variant="outline" className="w-full">
+                        WhatsApp
+                      </Button>
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
-        <div className="text-center mt-8">
+        <div className="text-center mt-10">
           <Link to="/request-blood">
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" className="gap-2">
               View All Requests
+              <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{requests.length}+</span>
             </Button>
           </Link>
         </div>

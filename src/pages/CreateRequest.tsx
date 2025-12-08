@@ -90,7 +90,7 @@ const CreateRequest = () => {
     }
     
     try {
-      await addRequest(validation.data);
+      await addRequest(validation.data as Omit<Parameters<typeof addRequest>[0], 'id' | 'created_at'>);
       
       toast({
         title: "Request Submitted",
