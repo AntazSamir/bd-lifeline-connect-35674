@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Menu, User, LogOut } from "lucide-react";
+import { Menu, User, LogOut, Search, Bell, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bloodLogo from "@/assets/blood_logo.png";
 import { signOut } from "@/services/dbService";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -18,141 +19,134 @@ const Header = () => {
       await signOut();
       setIsLoggedIn(false);
       toast.success("You have been signed out successfully");
-      navigate("/"); // Redirect to home page
+      navigate("/");
     } catch (error) {
       console.error("Sign out error:", error);
       toast.error("Failed to sign out. Please try again.");
     }
   };
 
-  return <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-sm transition-all duration-300">
-    <div className="container flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
-      {/* Logo */}
-      <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 flex-shrink-0">
-        <img src={bloodLogo} alt="BloodConnect Logo" className="h-7 w-7 sm:h-9 sm:w-9" />
-        <span className="text-base sm:text-xl font-bold text-foreground whitespace-nowrap">BloodConnect</span>
-      </Link>
-
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center space-x-4 lg:space-x-8 flex-1 justify-center max-w-2xl">
-        <Link to="/" className="text-sm font-medium relative group transition-colors">
-          Home
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+  return (
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 border-b border-border/50 shadow-sm">
+      <div className="container flex h-16 sm:h-18 items-center justify-between px-4 sm:px-6">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+          <img src={bloodLogo} alt="BloodConnect Logo" className="h-8 w-8 sm:h-9 sm:w-9" />
+          <span className="text-lg sm:text-xl font-bold text-foreground">BloodConnect</span>
         </Link>
-        <Link to="/find-donors" className="text-sm font-medium relative group transition-colors">
-          Find Donor
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-        </Link>
-        <Link to="/request-blood" className="text-sm font-medium relative group transition-colors">
-          Request Blood
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-        </Link>
-        <Link to="/contact" className="text-sm font-medium relative group transition-colors">
-          Contact
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-        </Link>
-        <Link to="/about" className="text-sm font-medium relative group transition-colors">
-          About
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-        </Link>
-      </nav>
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-        <ThemeToggle />
-
-        {isCheckingAuth ? (
-          // Invisible placeholders to prevent layout shift
-          <>
-            <div className="hidden sm:block w-9 h-9"></div>
-            <div className="hidden sm:block w-9 h-9"></div>
-          </>
-        ) : (
-          <>
-            {isLoggedIn ? (
-              <>
-                <Link to="/profile" className="hidden sm:block">
-                  <Button variant="outline" size="icon" className="rounded-full">
-                    <User className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Button variant="outline" size="icon" onClick={handleSignOut} className="hidden sm:flex rounded-full">
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/sign-in" className="hidden sm:block">
-                  <Button variant="outline" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/sign-up" className="hidden sm:block">
-                  <Button
-                    size="sm"
-                    className="bg-[#F05656] hover:opacity-90 transition-opacity"
-                  >
-                    Become a Donor
-                  </Button>
-                </Link>
-              </>
-            )}
-          </>
-        )}
-
-        {/* Mobile menu button */}
-        <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          <Menu className="h-5 w-5" />
-        </Button>
-      </div>
-    </div>
-
-    {/* Mobile Navigation */}
-    {
-      isMenuOpen && <div className="md:hidden border-t bg-background">
-        <nav className="container py-4 space-y-3">
-          <Link to="/" className="block text-sm font-medium hover:text-primary transition-colors">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center space-x-6 flex-1 justify-center max-w-2xl">
+          <Link to="/" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
             Home
           </Link>
-          <Link to="/request-blood" className="block text-sm font-medium hover:text-primary transition-colors">
-            Request Blood
+          <Link to="/find-donors" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            Find Donor
           </Link>
-          <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors">
-            Find Donors
+          <Link to="/request-blood" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors flex items-center gap-1.5">
+            Emergency Requests
+            <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 bg-urgent">
+              Live
+            </Badge>
           </Link>
-          <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors">
-            Contact
-          </Link>
-          <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/about" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
             About
           </Link>
+          <Link to="/contact" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            Contact
+          </Link>
+        </nav>
 
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" className="block text-sm font-medium hover:text-primary transition-colors">
-                Profile
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="block w-full text-left text-sm font-medium hover:text-primary transition-colors"
-              >
-                Sign Out
-              </button>
-            </>
+        {/* Actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <ThemeToggle />
+
+          {isCheckingAuth ? (
+            <div className="hidden sm:block w-20 h-9"></div>
           ) : (
             <>
-              <Link to="/sign-in" className="block text-sm font-medium hover:text-primary transition-colors">
-                Sign In
-              </Link>
-              <Link to="/sign-up" className="block text-sm font-medium hover:text-primary transition-colors">
-                Register
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link to="/profile" className="hidden sm:block">
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" size="icon" onClick={handleSignOut} className="hidden sm:flex rounded-full">
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/sign-in" className="hidden sm:block">
+                    <Button variant="ghost" size="sm">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/sign-up" className="hidden sm:block">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90">
+                      Join as Donor
+                    </Button>
+                  </Link>
+                </>
+              )}
             </>
           )}
-        </nav>
+
+          {/* Mobile menu button */}
+          <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
-    }
-  </header >;
+
+      {/* Mobile Navigation */}
+      {isMenuOpen && (
+        <div className="lg:hidden border-t bg-background/95 backdrop-blur-lg">
+          <nav className="container py-4 space-y-3 px-4">
+            <Link to="/" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+              Home
+            </Link>
+            <Link to="/request-blood" className="block text-sm font-medium hover:text-primary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+              Emergency Requests
+              <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 bg-urgent">Live</Badge>
+            </Link>
+            <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+              Find Donors
+            </Link>
+            <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+              Contact
+            </Link>
+            <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+              About
+            </Link>
+            
+            <div className="pt-3 border-t border-border">
+              {isLoggedIn ? (
+                <>
+                  <Link to="/profile" className="block text-sm font-medium hover:text-primary transition-colors mb-3" onClick={() => setIsMenuOpen(false)}>
+                    Profile
+                  </Link>
+                  <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="text-sm font-medium text-destructive">
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <div className="flex gap-3">
+                  <Link to="/sign-in" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full">Login</Button>
+                  </Link>
+                  <Link to="/sign-up" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full bg-primary">Join as Donor</Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
 };
 
 export default Header;

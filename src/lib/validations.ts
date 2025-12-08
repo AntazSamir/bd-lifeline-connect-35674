@@ -37,11 +37,11 @@ export const nidSchema = z.string()
   .min(1, 'NID is required')
   .regex(NID_REGEX, 'NID must be 10-17 digits');
 
-export const bloodGroupSchema = z.enum(BLOOD_GROUPS as [string, ...string[]], {
+export const bloodGroupSchema = z.enum([...BLOOD_GROUPS] as [string, ...string[]], {
   errorMap: () => ({ message: 'Please select a valid blood group' })
 });
 
-export const districtSchema = z.enum(DISTRICTS as [string, ...string[]], {
+export const districtSchema = z.enum([...DISTRICTS] as [string, ...string[]], {
   errorMap: () => ({ message: 'Please select a valid district' })
 });
 

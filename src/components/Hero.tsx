@@ -1,25 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Search } from "lucide-react";
+import { Heart, Search, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/services/dbService";
 import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
 import { ThankYouDialog } from "@/components/ThankYouDialog";
-import heroBackground from "@/assets/hero-background.jpg";
 import { supabase } from "@/services/supabaseClient";
+import { motion } from "framer-motion";
+import LiveEmergencyTicker from "@/components/LiveEmergencyTicker";
+import TrustBadges from "@/components/TrustBadges";
+import SmartQuickSearch from "@/components/SmartQuickSearch";
+import heroBackground from "@/assets/hero-background.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
-  const [isCurrentUserDonor, setIsCurrentUserDonor] = useState(false);
   const [checkingDonorStatus, setCheckingDonorStatus] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
 
-  // Check if user is logged in
   useEffect(() => {
     getCurrentUser().then(user => {
       setIsLoggedIn(!!user);
@@ -30,7 +30,6 @@ const Hero = () => {
 
   const handleBecomeDonor = async () => {
     if (isLoggedIn) {
-      // Check if user is already a donor
       setCheckingDonorStatus(true);
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -41,7 +40,6 @@ const Hero = () => {
             .eq('profile_id', user.id)
             .single();
 
-          // Fetch user profile for pre-filling registration form
           const { data: profile } = await supabase
             .from('user_profiles')
             .select('*')
@@ -51,22 +49,18 @@ const Hero = () => {
           if (profile) setUserProfile(profile);
 
           if (donorData) {
-            // User is already a donor, show thank you dialog
             setThankYouDialogOpen(true);
           } else {
-            // User is not a donor, open registration dialog
             setRegistrationDialogOpen(true);
           }
         }
       } catch (error) {
         console.error('Error checking donor status:', error);
-        // If error, assume not a donor and show registration dialog
         setRegistrationDialogOpen(true);
       } finally {
         setCheckingDonorStatus(false);
       }
     } else {
-      // If user is not logged in, redirect to signin page
       navigate("/sign-in");
     }
   };
@@ -74,140 +68,96 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%), linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${heroBackground})`,
+        backgroundImage: `linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.85) 100%), url(${heroBackground})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="container relative z-10 px-4 py-12 sm:py-16 lg:py-20">
-        <div className="max-w-5xl mx-auto">
-          {/* Main Heading */}
-          <div className="text-center space-y-6 sm:space-y-8 mb-8 sm:mb-12 animate-fade-in">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight tracking-tight px-2">
-              Save Lives.{" "}
-              <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-                Share Hope.
+      {/* Gradient overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+
+      <div className="container relative z-10 px-4 py-16 md:py-24">
+        <div className="max-w-6xl mx-auto">
+          {/* Live Emergency Ticker */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex justify-center mb-8"
+          >
+            <LiveEmergencyTicker />
+          </motion.div>
+
+          {/* Main Heading - Emotional */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-center space-y-6 mb-10"
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight tracking-tight">
+              Someone near you needs blood{" "}
+              <span className="block sm:inline">
+                <span className="bg-gradient-to-r from-primary via-primary-light to-urgent bg-clip-text text-transparent">
+                  in the next 2 hours.
+                </span>
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto font-light px-4">
-              Join BloodConnect and help patients find life-saving blood donors in minutes across Bangladesh.
+            <p className="text-lg md:text-xl lg:text-2xl text-white/85 max-w-3xl mx-auto font-light">
+              Join 50,000+ verified donors saving lives across Bangladesh. Every second counts.
             </p>
+          </motion.div>
 
-            {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 px-2">
-              <div className="text-center animate-slide-up min-w-[90px]">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">10,000+</div>
-                <div className="text-white/80 text-xs sm:text-sm">Active Donors</div>
-              </div>
-              <div className="text-center animate-slide-up min-w-[90px]" style={{ animationDelay: '0.1s' }}>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">3,500+</div>
-                <div className="text-white/80 text-xs sm:text-sm">Lives Saved</div>
-              </div>
-              <div className="text-center animate-slide-up min-w-[90px]" style={{ animationDelay: '0.2s' }}>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">64</div>
-                <div className="text-white/80 text-xs sm:text-sm">Districts Covered</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-10 sm:mb-16 animate-slide-up px-4">
-            <Button
-              size="lg"
-              className="bg-[#F05656] text-white px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl w-full sm:w-auto"
-              onClick={handleBecomeDonor}
-            >
-              <Heart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Become a Donor
-            </Button>
-            <Link to="/find-donors" className="w-full sm:w-auto">
+          {/* Primary CTAs */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-10"
+          >
+            <Link to="/find-donors">
               <Button
                 size="lg"
-                variant="outline"
-                className="px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300 w-full"
+                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 group"
               >
-                Find Donor Now
+                <Search className="h-5 w-5 mr-2" />
+                Find Blood Now
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-          </div>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleBecomeDonor}
+              disabled={checkingDonorStatus}
+              className="w-full sm:w-auto px-8 py-6 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
+            >
+              <Heart className="h-5 w-5 mr-2" />
+              Join as Donor
+            </Button>
+          </motion.div>
 
-          {/* Search Card */}
-          <Card className="max-w-4xl mx-auto glass-card shadow-2xl animate-slide-up border-white/20 mx-4">
-            <div className="p-4 sm:p-6 md:p-10">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-center mb-6 sm:mb-8 text-foreground">
-                Quick Donor Search
-              </h2>
+          {/* Trust Layer */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="mb-12"
+          >
+            <TrustBadges />
+          </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-2">
-                    🩸 Blood Group
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-2">
-                    📍 Location
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder="Select division" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dhaka">Dhaka</SelectItem>
-                      <SelectItem value="chittagong">Chittagong</SelectItem>
-                      <SelectItem value="sylhet">Sylhet</SelectItem>
-                      <SelectItem value="khulna">Khulna</SelectItem>
-                      <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                      <SelectItem value="barisal">Barisal</SelectItem>
-                      <SelectItem value="rangpur">Rangpur</SelectItem>
-                      <SelectItem value="mymensingh">Mymensingh</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 sm:col-span-2 md:col-span-1">
-                  <label className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-2">
-                    ⚡ Urgency
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder="Select urgency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="immediate">🔴 Immediate</SelectItem>
-                      <SelectItem value="urgent">🟠 Urgent</SelectItem>
-                      <SelectItem value="flexible">🟢 Flexible</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Link to="/find-donors" className="block mt-6 sm:mt-8">
-                <Button className="w-full bg-[#F05656] text-white py-4 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  Search Donors
-                </Button>
-              </Link>
-            </div>
-          </Card>
+          {/* Smart Quick Search */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <SmartQuickSearch />
+          </motion.div>
         </div>
       </div>
 
@@ -218,12 +168,12 @@ const Hero = () => {
         userProfile={userProfile}
       />
 
-      {/* Thank You Dialog for existing donors */}
+      {/* Thank You Dialog */}
       <ThankYouDialog
         open={thankYouDialogOpen}
         onOpenChange={setThankYouDialogOpen}
       />
-    </section >
+    </section>
   );
 };
 

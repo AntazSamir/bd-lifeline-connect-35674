@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Clock, Shield, Droplets, Award, Stethoscope } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Heart, Clock, Shield, Stethoscope, Sparkles, Droplets } from "lucide-react";
+import { motion } from "framer-motion";
 import saveLivesImg from "@/assets/illustration-save-lives.png";
 import quickEasyImg from "@/assets/illustration-quick-easy.png";
 import healthBenefitsImg from "@/assets/illustration-health-benefits.png";
@@ -10,99 +10,109 @@ const benefits = [
   {
     icon: Heart,
     title: "Save Lives",
-    description: "One donation can save up to three lives. Your single act of kindness creates a ripple effect of hope.",
-    gradient: "from-pink-500 to-rose-500",
-    span: "col-span-1 md:col-span-2 md:row-span-2",
+    emotionalLine: "Your one bag saved a child's life.",
+    medicalLine: "One donation can save up to 3 lives",
+    gradient: "from-rose-500 to-pink-500",
     image: saveLivesImg
   },
   {
     icon: Clock,
     title: "Quick & Easy",
-    description: "The entire donation process takes less than an hour, but the impact lasts a lifetime.",
-    gradient: "from-green-500 to-emerald-500",
-    span: "col-span-1",
+    emotionalLine: "30 minutes of your time, a lifetime for someone else.",
+    medicalLine: "Simple process from registration to donation",
+    gradient: "from-emerald-500 to-green-500",
     image: quickEasyImg
-  },
-  {
-    icon: Shield,
-    title: "Health Benefits",
-    description: "Regular donation can reduce the risk of heart disease and helps maintain healthy iron levels.",
-    gradient: "from-orange-500 to-red-500",
-    span: "col-span-1",
-    image: healthBenefitsImg
   },
   {
     icon: Stethoscope,
     title: "Free Health Check",
-    description: "Get a basic health screening before every donation at no cost.",
-    gradient: "from-indigo-500 to-blue-500",
-    span: "col-span-1 md:col-span-2",
+    emotionalLine: "Know your health while helping others.",
+    medicalLine: "Complete blood screening at no cost",
+    gradient: "from-blue-500 to-indigo-500",
     image: healthCheckImg
+  },
+  {
+    icon: Shield,
+    title: "Health Benefits",
+    emotionalLine: "Your body regenerates healthier blood.",
+    medicalLine: "Reduces risk of heart disease & maintains iron levels",
+    gradient: "from-orange-500 to-amber-500",
+    image: healthBenefitsImg
   },
 ];
 
 const WhyDonate = () => {
   return (
-    <section className="py-16 px-4 bg-background">
-      <div className="container mx-auto max-w-7xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Why Donate Blood?
+    <section className="py-16 md:py-24 px-4 bg-background relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-hope-green/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
+            <Droplets className="h-4 w-4" />
+            <span className="text-sm font-semibold">Why Donate Blood?</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            Every Drop Makes a Difference
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every donation makes a difference. Discover the incredible impact you can have.
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Discover how your simple act of kindness creates waves of hope and healing
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {benefits.map((benefit, index) => {
             const IconComponent = benefit.icon;
             return (
-              <Card
+              <motion.div
                 key={index}
-                className={cn(
-                  "relative overflow-hidden group transition-all duration-300 hover:shadow-xl cursor-pointer",
-                  benefit.span
-                )}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
               >
-                <div className={cn(
-                  "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-300",
-                  benefit.gradient
-                )} />
-                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
-                  <img
-                    src={benefit.image}
-                    alt={benefit.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className={cn(
-                  "p-6 h-full relative z-10",
-                  index === 0 ? "text-left" : "text-center"
-                )}>
-                  <div className={cn(
-                    "rounded-full bg-primary/10 flex items-center justify-center mb-4",
-                    index === 0 ? "w-12 h-12" : "w-12 h-12 mx-auto"
-                  )}>
-                    <IconComponent className={cn(
-                      "text-primary",
-                      index === 0 ? "w-6 h-6" : "w-6 h-6"
-                    )} />
-                  </div>
-                  <h3 className={cn(
-                    "font-semibold mb-2 text-foreground",
-                    index === 0 ? "text-xl" : "text-lg"
-                  )}>
-                    {benefit.title}
-                  </h3>
-                  <p className={cn(
-                    "text-muted-foreground",
-                    index === 0 ? "text-base" : "text-sm"
-                  )}>
-                    {benefit.description}
-                  </p>
-                </CardContent>
-              </Card>
+                <Card className="relative overflow-hidden group h-full transition-all duration-500 hover:shadow-2xl border-border/50 hover:border-primary/30 bg-card">
+                  {/* Gradient overlay on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  
+                  {/* Glow effect on hover */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-hope-green/20 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                  
+                  <CardContent className="p-6 md:p-8 relative z-10">
+                    <div className="flex items-start gap-5">
+                      {/* Icon */}
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${benefit.gradient} flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">
+                          {benefit.title}
+                        </h3>
+                        
+                        {/* Emotional line */}
+                        <p className="text-foreground font-medium mb-2 flex items-start gap-2">
+                          <Sparkles className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                          <span className="italic">"{benefit.emotionalLine}"</span>
+                        </p>
+                        
+                        {/* Medical line */}
+                        <p className="text-muted-foreground text-sm">
+                          {benefit.medicalLine}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
         </div>
