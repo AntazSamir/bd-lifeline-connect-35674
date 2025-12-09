@@ -10,10 +10,13 @@ import TrustVerificationPanel from "@/components/TrustVerificationPanel";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import FloatingEmergencyButton from "@/components/FloatingEmergencyButton";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
+import FirstVisitBanner from "@/components/FirstVisitBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-16 md:pb-0">
+      <FirstVisitBanner />
       <Header />
       <Hero />
       <TrustedCompanies />
@@ -26,6 +29,7 @@ const Index = () => {
       <Footer />
       <MobileBottomNav />
       <FloatingEmergencyButton />
+      <ExitIntentPopup />
     </div>
   );
 };
