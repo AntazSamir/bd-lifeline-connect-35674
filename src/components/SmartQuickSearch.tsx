@@ -74,7 +74,7 @@ const SmartQuickSearch = () => {
   };
 
   return (
-    <Card className="max-w-4xl mx-auto glass-card shadow-2xl border-white/20 overflow-hidden">
+    <Card className="max-w-4xl mx-auto glass-card shadow-2xl border-white/20 overflow-hidden hover:transform-none hover:shadow-2xl">
       <div className="p-6 md:p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
