@@ -36,10 +36,31 @@ const SignIn = () => {
         description: "Signed in successfully!",
       });
       navigate("/");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to sign in";
+    } catch (error: any) {
+      let title = "Sign In Failed";
+      let message = "An unexpected error occurred. Please try again.";
+      
+      const errorMessage = error?.message?.toLowerCase() || "";
+      const errorCode = error?.code || "";
+      
+      if (errorMessage.includes("invalid login credentials") || errorCode === "invalid_credentials") {
+        title = "Incorrect Password";
+        message = "The password you entered is incorrect. Please try again or reset your password.";
+      } else if (errorMessage.includes("user not found") || errorCode === "user_not_found") {
+        title = "Account Not Found";
+        message = "No account exists with this email. Please check your email or sign up.";
+      } else if (errorMessage.includes("email not confirmed")) {
+        title = "Email Not Verified";
+        message = "Please check your inbox and verify your email before signing in.";
+      } else if (errorMessage.includes("too many requests") || errorCode === "over_request_rate_limit") {
+        title = "Too Many Attempts";
+        message = "You've made too many login attempts. Please wait a few minutes and try again.";
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+      
       toast({
-        title: "Error",
+        title,
         description: message,
         variant: "destructive",
       });
