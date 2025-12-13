@@ -96,10 +96,10 @@ const Testimonials = () => {
         </motion.div>
       </div>
 
-      <Marquee 
-        pauseOnHover 
-        gradient={false} 
-        speed={40} 
+      <Marquee
+        pauseOnHover
+        gradient={false}
+        speed={40}
         className="w-full py-4"
       >
         {testimonials.map((testimonial) => (
@@ -107,7 +107,7 @@ const Testimonials = () => {
             key={testimonial.id}
             className="flex-shrink-0 w-96 mx-4"
           >
-            <Card className="h-full bg-card hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/30 group">
+            <Card className="h-full bg-card border-border/50 hover:shadow-sm hover:translate-y-0">
               <CardContent className="p-6">
                 {/* Header with photo and info */}
                 <div className="flex items-start gap-4 mb-4">
@@ -115,7 +115,7 @@ const Testimonials = () => {
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/20 group-hover:border-primary/50 transition-colors"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/20"
                     />
                     {testimonial.verified && (
                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-hope-green rounded-full flex items-center justify-center border-2 border-background">
@@ -126,8 +126,8 @@ const Testimonials = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold text-foreground">{testimonial.name}</p>
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className="bg-primary/10 text-primary text-xs font-bold"
                       >
                         {testimonial.bloodGroup}
@@ -151,13 +151,12 @@ const Testimonials = () => {
 
                 {/* Badge */}
                 <div className="mt-4 pt-4 border-t border-border/50">
-                  <Badge 
-                    variant="outline" 
-                    className={`text-xs ${
-                      testimonial.type === 'donor' 
-                        ? 'border-hope-green/50 text-hope-green' 
-                        : 'border-trust-blue/50 text-trust-blue'
-                    }`}
+                  <Badge
+                    variant="outline"
+                    className={`text-xs ${testimonial.type === 'donor'
+                      ? 'border-hope-green/50 text-hope-green'
+                      : 'border-trust-blue/50 text-trust-blue'
+                      }`}
                   >
                     {testimonial.verified ? '✓ ' : ''}
                     Verified {testimonial.type === 'donor' ? 'Donor' : 'Patient'}

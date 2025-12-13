@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,7 @@ import { supabase } from "@/services/supabaseClient";
 
 const FindDonors = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
@@ -56,6 +57,22 @@ const FindDonors = () => {
   });
 
   const { donors, loading, error } = useDonors();
+
+  // Sync filters with URL parameters
+  useEffect(() => {
+    const bg = searchParams.get("blood_group");
+    const loc = searchParams.get("division") || searchParams.get("location");
+    const urgency = searchParams.get("urgency");
+
+    if (bg || loc || urgency) {
+      setFilters((prev) => ({
+        ...prev,
+        bloodGroup: bg || prev.bloodGroup,
+        location: loc || prev.location,
+        urgentOnly: urgency === "immediate",
+      }));
+    }
+  }, [searchParams]);
 
   // Check if current user is already a donor
   useEffect(() => {

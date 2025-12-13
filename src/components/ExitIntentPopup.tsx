@@ -61,11 +61,11 @@ const ExitIntentPopup = () => {
 
           {/* Popup */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, x: '-50%', y: '-45%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.9, x: '-50%', y: '-45%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[90%] max-w-md"
+            className="fixed left-1/2 top-1/2 z-[100] w-[90%] max-w-md"
           >
             <div className="relative bg-card rounded-2xl shadow-2xl overflow-hidden border border-border">
               {/* Close button */}
@@ -103,7 +103,7 @@ const ExitIntentPopup = () => {
 
                 <div className="bg-primary/5 rounded-xl p-4 mb-6 border border-primary/10">
                   <p className="text-sm text-foreground">
-                    <span className="font-semibold text-primary">Every 2 seconds</span>, someone in Bangladesh needs blood. 
+                    <span className="font-semibold text-primary">Every 2 seconds</span>, someone in Bangladesh needs blood.
                     Your registration could save a life today.
                   </p>
                 </div>

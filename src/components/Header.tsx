@@ -100,52 +100,69 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="lg:hidden border-t bg-background/95 backdrop-blur-lg">
-          <nav className="container py-4 space-y-3 px-4">
-            <Link to="/" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
-              Home
-            </Link>
-            <Link to="/request-blood" className="block text-sm font-medium hover:text-primary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
-              Emergency Requests
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 bg-urgent">Live</Badge>
-            </Link>
-            <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
-              Find Donors
-            </Link>
-            <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
-              Contact
-            </Link>
-            <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
-              About
-            </Link>
-            
-            <div className="pt-3 border-t border-border">
-              {isLoggedIn ? (
-                <>
-                  <Link to="/profile" className="block text-sm font-medium hover:text-primary transition-colors mb-3" onClick={() => setIsMenuOpen(false)}>
-                    Profile
-                  </Link>
-                  <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="text-sm font-medium text-destructive">
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <div className="flex gap-3">
-                  <Link to="/sign-in" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" className="w-full">Login</Button>
-                  </Link>
-                  <Link to="/sign-up" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-primary">Join as Donor</Button>
-                  </Link>
-                </div>
-              )}
+      {/* Welcome Notification */}
+      {
+        !isLoggedIn && !isCheckingAuth && (
+          <div className="w-full bg-red-50/50 dark:bg-red-950/10 border-b border-red-100/50 dark:border-red-900/20 backdrop-blur-sm">
+            <div className="container py-2 text-center animate-in fade-in slide-in-from-top-1 duration-500">
+              <p className="text-xs sm:text-sm font-medium text-red-600 dark:text-red-400 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                <span className="font-bold">👋 Welcome to BloodConnect!</span>
+                <span className="hidden sm:inline w-1 h-1 rounded-full bg-red-400/50"></span>
+                <span>Register in 30 seconds. Save a life today. ❤️</span>
+              </p>
             </div>
-          </nav>
-        </div>
-      )}
-    </header>
+          </div>
+        )
+      }
+
+      {/* Mobile Navigation */}
+      {
+        isMenuOpen && (
+          <div className="lg:hidden border-t bg-background/95 backdrop-blur-lg">
+            <nav className="container py-4 space-y-3 px-4">
+              <Link to="/" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+                Home
+              </Link>
+              <Link to="/request-blood" className="block text-sm font-medium hover:text-primary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                Emergency Requests
+                <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 bg-urgent">Live</Badge>
+              </Link>
+              <Link to="/find-donors" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+                Find Donors
+              </Link>
+              <Link to="/contact" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+                Contact
+              </Link>
+              <Link to="/about" className="block text-sm font-medium hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+
+              <div className="pt-3 border-t border-border">
+                {isLoggedIn ? (
+                  <>
+                    <Link to="/profile" className="block text-sm font-medium hover:text-primary transition-colors mb-3" onClick={() => setIsMenuOpen(false)}>
+                      Profile
+                    </Link>
+                    <button onClick={() => { handleSignOut(); setIsMenuOpen(false); }} className="text-sm font-medium text-destructive">
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex gap-3">
+                    <Link to="/sign-in" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">Login</Button>
+                    </Link>
+                    <Link to="/sign-up" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="w-full bg-primary">Join as Donor</Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </nav>
+          </div>
+        )
+      }
+    </header >
   );
 };
 
