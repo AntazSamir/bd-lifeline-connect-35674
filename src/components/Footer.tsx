@@ -34,7 +34,7 @@ const Footer = () => {
               </Button>
             </Link>
             <a href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white/10">
+              <Button size="sm" variant="outline" className="border-white bg-transparent text-white hover:bg-white/20">
                 <MessageCircle className="h-4 w-4 mr-2" />
                 WhatsApp
               </Button>
