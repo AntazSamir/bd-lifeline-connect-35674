@@ -27,14 +27,14 @@ const Footer = () => {
             <AlertTriangle className="h-5 w-5" />
             <span className="font-medium">Need blood urgently?</span>
           </div>
-          <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-            <Link to="/create-request" className="w-full xs:w-auto">
-              <Button size="sm" variant="secondary" className="bg-white text-primary hover:bg-white/90 w-full xs:w-auto text-xs sm:text-sm">
+          <div className="flex gap-3">
+            <Link to="/create-request">
+              <Button size="sm" variant="secondary" className="bg-white text-primary hover:bg-white/90">
                 Post Emergency Request
               </Button>
             </Link>
-            <a href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer" className="w-full xs:w-auto">
-              <Button size="sm" variant="outline" className="border-white bg-transparent text-white hover:bg-white/20 w-full xs:w-auto text-xs sm:text-sm">
+            <a href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" variant="outline" className="border-white bg-transparent text-white hover:bg-white/20">
                 <MessageCircle className="h-4 w-4 mr-2" />
                 WhatsApp
               </Button>
