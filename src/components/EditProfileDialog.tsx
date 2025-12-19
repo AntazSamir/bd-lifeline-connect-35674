@@ -21,8 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/services/supabaseClient";
 import { Loader2, Upload, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DIVISIONS, DISTRICTS, BLOOD_GROUPS } from "@/lib/constants";
-import { Textarea } from "@/components/ui/textarea";
 
 interface EditProfileDialogProps {
     open: boolean;
@@ -34,21 +32,27 @@ interface EditProfileDialogProps {
         district?: string;
         location?: string;
         avatar_url?: string;
-        date_of_birth?: string;
-        weight?: number;
-        nid?: string;
-        height?: number;
-        division?: string;
-        full_address?: string;
     } | null;
     userId: string;
     email?: string;
     onProfileUpdated: () => void;
 }
 
-// Local constants removed as we import from @/lib/constants
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-// Local constants removed as we import from @/lib/constants
+const DISTRICTS = [
+    "Dhaka", "Chattogram", "Rajshahi", "Khulna", "Barishal", "Sylhet",
+    "Rangpur", "Mymensingh", "Comilla", "Gazipur", "Narayanganj", "Tangail",
+    "Jamalpur", "Kishoreganj", "Netrokona", "Sherpur", "Bogura", "Joypurhat",
+    "Naogaon", "Natore", "Chapainawabganj", "Pabna", "Sirajganj", "Bagerhat",
+    "Chuadanga", "Jessore", "Jhenaidah", "Khulna", "Kushtia", "Magura",
+    "Meherpur", "Narail", "Satkhira", "Barguna", "Barishal", "Bhola",
+    "Jhalokati", "Patuakhali", "Pirojpur", "Bandarban", "Brahmanbaria",
+    "Chandpur", "Chattogram", "Cox's Bazar", "Cumilla", "Feni", "Khagrachhari",
+    "Lakshmipur", "Noakhali", "Rangamati", "Habiganj", "Moulvibazar",
+    "Sunamganj", "Sylhet", "Dinajpur", "Gaibandha", "Kurigram", "Lalmonirhat",
+    "Nilphamari", "Panchagarh", "Rangpur", "Thakurgaon"
+];
 
 export function EditProfileDialog({
     open,
@@ -70,12 +74,6 @@ export function EditProfileDialog({
         blood_group: currentProfile?.blood_group || "",
         district: currentProfile?.district || "",
         location: currentProfile?.location || "",
-        date_of_birth: currentProfile?.date_of_birth || "",
-        weight: currentProfile?.weight?.toString() || "",
-        nid: currentProfile?.nid || "",
-        height: currentProfile?.height?.toString() || "",
-        division: currentProfile?.division || "",
-        full_address: currentProfile?.full_address || "",
     });
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,12 +165,6 @@ export function EditProfileDialog({
                     blood_group: formData.blood_group,
                     district: formData.district,
                     location: formData.location,
-                    date_of_birth: formData.date_of_birth || null,
-                    weight: formData.weight ? parseFloat(formData.weight) : null,
-                    nid: formData.nid,
-                    height: formData.height ? parseFloat(formData.height) : null,
-                    division: formData.division,
-                    full_address: formData.full_address,
                     avatar_url: avatarUrl,
                     updated_at: new Date().toISOString(),
                 })
@@ -306,11 +298,13 @@ export function EditProfileDialog({
                                 id="phone"
                                 type="tel"
                                 value={formData.phone}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, phone: e.target.value })
-                                }
-                                placeholder="Enter your phone number"
+                                readOnly
+                                className="bg-muted text-muted-foreground cursor-not-allowed"
+                                title="Phone number cannot be changed currently"
                             />
+                            <p className="text-xs text-muted-foreground">
+                                To change your phone number, please contact support.
+                            </p>
                         </div>
 
                         <div className="grid gap-2">
@@ -334,125 +328,37 @@ export function EditProfileDialog({
                             </Select>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="division">Division</Label>
-                                <Select
-                                    value={formData.division}
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, division: value })
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select division" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {DIVISIONS.map((division) => (
-                                            <SelectItem key={division} value={division}>
-                                                {division}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="district">District</Label>
-                                <Select
-                                    value={formData.district}
-                                    onValueChange={(value) =>
-                                        setFormData({ ...formData, district: value })
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select district" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-[200px]">
-                                        {DISTRICTS.map((district) => (
-                                            <SelectItem key={district} value={district}>
-                                                {district}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="district">District</Label>
+                            <Select
+                                value={formData.district}
+                                onValueChange={(value) =>
+                                    setFormData({ ...formData, district: value })
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select district" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[200px]">
+                                    {DISTRICTS.map((district) => (
+                                        <SelectItem key={district} value={district}>
+                                            {district}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="location">Area / Thana</Label>
+                            <Label htmlFor="location">Detailed Location</Label>
                             <Input
                                 id="location"
                                 value={formData.location}
                                 onChange={(e) =>
                                     setFormData({ ...formData, location: e.target.value })
                                 }
-                                placeholder="e.g. Uttara Sector 4"
+                                placeholder="Area, Thana, etc."
                             />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="full_address">Full Address</Label>
-                            <Textarea
-                                id="full_address"
-                                value={formData.full_address}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, full_address: e.target.value })
-                                }
-                                placeholder="Enter your complete home or office address"
-                                className="resize-none"
-                                rows={2}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="date_of_birth">Date of Birth</Label>
-                                <Input
-                                    id="date_of_birth"
-                                    type="date"
-                                    value={formData.date_of_birth}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, date_of_birth: e.target.value })
-                                    }
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="nid">National ID (NID)</Label>
-                                <Input
-                                    id="nid"
-                                    value={formData.nid}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, nid: e.target.value })
-                                    }
-                                    placeholder="NID number"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="weight">Weight (kg)</Label>
-                                <Input
-                                    id="weight"
-                                    type="number"
-                                    value={formData.weight}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, weight: e.target.value })
-                                    }
-                                    placeholder="e.g. 70"
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="height">Height (cm)</Label>
-                                <Input
-                                    id="height"
-                                    type="number"
-                                    value={formData.height}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, height: e.target.value })
-                                    }
-                                    placeholder="e.g. 175"
-                                />
-                            </div>
                         </div>
                     </div>
 
