@@ -135,7 +135,7 @@ const Profile = () => {
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <Card>
+            <Card noHover>
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <Avatar className="w-20 h-20">
@@ -194,7 +194,7 @@ const Profile = () => {
           <div className="lg:col-span-3">
             {/* Stats Cards */}
             <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <Card>
+              <Card noHover>
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -208,7 +208,7 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card noHover>
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
@@ -222,7 +222,7 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card noHover>
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-full bg-hope-green/10 flex items-center justify-center">
@@ -248,7 +248,7 @@ const Profile = () => {
 
               <TabsContent value="overview" className="space-y-6">
                 {/* Donation Status */}
-                <Card>
+                <Card noHover>
                   <CardHeader>
                     <CardTitle>{t('donationStatus')}</CardTitle>
                   </CardHeader>
@@ -290,7 +290,7 @@ const Profile = () => {
               </TabsContent>
 
               <TabsContent value="history">
-                <Card>
+                <Card noHover>
                   <CardHeader>
                     <CardTitle>{t('donationHistory')}</CardTitle>
                   </CardHeader>
@@ -319,7 +319,7 @@ const Profile = () => {
               </TabsContent>
 
               <TabsContent value="achievements">
-                <Card>
+                <Card noHover>
                   <CardHeader>
                     <CardTitle>{t('yourAchievements')}</CardTitle>
                   </CardHeader>
@@ -348,7 +348,7 @@ const Profile = () => {
               </TabsContent>
 
               <TabsContent value="requests">
-                <Card>
+                <Card noHover>
                   <CardHeader>
                     <CardTitle>{t('matchingRequests')}</CardTitle>
                     <p className="text-sm text-muted-foreground">

@@ -259,7 +259,7 @@ const Contact = () => {
         </div>
 
         {/* Blood Donor Telephone Enquiries Section */}
-        <Card className="mb-16 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+        <Card noHover className="mb-16 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -279,7 +279,7 @@ const Contact = () => {
               <p className="text-sm text-muted-foreground mb-2">{t('callNow')}</p>
               <a
                 href="tel:03459090999"
-                className="text-3xl md:text-4xl font-bold text-primary hover:text-primary/80 transition-colors"
+                className="text-3xl md:text-4xl font-bold text-primary"
               >
                 {t('hotlineNumber')}
               </a>
@@ -359,7 +359,7 @@ const Contact = () => {
 
         {/* Email Us Section */}
         <div className="max-w-2xl mx-auto mb-16">
-          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-background hover:shadow-lg transition-all duration-300">
+          <Card noHover className="border-primary/20 bg-gradient-to-br from-primary/5 to-background shadow-md">
             <CardContent className="p-8">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -369,7 +369,7 @@ const Contact = () => {
                   <h3 className="text-2xl font-bold text-foreground mb-2">{t('emailUs')}</h3>
                   <a
                     href="mailto:support@bloodconnect.bd"
-                    className="text-lg font-semibold text-primary hover:text-primary/80 transition-colors"
+                    className="text-lg font-semibold text-primary"
                   >
                     support@bloodconnect.bd
                   </a>
@@ -387,7 +387,7 @@ const Contact = () => {
 
         {/* Contact Form - Full Width */}
         <div className="max-w-4xl mx-auto mb-16">
-          <Card className="animate-fade-in border-primary/20 bg-gradient-to-br from-primary/5 to-background" style={{ animationDelay: "400ms" }}>
+          <Card noHover className="animate-fade-in border-primary/20 bg-gradient-to-br from-primary/5 to-background" style={{ animationDelay: "400ms" }}>
             <CardHeader>
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -504,7 +504,7 @@ const Contact = () => {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                    className="w-full h-12 text-base font-semibold shadow-lg"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -546,8 +546,9 @@ const Contact = () => {
           <div className="grid md:grid-cols-3 gap-6">
             {quickLinks.map((link, index) => (
               <Card
+                noHover
                 key={index}
-                className="hover-scale cursor-pointer animate-fade-in hover:shadow-lg transition-all duration-300"
+                className="cursor-pointer shadow-md"
                 style={{ animationDelay: `${600 + index * 100}ms` }}
                 onClick={link.action}
               >
