@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
@@ -14,7 +14,11 @@ import {
   Heart,
   Clock,
   Settings,
-  Bell
+  Bell,
+  Cake,
+  Scale,
+  CreditCard,
+  Ruler
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +48,21 @@ function getTimeAgo(dateString: string) {
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: { full_name?: string }; created_at?: string } | null>(null);
-  const [profile, setProfile] = useState<{ full_name?: string; blood_group?: string; district?: string; location?: string; created_at?: string; phone?: string } | null>(null);
+  const [profile, setProfile] = useState<{
+    full_name?: string;
+    blood_group?: string;
+    district?: string;
+    location?: string;
+    created_at?: string;
+    phone?: string;
+    avatar_url?: string;
+    date_of_birth?: string;
+    weight?: number;
+    nid?: string;
+    height?: number;
+    division?: string;
+    full_address?: string;
+  } | null>(null);
   const [matchingRequests, setMatchingRequests] = useState<BloodRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
@@ -104,7 +122,14 @@ const Profile = () => {
     nextEligible: "Available now",
     tier: "New Donor",
     phone: profile?.phone || "Not set",
-    email: user?.email || "Not set"
+    email: user?.email || "Not set",
+    avatarUrl: profile?.avatar_url,
+    dateOfBirth: profile?.date_of_birth,
+    weight: profile?.weight,
+    height: profile?.height,
+    nid: profile?.nid,
+    division: profile?.division,
+    fullAddress: profile?.full_address
   };
 
   const donationHistory: any[] = []; // TODO: Fetch real history when available
@@ -137,6 +162,7 @@ const Profile = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <Avatar className="w-20 h-20">
+                    <AvatarImage src={userProfile.avatarUrl} />
                     <AvatarFallback className="text-lg bg-primary text-primary-foreground">
                       {userProfile.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
@@ -172,6 +198,18 @@ const Profile = () => {
                       <Mail className="h-4 w-4 mr-2" />
                       {userProfile.email}
                     </div>
+                    {userProfile.dateOfBirth && (
+                      <div className="flex items-center text-muted-foreground">
+                        <Cake className="h-4 w-4 mr-2" />
+                        Born {new Date(userProfile.dateOfBirth).toLocaleDateString()}
+                      </div>
+                    )}
+                    {userProfile.weight && (
+                      <div className="flex items-center text-muted-foreground">
+                        <Scale className="h-4 w-4 mr-2" />
+                        {userProfile.weight} kg
+                      </div>
+                    )}
                   </div>
 
                   <Button
@@ -281,6 +319,45 @@ const Profile = () => {
                           <Bell className="h-4 w-4 mr-2" />
                           Notification Settings
                         </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Detailed Personal Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Detailed Information</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm">
+                          <CreditCard className="h-4 w-4 mr-3 text-muted-foreground" />
+                          <span className="text-muted-foreground w-24">National ID:</span>
+                          <span className="font-medium">{userProfile.nid || "Not provided"}</span>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <Ruler className="h-4 w-4 mr-3 text-muted-foreground" />
+                          <span className="text-muted-foreground w-24">Height:</span>
+                          <span className="font-medium">{userProfile.height ? `${userProfile.height} cm` : "Not provided"}</span>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <MapPin className="h-4 w-4 mr-3 text-muted-foreground" />
+                          <span className="text-muted-foreground w-24">Division:</span>
+                          <span className="font-medium">{userProfile.division || "Not provided"}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-start text-sm">
+                          <MapPin className="h-4 w-4 mr-3 mt-0.5 text-muted-foreground" />
+                          <div>
+                            <span className="text-muted-foreground block mb-1">Full Address:</span>
+                            <span className="font-medium leading-relaxed">
+                              {userProfile.fullAddress || "No address provided"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
