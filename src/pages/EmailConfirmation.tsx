@@ -7,8 +7,10 @@ import { supabase } from "@/services/supabaseClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CheckCircle, AlertCircle, Clock, Mail } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const EmailConfirmation = () => {
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -19,7 +21,6 @@ const EmailConfirmation = () => {
     const confirmEmail = async () => {
       const token_hash = searchParams.get("token_hash");
       const type = searchParams.get("type");
-      const next = searchParams.get("next") || "/";
 
       if (token_hash && type === "email") {
         try {
@@ -33,29 +34,29 @@ const EmailConfirmation = () => {
           }
 
           setStatus("success");
-          setMessage("Your email has been successfully verified!");
+          setMessage(t('emailVerifiedToastDesc'));
           toast({
-            title: "Email Verified",
-            description: "Your email has been successfully confirmed. You can now sign in.",
+            title: t('emailVerified'),
+            description: t('emailVerifiedToastDesc'),
           });
         } catch (error) {
           console.error("Email confirmation error:", error);
           setStatus("error");
-          setMessage("Failed to verify your email. The link may have expired or is invalid.");
+          setMessage(t('failedToVerify'));
           toast({
-            title: "Verification Failed",
-            description: "Failed to verify your email. Please try again.",
+            title: t('verificationFailed'),
+            description: t('verificationFailedToastDesc'),
             variant: "destructive",
           });
         }
       } else {
         setStatus("error");
-        setMessage("Invalid confirmation link.");
+        setMessage(t('invalidLink'));
       }
     };
 
     confirmEmail();
-  }, [searchParams, toast]);
+  }, [searchParams, toast, t]);
 
   const handleRedirect = () => {
     navigate("/sign-in");
@@ -73,30 +74,30 @@ const EmailConfirmation = () => {
               {status === "error" && <AlertCircle className="h-8 w-8 text-destructive" />}
             </div>
             <CardTitle className="text-2xl font-bold">
-              {status === "loading" && "Verifying Email"}
-              {status === "success" && "Email Verified"}
-              {status === "error" && "Verification Failed"}
+              {status === "loading" && t('verifyingEmail')}
+              {status === "success" && t('emailVerified')}
+              {status === "error" && t('verificationFailed')}
             </CardTitle>
             <CardDescription>
-              {status === "loading" && "Please wait while we verify your email address..."}
-              {status === "success" && "Your email has been successfully verified"}
-              {status === "error" && "Unable to verify your email address"}
+              {status === "loading" && t('waitVerifying')}
+              {status === "success" && t('emailVerifiedToastDesc')}
+              {status === "error" && t('verificationFailedToastDesc')}
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-4 text-center">
             <p className={status === "error" ? "text-destructive" : ""}>
               {message}
             </p>
-            
+
             {(status === "success" || status === "error") && (
               <div className="pt-4">
-                <Button 
-                  onClick={handleRedirect} 
+                <Button
+                  onClick={handleRedirect}
                   className="w-full"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Continue to Sign In
+                  {t('continueToSignIn')}
                 </Button>
               </div>
             )}

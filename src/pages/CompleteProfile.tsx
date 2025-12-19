@@ -48,7 +48,7 @@ const CompleteProfile = () => {
 
             // If profile is fully complete, go to dashboard
             if (profile && profile.blood_group && profile.district && profile.phone) {
-                navigate("/dashboard");
+                navigate("/profile");
                 return;
             }
 
@@ -134,7 +134,7 @@ const CompleteProfile = () => {
                 description: t('profileCompletedSuccess'),
             });
 
-            navigate("/dashboard");
+            navigate("/profile");
         } catch (error) {
             toast({
                 title: t('errorTitle'),

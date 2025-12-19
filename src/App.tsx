@@ -24,6 +24,8 @@ import ResetPassword from "./pages/ResetPassword";
 import TestRealtime from "./pages/TestRealtime";
 import TermsOfService from "./pages/TermsOfService";
 import { AuthListener } from "./components/AuthListener";
+import ScrollToHashElement from "./components/ScrollToHashElement";
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
@@ -42,12 +44,13 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <AuthListener />
+              <ScrollToHashElement />
               <Routes>
                 <Route path="/" element={<Index />} />
 
                 <Route path="/request-blood" element={<RequestBlood />} />
                 <Route path="/create-request" element={<CreateRequest />} />
-                <Route path="/dashboard" element={<Profile />} />
+                <Route path="/dashboard" element={<Navigate to="/profile" replace />} />
                 <Route path="/find-donors" element={<FindDonors />} />
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />

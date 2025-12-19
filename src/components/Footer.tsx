@@ -77,8 +77,8 @@ const Footer = () => {
             <nav className="space-y-3">
               {[
                 { label: t('findDonor'), path: "/find-donors" },
-                { label: t('emergencyRequests'), path: "/create-request" },
-                { label: t('howItWorksTitle'), path: "/#about" },
+                { label: t('emergencyRequests'), path: "/request-blood" },
+                { label: t('howItWorksTitle'), path: "/#how-it-works" },
               ].map((link) => (
                 <Link key={link.path} to={link.path} className="text-slate-300 hover:text-primary text-sm block transition-colors">
                   → {link.label}
@@ -140,7 +140,7 @@ const Footer = () => {
             © 2024 BloodConnect. {t('madeWith')} <Heart className="inline h-4 w-4 text-primary mx-1" /> {t('forBangladesh')}
           </p>
           <div className="flex gap-6 text-sm text-slate-400">
-            <Link to="/about" className="hover:text-primary transition-colors">{t('privacyPolicy')}</Link>
+            <Link to="/about#privacy-policy" className="hover:text-primary transition-colors">{t('privacyPolicy')}</Link>
             <Link to="/terms-of-service" className="hover:text-primary transition-colors">{t('termsOfService')}</Link>
           </div>
         </div>

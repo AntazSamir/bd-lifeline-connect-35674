@@ -48,7 +48,7 @@ const About = () => {
         </section>
 
         {/* Privacy Policy */}
-        <section className="space-y-4">
+        <section id="privacy-policy" className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{t('privacyPolicyTitle')}</h2>
           <Card>
             <CardContent className="pt-6 text-muted-foreground leading-relaxed">
@@ -58,7 +58,7 @@ const About = () => {
         </section>
 
         {/* FAQ */}
-        <section className="space-y-4">
+        <section id="faq" className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{t('faqTitle')}</h2>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="q1">
