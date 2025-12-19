@@ -11,8 +11,10 @@ import { signIn, signInWithGoogle } from "@/services/dbService";
 import { supabase } from "@/services/supabaseClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SignIn = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -32,36 +34,34 @@ const SignIn = () => {
     try {
       await signIn(formData.email.trim(), formData.password);
       toast({
-        title: "Success",
-        description: "Signed in successfully!",
+        title: t('success'),
+        description: t('signedInSuccess'),
       });
       navigate("/");
     } catch (error: any) {
-      let title = "Sign In Failed";
-      let message = "An unexpected error occurred. Please try again.";
+      let titleKey = "signInFailed";
+      let messageKey = "unexpectedError";
 
       const errorMessage = error?.message?.toLowerCase() || "";
       const errorCode = error?.code || "";
 
       if (errorMessage.includes("invalid login credentials") || errorCode === "invalid_credentials") {
-        title = "Incorrect Password";
-        message = "The password you entered is incorrect. Please try again or reset your password.";
+        titleKey = "incorrectPassword";
+        messageKey = "incorrectPasswordDesc";
       } else if (errorMessage.includes("user not found") || errorCode === "user_not_found") {
-        title = "Account Not Found";
-        message = "No account exists with this email. Please check your email or sign up.";
+        titleKey = "accountNotFound";
+        messageKey = "accountNotFoundDesc";
       } else if (errorMessage.includes("email not confirmed")) {
-        title = "Email Not Verified";
-        message = "Please check your inbox and verify your email before signing in.";
+        titleKey = "emailNotVerified";
+        messageKey = "emailNotVerifiedDesc";
       } else if (errorMessage.includes("too many requests") || errorCode === "over_request_rate_limit") {
-        title = "Too Many Attempts";
-        message = "You've made too many login attempts. Please wait a few minutes and try again.";
-      } else if (error instanceof Error) {
-        message = error.message;
+        titleKey = "tooManyAttempts";
+        messageKey = "tooManyAttemptsDesc";
       }
 
       toast({
-        title,
-        description: message,
+        title: t(titleKey),
+        description: t(messageKey),
         variant: "destructive",
       });
     } finally {
@@ -73,10 +73,9 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to sign in with Google";
       toast({
-        title: "Error",
-        description: message,
+        title: t('errorTitle'),
+        description: t('googleSignInFailed'),
         variant: "destructive",
       });
     }
@@ -99,8 +98,6 @@ const SignIn = () => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      // Handle "User not found" specifically to avoid leaking user existence
-      // and to prevent confusing error messages. We treat it as a success.
       if (error) {
         const isUserNotFound =
           error.message.toLowerCase().includes("not found") ||
@@ -110,20 +107,18 @@ const SignIn = () => {
         if (!isUserNotFound) {
           throw error;
         }
-        console.log("User not found for password reset, simulating success for security");
       }
 
       toast({
-        title: "Check your email",
-        description: "If an account exists with this email, you will receive a password reset link.",
+        title: t('checkYourEmail'),
+        description: t('resetEmailSent'),
       });
       setResetDialogOpen(false);
       setResetEmail("");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to send reset email";
       toast({
-        title: "Error",
-        description: message,
+        title: t('errorTitle'),
+        description: t('unexpectedError'),
         variant: "destructive",
       });
     } finally {
@@ -140,33 +135,33 @@ const SignIn = () => {
             <div className="flex items-center justify-center mb-4">
               <Heart className="h-8 w-8 text-primary" fill="currentColor" />
             </div>
-            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t('welcomeBack')}</CardTitle>
             <CardDescription>
-              Sign in to your account
+              {t('signInDesc')}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('email')}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('emailPlaceholder')}
                   value={formData.email}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder={t('passwordPlaceholder')}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -190,30 +185,30 @@ const SignIn = () => {
                 <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="link" className="px-0 text-sm font-normal">
-                      Forgot password?
+                      {t('forgotPassword')}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Reset Password</DialogTitle>
+                      <DialogTitle>{t('resetPassword')}</DialogTitle>
                       <DialogDescription>
-                        Enter your email address and we'll send you a link to reset your password.
+                        {t('resetPasswordDesc')}
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handlePasswordReset} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="reset-email">Email</Label>
+                        <Label htmlFor="reset-email">{t('email')}</Label>
                         <Input
                           id="reset-email"
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder={t('emailPlaceholder')}
                           value={resetEmail}
                           onChange={(e) => setResetEmail(e.target.value)}
                           required
                         />
                       </div>
                       <Button type="submit" className="w-full" disabled={isResetLoading}>
-                        {isResetLoading ? "Sending..." : "Send Reset Link"}
+                        {isResetLoading ? t('sending') : t('sendResetLink')}
                       </Button>
                     </form>
                   </DialogContent>
@@ -222,7 +217,7 @@ const SignIn = () => {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing In..." : "Sign In"}
+                {isLoading ? t('signingIn') : t('signIn')}
               </Button>
 
               <div className="relative">
@@ -231,7 +226,7 @@ const SignIn = () => {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Or
+                    {t('or')}
                   </span>
                 </div>
               </div>
@@ -249,13 +244,13 @@ const SignIn = () => {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                 </svg>
-                Continue with Google
+                {t('continueWithGoogle')}
               </Button>
 
               <div className="text-center text-sm">
-                Need a new account?{" "}
+                {t('needAccount')}{" "}
                 <Link to="/sign-up" className="text-primary hover:underline font-medium">
-                  Sign Up
+                  {t('signUp')}
                 </Link>
               </div>
             </CardFooter>

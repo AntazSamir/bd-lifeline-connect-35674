@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, Droplets, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ExitIntentPopup = () => {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
   const navigate = useNavigate();
@@ -91,20 +93,19 @@ const ExitIntentPopup = () => {
               <div className="pt-24 pb-8 px-8 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <Droplets className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-medium text-primary">Don't Leave Yet</span>
+                  <span className="text-sm font-medium text-primary">{t('dontLeaveYet')}</span>
                 </div>
 
                 <h2 className="text-2xl font-bold text-foreground mb-3">
-                  Before you leave —
+                  {t('beforeYouLeave')}
                 </h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Someone near you might need your blood.
+                  {t('someoneNearYou')}
                 </p>
 
                 <div className="bg-primary/5 rounded-xl p-4 mb-6 border border-primary/10">
                   <p className="text-sm text-foreground">
-                    <span className="font-semibold text-primary">Every 2 seconds</span>, someone in Bangladesh needs blood.
-                    Your registration could save a life today.
+                    <span className="font-semibold text-primary">{t('every2Seconds')}</span>, {t('bdEvery2Seconds')}
                   </p>
                 </div>
 
@@ -113,7 +114,7 @@ const ExitIntentPopup = () => {
                     onClick={handleRegister}
                     className="w-full h-12 text-base font-semibold ripple-btn group"
                   >
-                    Register as Donor
+                    {t('registerAsDonor')}
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button
@@ -121,7 +122,7 @@ const ExitIntentPopup = () => {
                     onClick={handleClose}
                     className="text-muted-foreground hover:text-foreground"
                   >
-                    Maybe Later
+                    {t('maybeLater')}
                   </Button>
                 </div>
               </div>

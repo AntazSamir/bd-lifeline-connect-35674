@@ -2,8 +2,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -11,36 +14,34 @@ const About = () => {
       <main className="container py-12 md:py-16 space-y-12">
         {/* About the Website */}
         <section className="space-y-6">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">About BloodConnect</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{t('aboutTitle')}</h1>
           <p className="text-muted-foreground max-w-3xl">
-            BloodConnect is a platform dedicated to connecting blood donors with recipients across Bangladesh.
-            Our mission is to reduce the time to find compatible donors, streamline urgent requests, and build a
-            dependable, community-driven network that saves lives every day.
+            {t('aboutMission')}
           </p>
 
           <div className="grid gap-6 md:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl">What we do</CardTitle>
+                <CardTitle className="text-xl">{t('whatWeDo')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                We aggregate donor availability, match urgent requests, and notify potential donors in real-time.
+                {t('whatWeDoDesc')}
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl">Why it matters</CardTitle>
+                <CardTitle className="text-xl">{t('whyItMatters')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                Timely access to blood can be life-saving. We help reduce friction, delay, and uncertainty.
+                {t('whyItMattersDesc')}
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl">For our users</CardTitle>
+                <CardTitle className="text-xl">{t('forOurUsers')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                Donors gain a simple way to contribute. Recipients get a reliable path to urgent help.
+                {t('forOurUsersDesc')}
               </CardContent>
             </Card>
           </div>
@@ -48,48 +49,44 @@ const About = () => {
 
         {/* Privacy Policy */}
         <section className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Privacy Policy</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{t('privacyPolicyTitle')}</h2>
           <Card>
             <CardContent className="pt-6 text-muted-foreground leading-relaxed">
-              We collect essential information to operate the platform—such as account details and donor preferences.
-              Your data is stored securely and accessed only for service functionality, safety, and compliance.
-              We never sell your personal data. You may request data export or deletion in accordance with applicable laws.
+              {t('privacyPolicyDesc')}
             </CardContent>
           </Card>
         </section>
 
         {/* FAQ */}
         <section className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Frequently Asked Questions</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">{t('faqTitle')}</h2>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="q1">
-              <AccordionTrigger>How do I become a donor?</AccordionTrigger>
+              <AccordionTrigger>{t('faqQ1')}</AccordionTrigger>
               <AccordionContent>
-                Create an account and complete your donor profile with blood group and availability. You can update preferences anytime.
+                {t('faqA1')}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="q2">
-              <AccordionTrigger>Is my personal information safe?</AccordionTrigger>
+              <AccordionTrigger>{t('faqQ2')}</AccordionTrigger>
               <AccordionContent>
-                Yes. We use secure storage and restrict access to operational needs. See our Privacy Policy for details.
+                {t('faqA2')}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="q3">
-              <AccordionTrigger>Do you charge any fees?</AccordionTrigger>
+              <AccordionTrigger>{t('faqQ3')}</AccordionTrigger>
               <AccordionContent>
-                No. BloodConnect is free for donors and recipients. We may add optional features in the future with clear disclosure.
+                {t('faqA3')}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="q4">
-              <AccordionTrigger>How are matches made?</AccordionTrigger>
+              <AccordionTrigger>{t('faqQ4')}</AccordionTrigger>
               <AccordionContent>
-                We match based on blood group compatibility, proximity, and donor availability to maximize response speed and safety.
+                {t('faqA4')}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </section>
-
-
       </main>
 
       <Footer />

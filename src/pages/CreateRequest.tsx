@@ -15,8 +15,10 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/services/supabaseClient";
 import { BLOOD_GROUPS, URGENCY_OPTIONS, URGENCY_LEVELS } from "@/lib/constants";
 import { bloodRequestSchema, formatZodErrors } from "@/lib/validations";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CreateRequest = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addRequest } = useBloodRequests();
@@ -42,7 +44,7 @@ const CreateRequest = () => {
   const getUrgencyInfo = (level: string) => {
     const option = URGENCY_OPTIONS.find(opt => opt.value === level);
     if (!option) return null;
-    
+
     return {
       color: option.color,
       icon: level === URGENCY_LEVELS.IMMEDIATE ? <AlertTriangle className="h-4 w-4" /> : <Clock className="h-4 w-4" />,
@@ -67,7 +69,7 @@ const CreateRequest = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate with Zod
     const validation = bloodRequestSchema.safeParse({
       blood_group: formData.blood_group,
@@ -82,26 +84,26 @@ const CreateRequest = () => {
       const errors = formatZodErrors(validation.error);
       const firstError = Object.values(errors)[0];
       toast({
-        title: "Validation Error",
-        description: firstError || "Please check your input",
+        title: t('validationError'),
+        description: firstError || t('checkInput'),
         variant: "destructive"
       });
       return;
     }
-    
+
     try {
       await addRequest(validation.data as Omit<Parameters<typeof addRequest>[0], 'id' | 'created_at'>);
-      
+
       toast({
-        title: "Request Submitted",
-        description: "Your blood request has been submitted successfully."
+        title: t('requestSubmitted'),
+        description: t('requestSubmittedDesc')
       });
-      
+
       navigate("/request-blood");
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to submit blood request. Please try again.",
+        title: t('errorTitle'),
+        description: t('requestFailedDesc'),
         variant: "destructive"
       });
     }
@@ -110,7 +112,7 @@ const CreateRequest = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container py-16">
         <div className="max-w-2xl mx-auto">
           <Button
@@ -119,42 +121,42 @@ const CreateRequest = () => {
             onClick={() => navigate("/request-blood")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Blood Requests
+            {t('backToBloodRequests')}
           </Button>
 
           <Card>
             <CardHeader>
-              <CardTitle>Blood Request Details</CardTitle>
+              <CardTitle>{t('bloodRequestDetails')}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Please provide accurate information to help us find the right donors for you.
+                {t('bloodRequestDetailsDesc')}
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit}>
                 {/* Patient Information */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground">Patient Information</h3>
-                  
+                  <h3 className="font-semibold text-foreground">{t('patientInformation')}</h3>
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="patient_info">Patient Information *</Label>
-                      <Input 
-                        id="patient_info" 
-                        placeholder="Enter patient's name or condition" 
+                      <Label htmlFor="patient_info">{t('patientInfoLabel')}</Label>
+                      <Input
+                        id="patient_info"
+                        placeholder={t('patientInfoPlaceholder')}
                         value={formData.patient_info}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="units_needed">Units Needed *</Label>
-                      <Input 
-                        id="units_needed" 
-                        type="number" 
+                      <Label htmlFor="units_needed">{t('unitsNeededLabel')}</Label>
+                      <Input
+                        id="units_needed"
+                        type="number"
                         min="1"
-                        placeholder="Number of units"
+                        placeholder={t('unitsNeededPlaceholder')}
                         value={formData.units_needed}
-                        onChange={(e) => setFormData(prev => ({...prev, units_needed: parseInt(e.target.value) || 1}))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, units_needed: parseInt(e.target.value) || 1 }))}
                         required
                       />
                     </div>
@@ -162,10 +164,10 @@ const CreateRequest = () => {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="blood_group">Blood Group Required *</Label>
+                      <Label htmlFor="blood_group">{t('bloodGroupRequired')}</Label>
                       <Select value={formData.blood_group} onValueChange={(value) => handleSelectChange("blood_group", value)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select blood group" />
+                          <SelectValue placeholder={t('selectBloodGroup')} />
                         </SelectTrigger>
                         <SelectContent>
                           {BLOOD_GROUPS.map((bg) => (
@@ -178,53 +180,52 @@ const CreateRequest = () => {
                 </div>
 
                 {/* Urgency Level */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground">Urgency Level</h3>
+                <div className="space-y-4 mt-6">
+                  <h3 className="font-semibold text-foreground">{t('urgencyLevel')}</h3>
                   <div className="grid gap-3">
                     {URGENCY_OPTIONS.map((option) => (
                       <Button
                         key={option.value}
                         variant={urgency === option.value ? "default" : "outline"}
-                        className={`w-full justify-start p-4 h-auto ${
-                          urgency === option.value 
-                            ? "bg-primary text-primary-foreground" 
-                            : "hover:bg-accent/50"
-                        }`}
+                        className={`w-full justify-start p-4 h-auto ${urgency === option.value
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-accent/50"
+                          }`}
                         type="button"
                         onClick={() => setUrgency(option.value)}
                       >
                         <div className="text-left">
-                          <div className="font-medium">{option.label}</div>
-                          <div className="text-sm opacity-70">{option.description}</div>
+                          <div className="font-medium">{t(option.labelKey)}</div>
+                          <div className="text-sm opacity-70">{t(option.descKey || '') || option.description}</div>
                         </div>
                       </Button>
                     ))}
                   </div>
-                  
+
                   {urgency && (
                     <div className="flex items-center space-x-2">
                       <Badge className={getUrgencyInfo(urgency)?.color}>
                         {getUrgencyInfo(urgency)?.icon}
-                        <span className="ml-1 capitalize">{urgency}</span>
+                        <span className="ml-1 capitalize">{t(URGENCY_OPTIONS.find(o => o.value === urgency)?.labelKey || '')}</span>
                       </Badge>
                       <span className="text-sm text-muted-foreground">
-                        {getUrgencyInfo(urgency)?.description}
+                        {t(URGENCY_OPTIONS.find(o => o.value === urgency)?.descKey || '')}
                       </span>
                     </div>
                   )}
                 </div>
 
                 {/* Location Information */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground">Location Information</h3>
-                  
+                <div className="space-y-4 mt-6">
+                  <h3 className="font-semibold text-foreground">{t('locationInformation')}</h3>
+
                   <div>
-                    <Label htmlFor="location">Hospital/Location *</Label>
+                    <Label htmlFor="location">{t('hospitalLocationLabel')}</Label>
                     <div className="relative">
                       <Hospital className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        id="location" 
-                        placeholder="Enter hospital name or location" 
+                      <Input
+                        id="location"
+                        placeholder={t('hospitalLocationPlaceholder')}
                         className="pl-10"
                         value={formData.location}
                         onChange={handleInputChange}
@@ -235,14 +236,14 @@ const CreateRequest = () => {
                 </div>
 
                 {/* Contact Information */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-foreground">Contact Information</h3>
-                  
+                <div className="space-y-4 mt-6">
+                  <h3 className="font-semibold text-foreground">{t('contactInfo')}</h3>
+
                   <div>
-                    <Label htmlFor="contact_number">Phone Number *</Label>
-                    <Input 
-                      id="contact_number" 
-                      placeholder="+880 1XXX-XXXXXX" 
+                    <Label htmlFor="contact_number">{t('phoneNumberLabel')}</Label>
+                    <Input
+                      id="contact_number"
+                      placeholder={t('phoneNumberPlaceholder') || "+880 1XXX-XXXXXX"}
                       value={formData.contact_number}
                       onChange={handleInputChange}
                       required
@@ -250,8 +251,8 @@ const CreateRequest = () => {
                   </div>
                 </div>
 
-                <Button className="w-full bg-primary hover:bg-primary/90" size="lg" type="submit">
-                  Submit Blood Request
+                <Button className="w-full bg-primary hover:bg-primary/90 mt-8" size="lg" type="submit">
+                  {t('submitBloodRequest')}
                 </Button>
               </form>
             </CardContent>

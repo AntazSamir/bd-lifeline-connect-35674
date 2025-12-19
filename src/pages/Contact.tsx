@@ -23,37 +23,21 @@ import { DonorRegistrationDialog } from "@/components/DonorRegistrationDialog";
 import { ThankYouDialog } from "@/components/ThankYouDialog";
 import { getCurrentUser } from "@/services/dbService";
 import { supabase } from "@/services/supabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// Validation schema
+// Base validation schema for type inference
 const contactSchema = z.object({
-  name: z.string()
-    .trim()
-    .min(2, { message: "Name must be at least 2 characters" })
-    .max(100, { message: "Name must be less than 100 characters" }),
-  email: z.string()
-    .trim()
-    .email({ message: "Invalid email address" })
-    .max(255, { message: "Email must be less than 255 characters" }),
-  phone: z.string()
-    .trim()
-    .regex(/^[0-9+\-\s()]*$/, { message: "Invalid phone number format" })
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .max(20, { message: "Phone number must be less than 20 characters" })
-    .optional()
-    .or(z.literal("")),
-  subject: z.string()
-    .trim()
-    .min(5, { message: "Subject must be at least 5 characters" })
-    .max(200, { message: "Subject must be less than 200 characters" }),
+  name: z.string(),
+  email: z.string(),
+  phone: z.string().optional(),
+  subject: z.string(),
   message: z.string()
-    .trim()
-    .min(10, { message: "Message must be at least 10 characters" })
-    .max(1000, { message: "Message must be less than 1000 characters" })
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const Contact = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,7 +75,33 @@ const Contact = () => {
 
     try {
       // Validate form data
-      const validatedData = contactSchema.parse(formData);
+      const contactSchemaIntl = z.object({
+        name: z.string()
+          .trim()
+          .min(2, { message: t('invalidName') })
+          .max(100, { message: "Name must be less than 100 characters" }),
+        email: z.string()
+          .trim()
+          .email({ message: t('enterValidEmail') })
+          .max(255, { message: "Email must be less than 255 characters" }),
+        phone: z.string()
+          .trim()
+          .regex(/^[0-9+\-\s()]*$/, { message: t('invalidPhone') })
+          .min(10, { message: "Phone number must be at least 10 digits" })
+          .max(20, { message: "Phone number must be less than 20 characters" })
+          .optional()
+          .or(z.literal("")),
+        subject: z.string()
+          .trim()
+          .min(5, { message: t('invalidSubject') })
+          .max(200, { message: "Subject must be less than 200 characters" }),
+        message: z.string()
+          .trim()
+          .min(10, { message: t('invalidMessage') })
+          .max(1000, { message: "Message must be less than 1000 characters" })
+      });
+
+      const validatedData = contactSchemaIntl.parse(formData);
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -100,8 +110,8 @@ const Contact = () => {
       // Example: await sendContactEmail(validatedData);
 
       toast({
-        title: "Message Sent!",
-        description: "Thank you for contacting us. We'll get back to you soon.",
+        title: t('messageSent'),
+        description: t('messageSentDesc'),
       });
 
       // Reset form
@@ -122,14 +132,14 @@ const Contact = () => {
         });
         setErrors(fieldErrors);
         toast({
-          title: "Validation Error",
-          description: "Please check the form for errors.",
+          title: t('validationError'),
+          description: t('checkInput'),
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Error",
-          description: "Failed to send message. Please try again.",
+          title: t('errorTitle'),
+          description: t('unexpectedError'),
           variant: "destructive",
         });
       }
@@ -180,30 +190,30 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: Phone,
-      title: "Emergency Hotline",
+      title: t('emergencyHotline'),
       content: "+880 1XXX-XXXXXX",
-      description: "24/7 available for urgent blood needs",
+      description: t('hotlineHours'),
       color: "text-primary"
     },
     {
       icon: Mail,
-      title: "Email Us",
+      title: t('emailUs'),
       content: "support@bloodconnect.bd",
-      description: "We'll respond within 24 hours",
+      description: t('emailResponse'),
       color: "text-primary"
     },
     {
       icon: MapPin,
-      title: "Head Office",
-      content: "Dhaka, Bangladesh",
-      description: "Visit us during office hours",
+      title: t('headOffice'),
+      content: t('headOfficeLocation'),
+      description: t('monFri'),
       color: "text-primary"
     },
     {
       icon: Clock,
-      title: "Office Hours",
-      content: "Sun - Thu: 9AM - 6PM",
-      description: "Closed on public holidays",
+      title: t('officeHours'),
+      content: t('officeHoursDesc'),
+      description: t('officeHoursClosed'),
       color: "text-primary"
     }
   ];
@@ -211,20 +221,20 @@ const Contact = () => {
   const quickLinks = [
     {
       icon: Heart,
-      title: "Become a Donor",
-      description: "Join our life-saving community",
+      title: t('joinAsDonor'),
+      description: t('ringSignUpsDesc'),
       action: handleBecomeDonor
     },
     {
       icon: MessageCircle,
-      title: "Request Blood",
-      description: "Submit an urgent blood request",
+      title: t('createRequest'),
+      description: t('bloodRequestsDesc'),
       action: () => navigate("/create-request")
     },
     {
       icon: HelpCircle,
-      title: "Find Donors",
-      description: "Search for available donors",
+      title: t('findDonor'),
+      description: t('connectVerifiedDonors'),
       action: () => navigate("/find-donors")
     }
   ];
@@ -241,11 +251,10 @@ const Contact = () => {
             <MessageCircle className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Get in Touch
+            {t('contactTitle')}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions or need assistance? We're here to help you save lives.
-            Reach out to us anytime.
+            {t('contactSubtitle')}
           </p>
         </div>
 
@@ -257,9 +266,9 @@ const Contact = () => {
                 <Phone className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Blood Donor Telephone Enquiries</CardTitle>
+                <CardTitle className="text-2xl">{t('telephoneEnquiries')}</CardTitle>
                 <CardDescription className="text-base mt-1">
-                  Our dedicated helpline for all blood donation queries
+                  {t('ringQuestionsDesc')}
                 </CardDescription>
               </div>
             </div>
@@ -267,53 +276,53 @@ const Contact = () => {
           <CardContent className="space-y-6">
             {/* Hotline Number */}
             <div className="bg-primary/10 rounded-lg p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Call us at</p>
+              <p className="text-sm text-muted-foreground mb-2">{t('callNow')}</p>
               <a
                 href="tel:03459090999"
                 className="text-3xl md:text-4xl font-bold text-primary hover:text-primary/80 transition-colors"
               >
-                0345 90 90 999
+                {t('hotlineNumber')}
               </a>
               <p className="text-sm text-muted-foreground mt-3 flex items-center justify-center gap-2">
                 <Clock className="h-4 w-4" />
-                Monday - Friday: 9:00 AM - 5:00 PM
+                {t('monFri')}
               </p>
             </div>
 
             {/* Services List */}
             <div>
-              <h3 className="font-semibold text-lg mb-4 text-foreground">Give us a ring if you:</h3>
+              <h3 className="font-semibold text-lg mb-4 text-foreground">{t('callUsIfTitle')}</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
                   {
-                    title: "Want to sign up as a blood donor",
-                    description: "Register to become a life-saving donor"
+                    title: t('ringSignUps'),
+                    description: t('ringSignUpsDesc')
                   },
                   {
-                    title: "Have questions about giving blood",
-                    description: "Get answers to your donation queries"
+                    title: t('ringQuestions'),
+                    description: t('ringQuestionsDesc')
                   },
                   {
-                    title: "Make or cancel an appointment",
-                    description: "Until 5pm the day before the session"
+                    title: t('ringAppointment'),
+                    description: t('ringAppointmentDesc')
                   },
                   {
-                    title: "Need medical advice",
-                    description: "Consult with our medical team"
+                    title: t('ringMedical'),
+                    description: t('ringMedicalDesc')
                   },
                   {
-                    title: "Feel unwell after giving blood",
-                    description: "Medical team on-call 24 hours",
+                    title: t('ringUnwell'),
+                    description: t('ringUnwellDesc'),
                     highlight: true
                   },
                   {
-                    title: "Suffer discomfort after donation",
-                    description: "Medical team on-call 24 hours",
+                    title: t('ringDiscomfort'),
+                    description: t('ringDiscomfortDesc'),
                     highlight: true
                   },
                   {
-                    title: "Have doubts about blood usage",
-                    description: "Concerns after donation"
+                    title: t('ringUsage'),
+                    description: t('ringUsageDesc')
                   }
                 ].map((service, index) => (
                   <div
@@ -342,8 +351,7 @@ const Contact = () => {
             {/* Important Note */}
             <div className="bg-muted/50 rounded-lg p-4 border border-border">
               <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Note:</strong> For medical emergencies after donation,
-                our medical team is available 24/7. Don't hesitate to call if you experience any discomfort or concerns.
+                <strong className="text-foreground">{t('importantNote')}</strong> {t('medicalEmergencyNote')}
               </p>
             </div>
           </CardContent>
@@ -358,7 +366,7 @@ const Contact = () => {
                   <Mail className="h-7 w-7 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Email Us</h3>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">{t('emailUs')}</h3>
                   <a
                     href="mailto:support@bloodconnect.bd"
                     className="text-lg font-semibold text-primary hover:text-primary/80 transition-colors"
@@ -366,7 +374,7 @@ const Contact = () => {
                     support@bloodconnect.bd
                   </a>
                   <p className="text-sm text-muted-foreground mt-2">
-                    We'll respond within 24 hours
+                    {t('emailResponse')}
                   </p>
                 </div>
               </div>
@@ -386,9 +394,9 @@ const Contact = () => {
                   <MessageCircle className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Send us a Message</CardTitle>
+                  <CardTitle className="text-2xl">{t('sendMessage')}</CardTitle>
                   <CardDescription className="text-base mt-1">
-                    Fill out the form below and we'll get back to you as soon as possible.
+                    {t('sendMessageDesc')}
                   </CardDescription>
                 </div>
               </div>
@@ -397,10 +405,10 @@ const Contact = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-semibold">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm font-semibold">{t('fullContactName')}</Label>
                     <Input
                       id="name"
-                      placeholder="Enter your full name"
+                      placeholder={t('enterFullName')}
                       value={formData.name}
                       onChange={handleInputChange}
                       className={`h-11 ${errors.name ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
@@ -413,11 +421,11 @@ const Contact = () => {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-semibold">Email Address *</Label>
+                    <Label htmlFor="email" className="text-sm font-semibold">{t('emailAddressLabel')}</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="your.email@example.com"
+                      placeholder={t('emailPlaceholder')}
                       value={formData.email}
                       onChange={handleInputChange}
                       className={`h-11 ${errors.email ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
@@ -433,7 +441,7 @@ const Contact = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-semibold">Phone Number (Optional)</Label>
+                    <Label htmlFor="phone" className="text-sm font-semibold">{t('phoneOptional')}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -450,10 +458,10 @@ const Contact = () => {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="subject" className="text-sm font-semibold">Subject *</Label>
+                    <Label htmlFor="subject" className="text-sm font-semibold">{t('subjectLabel')}</Label>
                     <Input
                       id="subject"
-                      placeholder="What is this regarding?"
+                      placeholder={t('regardingSubject')}
                       value={formData.subject}
                       onChange={handleInputChange}
                       className={`h-11 ${errors.subject ? "border-destructive focus-visible:ring-destructive" : "border-border focus-visible:ring-primary"}`}
@@ -468,10 +476,10 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message" className="text-sm font-semibold">Message *</Label>
+                  <Label htmlFor="message" className="text-sm font-semibold">{t('messageLabel')}</Label>
                   <Textarea
                     id="message"
-                    placeholder="Tell us more about your inquiry..."
+                    placeholder={t('tellMoreMessage')}
                     rows={6}
                     value={formData.message}
                     onChange={handleInputChange}
@@ -487,7 +495,7 @@ const Contact = () => {
                       <span />
                     )}
                     <p className="text-sm text-muted-foreground">
-                      {formData.message.length}/1000 characters
+                      {formData.message.length}/1000 {t('characters')}
                     </p>
                   </div>
                 </div>
@@ -502,12 +510,12 @@ const Contact = () => {
                     {isSubmitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                        Sending Message...
+                        {t('sendingMessage')}
                       </>
                     ) : (
                       <>
                         <Send className="h-5 w-5 mr-2" />
-                        Send Message
+                        {t('sendMessage')}
                       </>
                     )}
                   </Button>
@@ -516,7 +524,7 @@ const Contact = () => {
                 {/* Success/Info Message */}
                 <div className="bg-muted/50 rounded-lg p-4 border border-border">
                   <p className="text-sm text-muted-foreground">
-                    <strong className="text-foreground">Response Time:</strong> We typically respond to all inquiries within 24 hours during business days.
+                    <strong className="text-foreground">{t('responseTimeNote')}</strong> {t('typicallyRespond')}
                   </p>
                 </div>
               </form>
@@ -528,10 +536,10 @@ const Contact = () => {
         <div className="mt-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              Need Something Else?
+              {t('needSomethingElse')}
             </h2>
             <p className="text-muted-foreground">
-              Quick access to our most popular features
+              {t('quickAccessFeatures')}
             </p>
           </div>
 

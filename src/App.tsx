@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 
 import RequestBlood from "./pages/RequestBlood";
@@ -34,37 +35,39 @@ const App = () => (
       enableSystem
       disableTransitionOnChange
     >
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthListener />
-            <Routes>
-              <Route path="/" element={<Index />} />
+      <LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AuthListener />
+              <Routes>
+                <Route path="/" element={<Index />} />
 
-              <Route path="/request-blood" element={<RequestBlood />} />
-              <Route path="/create-request" element={<CreateRequest />} />
-              <Route path="/dashboard" element={<Profile />} />
-              <Route path="/find-donors" element={<FindDonors />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/complete-profile" element={<CompleteProfile />} />
-              {/* Test pages removed from production routes */}
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/confirm-email" element={<EmailConfirmation />} />
-              <Route path="/check-email" element={<CheckEmail />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/test-realtime" element={<TestRealtime />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+                <Route path="/request-blood" element={<RequestBlood />} />
+                <Route path="/create-request" element={<CreateRequest />} />
+                <Route path="/dashboard" element={<Profile />} />
+                <Route path="/find-donors" element={<FindDonors />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/complete-profile" element={<CompleteProfile />} />
+                {/* Test pages removed from production routes */}
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/confirm-email" element={<EmailConfirmation />} />
+                <Route path="/check-email" element={<CheckEmail />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/test-realtime" element={<TestRealtime />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

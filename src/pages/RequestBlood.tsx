@@ -12,8 +12,10 @@ import BloodRequestFeed from "@/components/BloodRequestFeed";
 import { supabase } from "@/services/supabaseClient";
 import { BLOOD_GROUPS, URGENCY_OPTIONS } from "@/lib/constants";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const RequestBlood = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,12 +67,12 @@ const RequestBlood = () => {
     <div className="space-y-6">
       {/* Search */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Search</label>
+        <label className="text-sm font-medium">{t('search')}</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Location, patient info..."
+            placeholder={t('locationPatientPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -82,7 +84,7 @@ const RequestBlood = () => {
 
       {/* Blood Group */}
       <div className="space-y-3">
-        <label className="text-sm font-medium">Blood Group</label>
+        <label className="text-sm font-medium">{t('bloodGroup')}</label>
         <div className="grid grid-cols-4 gap-2">
           {BLOOD_GROUPS.map((group) => (
             <Button
@@ -102,7 +104,7 @@ const RequestBlood = () => {
 
       {/* Urgency */}
       <div className="space-y-3">
-        <label className="text-sm font-medium">Urgency</label>
+        <label className="text-sm font-medium">{t('urgency')}</label>
         <div className="flex flex-col gap-2">
           {URGENCY_OPTIONS.map((level) => (
             <div
@@ -116,7 +118,7 @@ const RequestBlood = () => {
               `}
             >
               <div className="flex items-center gap-2">
-                <Badge className={level.color}>{level.label}</Badge>
+                <Badge className={level.color}>{t(level.labelKey)}</Badge>
               </div>
               {selectedUrgency === level.value && <div className="w-2 h-2 rounded-full bg-primary" />}
             </div>
@@ -132,7 +134,7 @@ const RequestBlood = () => {
           onClick={clearFilters}
         >
           <X className="h-4 w-4 mr-2" />
-          Clear Filters
+          {t('clearFilters')}
         </Button>
       )}
     </div>
@@ -146,21 +148,21 @@ const RequestBlood = () => {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Blood Requests</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t('bloodRequests')}</h1>
             <p className="text-muted-foreground mt-1">
-              Find and respond to urgent blood needs in your community
+              {t('bloodRequestsDesc')}
             </p>
           </div>
           <Button onClick={handleCreateRequest} size="lg" className="shadow-sm">
             {isLoggedIn ? (
               <>
                 <Plus className="h-5 w-5 mr-2" />
-                Create Request
+                {t('createRequest')}
               </>
             ) : (
               <>
                 <LogIn className="h-5 w-5 mr-2" />
-                Login to Request
+                {t('loginToRequest')}
               </>
             )}
           </Button>
@@ -174,7 +176,7 @@ const RequestBlood = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Filter className="h-5 w-5" />
-                    Filters
+                    {t('filters')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -190,12 +192,12 @@ const RequestBlood = () => {
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full">
                   <Filter className="h-4 w-4 mr-2" />
-                  Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+                  {t('filters')} {activeFiltersCount > 0 && `(${activeFiltersCount})`}
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
                 <div className="py-4">
-                  <h2 className="text-lg font-semibold mb-4">Filters</h2>
+                  <h2 className="text-lg font-semibold mb-4">{t('filters')}</h2>
                   <FilterContent />
                 </div>
               </SheetContent>
@@ -209,7 +211,7 @@ const RequestBlood = () => {
               <div className="flex flex-wrap gap-2 mb-4">
                 {selectedBloodGroup && (
                   <Badge variant="secondary" className="h-7">
-                    Group: {selectedBloodGroup}
+                    {t('groupFilter', { group: selectedBloodGroup })}
                     <X
                       className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSelectedBloodGroup("")}
@@ -218,7 +220,7 @@ const RequestBlood = () => {
                 )}
                 {selectedUrgency && (
                   <Badge variant="secondary" className="h-7">
-                    Urgency: {URGENCY_OPTIONS.find(u => u.value === selectedUrgency)?.label}
+                    {t('urgencyFilter', { urgency: t(URGENCY_OPTIONS.find(u => u.value === selectedUrgency)?.labelKey || '') })}
                     <X
                       className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSelectedUrgency("")}
@@ -227,7 +229,7 @@ const RequestBlood = () => {
                 )}
                 {searchQuery && (
                   <Badge variant="secondary" className="h-7">
-                    Search: "{searchQuery}"
+                    {t('searchFilter', { query: searchQuery })}
                     <X
                       className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
                       onClick={() => setSearchQuery("")}

@@ -11,10 +11,12 @@ import { updateUserProfile, getUserProfile, createUserProfile } from "@/services
 import { Droplets, MapPin, Phone, CreditCard } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { BLOOD_GROUPS, DISTRICTS } from "@/lib/constants";
+import { BLOOD_GROUPS } from "@/lib/constants";
 import { completeProfileSchema, formatZodErrors } from "@/lib/validations";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CompleteProfile = () => {
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -96,8 +98,8 @@ const CompleteProfile = () => {
             const errors = formatZodErrors(validation.error);
             const firstError = Object.values(errors)[0];
             toast({
-                title: "Validation Error",
-                description: firstError || "Please check your input",
+                title: t('validationError'),
+                description: firstError || t('checkInput'),
                 variant: "destructive",
             });
             return;
@@ -128,16 +130,15 @@ const CompleteProfile = () => {
             }
 
             toast({
-                title: "Success",
-                description: "Profile completed successfully!",
+                title: t('success'),
+                description: t('profileCompletedSuccess'),
             });
 
             navigate("/dashboard");
         } catch (error) {
-            const message = error instanceof Error ? error.message : "Failed to update profile";
             toast({
-                title: "Error",
-                description: message,
+                title: t('errorTitle'),
+                description: t('profileUpdateFailed'),
                 variant: "destructive",
             });
         } finally {
@@ -154,16 +155,16 @@ const CompleteProfile = () => {
                         <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                             <Droplets className="h-8 w-8 text-primary" />
                         </div>
-                        <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
+                        <CardTitle className="text-2xl">{t('completeYourProfile')}</CardTitle>
                         <CardDescription>
-                            Please provide the following information to complete your registration
+                            {t('completeProfileDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="blood_group">
-                                    Blood Group <span className="text-destructive">*</span>
+                                    {t('bloodGroup')} <span className="text-destructive">*</span>
                                 </Label>
                                 <Select
                                     value={formData.blood_group}
@@ -171,7 +172,7 @@ const CompleteProfile = () => {
                                     required
                                 >
                                     <SelectTrigger id="blood_group">
-                                        <SelectValue placeholder="Select your blood group" />
+                                        <SelectValue placeholder={t('bloodGroupPlaceholder')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {BLOOD_GROUPS.map((bg) => (
@@ -183,7 +184,7 @@ const CompleteProfile = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="district">
-                                    District <span className="text-destructive">*</span>
+                                    {t('district')} <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -191,7 +192,7 @@ const CompleteProfile = () => {
                                         id="district"
                                         name="district"
                                         type="text"
-                                        placeholder="e.g., Dhaka"
+                                        placeholder={t('districtPlaceholder')}
                                         value={formData.district}
                                         onChange={handleChange}
                                         className="pl-10"
@@ -202,7 +203,7 @@ const CompleteProfile = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="phone_number">
-                                    Phone Number <span className="text-destructive">*</span>
+                                    {t('phoneLabel')} <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
                                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -221,7 +222,7 @@ const CompleteProfile = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="nid">
-                                    National ID <span className="text-destructive">*</span>
+                                    {t('nationalId')} <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
                                     <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -229,7 +230,7 @@ const CompleteProfile = () => {
                                         id="nid"
                                         name="nid"
                                         type="text"
-                                        placeholder="Enter your NID number"
+                                        placeholder={t('nidPlaceholder')}
                                         value={formData.nid}
                                         onChange={handleChange}
                                         className="pl-10"
@@ -243,7 +244,7 @@ const CompleteProfile = () => {
                                 className="w-full"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Saving..." : "Complete Profile"}
+                                {isLoading ? t('saving') : t('completeYourProfile')}
                             </Button>
                         </form>
                     </CardContent>

@@ -1,45 +1,7 @@
 import { TrendingUp, Users, Droplets, MapPin, BadgeCheck, Building, Activity } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useState } from "react";
-
-const stats = [
-  {
-    icon: Users,
-    value: 50000,
-    suffix: "+",
-    label: "Active Donors",
-    subLabel: "Verified donors",
-    color: "text-trust-blue",
-    bgColor: "bg-trust-blue/10",
-  },
-  {
-    icon: Droplets,
-    value: 125000,
-    suffix: "+",
-    label: "Lives Saved",
-    subLabel: "Hospital confirmed",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
-  },
-  {
-    icon: MapPin,
-    value: 64,
-    suffix: "",
-    label: "Districts Covered",
-    subLabel: "Across Bangladesh",
-    color: "text-hope-green",
-    bgColor: "bg-hope-green/10",
-  },
-  {
-    icon: TrendingUp,
-    value: 98,
-    suffix: "%",
-    label: "Success Rate",
-    subLabel: "Real-time updated",
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AnimatedNumber = ({ value, suffix }: { value: number; suffix: string }) => {
   const [displayValue, setDisplayValue] = useState(0);
@@ -47,25 +9,25 @@ const AnimatedNumber = ({ value, suffix }: { value: number; suffix: string }) =>
 
   useEffect(() => {
     if (hasAnimated) return;
-    
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           setHasAnimated(true);
           const duration = 2000;
           const startTime = Date.now();
-          
+
           const updateValue = () => {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const easeOut = 1 - Math.pow(1 - progress, 3);
             setDisplayValue(Math.floor(value * easeOut));
-            
+
             if (progress < 1) {
               requestAnimationFrame(updateValue);
             }
           };
-          
+
           requestAnimationFrame(updateValue);
         }
       },
@@ -85,13 +47,54 @@ const AnimatedNumber = ({ value, suffix }: { value: number; suffix: string }) =>
   );
 };
 
-const trustBadges = [
-  { label: "Government Registered", icon: Building },
-  { label: "Red Crescent Partner", icon: BadgeCheck },
-  { label: "50+ Partner Hospitals", icon: Activity },
-];
-
 const ImpactStats = () => {
+  const { t } = useLanguage();
+
+  const stats = [
+    {
+      icon: Users,
+      value: 50000,
+      suffix: "+",
+      labelKey: "activeDonors",
+      subLabelKey: "verifiedDonors",
+      color: "text-trust-blue",
+      bgColor: "bg-trust-blue/10",
+    },
+    {
+      icon: Droplets,
+      value: 125000,
+      suffix: "+",
+      labelKey: "livesSaved",
+      subLabelKey: "hospitalConfirmed",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+    {
+      icon: MapPin,
+      value: 64,
+      suffix: "",
+      labelKey: "districtsCovered",
+      subLabelKey: "acrossBangladesh",
+      color: "text-hope-green",
+      bgColor: "bg-hope-green/10",
+    },
+    {
+      icon: TrendingUp,
+      value: 98,
+      suffix: "%",
+      labelKey: "successRate",
+      subLabelKey: "realtimeUpdated",
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
+    },
+  ];
+
+  const trustBadges = [
+    { labelKey: "govRegistered", icon: Building },
+    { labelKey: "redCrescentPartner", icon: BadgeCheck },
+    { labelKey: "partnerHospitals", icon: Activity },
+  ];
+
   return (
     <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-primary/5 to-background relative overflow-hidden">
       {/* Background pattern */}
@@ -109,13 +112,13 @@ const ImpactStats = () => {
         >
           <div className="inline-flex items-center gap-2 bg-hope-green/10 text-hope-green px-4 py-2 rounded-full mb-4">
             <Activity className="h-4 w-4" />
-            <span className="text-sm font-semibold">Our Impact</span>
+            <span className="text-sm font-semibold">{t('ourImpact')}</span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            Real Numbers, Real Lives
+            {t('realNumbers')}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every statistic represents a life saved, a family reunited, a hope restored
+            {t('statDesc')}
           </p>
         </motion.div>
 
@@ -138,18 +141,18 @@ const ImpactStats = () => {
                   <div className={`w-14 h-14 ${stat.bgColor} rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
                     <IconComponent className={`w-7 h-7 ${stat.color}`} />
                   </div>
-                  
+
                   <div className={`text-3xl md:text-4xl font-bold mb-2 ${stat.color}`}>
                     <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                   </div>
-                  
+
                   <div className="font-medium text-foreground mb-1">
-                    {stat.label}
+                    {t(stat.labelKey)}
                   </div>
-                  
+
                   <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                     <BadgeCheck className="h-3 w-3 text-hope-green" />
-                    {stat.subLabel}
+                    {t(stat.subLabelKey)}
                   </div>
                 </motion.div>
               </motion.div>
@@ -172,7 +175,7 @@ const ImpactStats = () => {
                 className="flex items-center gap-2 bg-card border border-border/50 rounded-full px-4 py-2"
               >
                 <IconComponent className="h-4 w-4 text-hope-green" />
-                <span className="text-sm font-medium text-foreground">{badge.label}</span>
+                <span className="text-sm font-medium text-foreground">{t(badge.labelKey)}</span>
               </div>
             );
           })}

@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      toast.success("Thank you for subscribing!");
+      toast.success(t('newsletterSuccess') || "Thank you for subscribing!");
       setEmail("");
     }
   };
@@ -25,18 +27,18 @@ const Footer = () => {
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
           <div className="flex items-center gap-3 text-white">
             <AlertTriangle className="h-5 w-5" />
-            <span className="font-medium">Need blood urgently?</span>
+            <span className="font-medium">{t('needBloodUrgently')}</span>
           </div>
           <div className="flex gap-3">
             <Link to="/create-request">
               <Button size="sm" variant="secondary" className="bg-white text-primary hover:bg-white/90">
-                Post Emergency Request
+                {t('postEmergencyRequest')}
               </Button>
             </Link>
             <a href="https://wa.me/8801234567890" target="_blank" rel="noopener noreferrer">
               <Button size="sm" variant="outline" className="border-white bg-transparent text-white hover:bg-white/20">
                 <MessageCircle className="h-4 w-4 mr-2" />
-                WhatsApp
+                {t('whatsApp')}
               </Button>
             </a>
           </div>
@@ -52,7 +54,7 @@ const Footer = () => {
               <span className="text-2xl font-bold text-white">BloodConnect</span>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed">
-              Bangladesh's trusted blood donation platform. Connecting verified donors with patients in need, 24/7.
+              {t('footerMission')}
             </p>
             <div className="flex gap-3 pt-2">
               {[Facebook, Twitter, Instagram, Linkedin].map((Icon, index) => (
@@ -71,13 +73,12 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-5">
-            <h4 className="font-semibold text-white text-lg">Quick Links</h4>
+            <h4 className="font-semibold text-white text-lg">{t('links')}</h4>
             <nav className="space-y-3">
               {[
-                { label: "Find Donors", path: "/find-donors" },
-                { label: "Request Blood", path: "/request-blood" },
-                { label: "Emergency Requests", path: "/create-request" },
-                { label: "How It Works", path: "/#about" },
+                { label: t('findDonor'), path: "/find-donors" },
+                { label: t('emergencyRequests'), path: "/create-request" },
+                { label: t('howItWorksTitle'), path: "/#about" },
               ].map((link) => (
                 <Link key={link.path} to={link.path} className="text-slate-300 hover:text-primary text-sm block transition-colors">
                   → {link.label}
@@ -88,26 +89,26 @@ const Footer = () => {
 
           {/* Support & Partner Hospitals */}
           <div className="space-y-5">
-            <h4 className="font-semibold text-white text-lg">Partner Hospitals</h4>
+            <h4 className="font-semibold text-white text-lg">{t('partnerHospitalsTitle')}</h4>
             <nav className="space-y-3 text-sm text-slate-300">
               <p>• Dhaka Medical College</p>
               <p>• Bangladesh Medical College</p>
               <p>• Apollo Hospital Dhaka</p>
               <p>• Square Hospital</p>
-              <p className="text-primary text-xs pt-2">+ 50 more partners</p>
+              <p className="text-primary text-xs pt-2">{t('morePartners')}</p>
             </nav>
           </div>
 
           {/* 24/7 Support */}
           <div className="space-y-5">
-            <h4 className="font-semibold text-white text-lg">24/7 Support</h4>
+            <h4 className="font-semibold text-white text-lg">{t('support247')}</h4>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-slate-300">
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Hotline</p>
+                  <p className="text-xs text-slate-400">{t('hotline')}</p>
                   <p className="font-medium text-white">+880 1XXX-XXXXXX</p>
                 </div>
               </div>
@@ -116,7 +117,7 @@ const Footer = () => {
                   <MessageCircle className="h-5 w-5 text-hope-green" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">WhatsApp</p>
+                  <p className="text-xs text-slate-400">{t('whatsApp')}</p>
                   <p className="font-medium text-white">+880 1XXX-XXXXXX</p>
                 </div>
               </div>
@@ -136,11 +137,11 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-slate-700 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-400 text-sm text-center md:text-left">
-            © 2024 BloodConnect. Made with <Heart className="inline h-4 w-4 text-primary mx-1" /> for Bangladesh
+            © 2024 BloodConnect. {t('madeWith')} <Heart className="inline h-4 w-4 text-primary mx-1" /> {t('forBangladesh')}
           </p>
           <div className="flex gap-6 text-sm text-slate-400">
-            <Link to="/about" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link to="/about" className="hover:text-primary transition-colors">{t('privacyPolicy')}</Link>
+            <Link to="/terms-of-service" className="hover:text-primary transition-colors">{t('termsOfService')}</Link>
           </div>
         </div>
       </div>

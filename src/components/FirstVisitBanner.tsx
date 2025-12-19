@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const FirstVisitBanner = () => {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if this is user's first visit
     const hasVisited = localStorage.getItem('hasVisitedBefore');
-    
+
     if (!hasVisited) {
       // Show banner after a short delay
       const timeout = setTimeout(() => {
@@ -57,10 +59,10 @@ const FirstVisitBanner = () => {
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                     <span className="font-bold text-sm sm:text-base">
-                      Welcome to BloodConnect!
+                      {t('welcomeToBloodConnect')}
                     </span>
                     <span className="text-xs sm:text-sm text-primary-foreground/90">
-                      Register in 30 seconds. Save a life today.
+                      {t('register30Sec')}
                     </span>
                   </div>
                 </div>
@@ -68,7 +70,7 @@ const FirstVisitBanner = () => {
                 {/* Timer badge */}
                 <div className="hidden md:flex items-center gap-2 bg-primary-foreground/20 rounded-full px-3 py-1">
                   <Clock className="w-4 h-4" />
-                  <span className="text-sm font-medium">30 sec signup</span>
+                  <span className="text-sm font-medium">{t('signup30Sec')}</span>
                 </div>
 
                 {/* CTA Button */}
@@ -78,8 +80,8 @@ const FirstVisitBanner = () => {
                   size="sm"
                   className="ripple-btn whitespace-nowrap font-semibold group"
                 >
-                  <span className="hidden sm:inline">Join Now</span>
-                  <span className="sm:hidden">Join</span>
+                  <span className="hidden sm:inline">{t('joinNow')}</span>
+                  <span className="sm:hidden">{t('join')}</span>
                   <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
 

@@ -1,34 +1,37 @@
 import { Shield, Phone, MapPin, Lock, BadgeCheck, Ban } from "lucide-react";
 import { motion } from "framer-motion";
-
-const verifications = [
-  {
-    icon: Phone,
-    title: "Phone-Verified Donors",
-    description: "Every donor's phone number is verified through OTP",
-    status: "active",
-  },
-  {
-    icon: Ban,
-    title: "Fake Requests Banned",
-    description: "Fraudulent accounts are permanently banned",
-    status: "active",
-  },
-  {
-    icon: MapPin,
-    title: "Hospital Verified",
-    description: "Request locations verified by partner hospitals",
-    status: "active",
-  },
-  {
-    icon: Lock,
-    title: "Data Encrypted",
-    description: "All personal data is encrypted and protected",
-    status: "active",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const TrustVerificationPanel = () => {
+  const { t } = useLanguage();
+
+  const verifications = [
+    {
+      icon: Phone,
+      titleKey: "phoneVerified",
+      descriptionKey: "phoneVerifiedDesc",
+      status: "active",
+    },
+    {
+      icon: Ban,
+      titleKey: "fakeRequestsBanned",
+      descriptionKey: "fakeRequestsBannedDesc",
+      status: "active",
+    },
+    {
+      icon: MapPin,
+      titleKey: "hospitalVerified",
+      descriptionKey: "hospitalVerifiedDesc",
+      status: "active",
+    },
+    {
+      icon: Lock,
+      titleKey: "dataEncrypted",
+      descriptionKey: "dataEncryptedDesc",
+      status: "active",
+    },
+  ];
+
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-background to-accent/30">
       <div className="container mx-auto max-w-6xl">
@@ -40,13 +43,13 @@ const TrustVerificationPanel = () => {
             className="inline-flex items-center gap-2 bg-hope-green/10 text-hope-green px-4 py-2 rounded-full mb-4"
           >
             <Shield className="h-4 w-4" />
-            <span className="text-sm font-semibold">Trust & Security</span>
+            <span className="text-sm font-semibold">{t('trustSecurity')}</span>
           </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Your Safety is Our Priority
+            {t('safetyPriority')}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            We employ multiple layers of verification to ensure every interaction on our platform is safe and genuine
+            {t('trustDesc')}
           </p>
         </div>
 
@@ -55,7 +58,7 @@ const TrustVerificationPanel = () => {
             const IconComponent = item.icon;
             return (
               <motion.div
-                key={item.title}
+                key={item.titleKey}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -75,8 +78,8 @@ const TrustVerificationPanel = () => {
                     <IconComponent className="h-7 w-7 text-hope-green" />
                   </div>
 
-                  <h3 className="font-semibold text-lg mb-2 text-foreground">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground">{t(item.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground">{t(item.descriptionKey)}</p>
                 </div>
               </motion.div>
             );
@@ -92,7 +95,7 @@ const TrustVerificationPanel = () => {
         >
           <div className="inline-flex items-center gap-3 bg-card border border-border rounded-full px-6 py-3">
             <BadgeCheck className="h-5 w-5 text-hope-green" />
-            <span className="text-sm font-medium">Trusted by 50,000+ verified donors across Bangladesh</span>
+            <span className="text-sm font-medium">{t('trustedByCount')}</span>
           </div>
         </motion.div>
       </div>

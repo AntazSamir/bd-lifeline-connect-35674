@@ -34,8 +34,10 @@ import { useDonors } from "@/hooks/useDatabase";
 import { Donor } from "@/services/dbService";
 import { BLOOD_GROUPS, DISTANCE_OPTIONS, GENDER_OPTIONS, LAST_DONATION_OPTIONS, AVAILABILITY_OPTIONS } from "@/lib/constants";
 import { supabase } from "@/services/supabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FindDonors = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
@@ -190,15 +192,15 @@ const FindDonors = () => {
         <div className="mb-8 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-foreground">Find Blood Donors</h1>
+              <h1 className="text-3xl font-bold text-foreground">{t('findBloodDonors')}</h1>
               <RealtimeStatusIndicator />
             </div>
-            <p className="text-muted-foreground">Connect with verified donors in your area</p>
+            <p className="text-muted-foreground">{t('connectVerifiedDonors')}</p>
           </div>
           {!checkingDonorStatus && !isCurrentUserDonor && (
             <Button size="lg" className="gap-2" onClick={handleRegisterClick}>
               <Heart className="h-5 w-5" />
-              Register as Donor
+              {t('registerAsDonor')}
             </Button>
           )}
         </div>
@@ -211,10 +213,10 @@ const FindDonors = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center text-lg">
                     <Filter className="h-5 w-5 mr-2 text-primary" />
-                    Filters
+                    {t('filters')}
                     {hasActiveFilters && (
                       <Badge variant="secondary" className="ml-2 h-5 text-xs">
-                        Active
+                        {t('active')}
                       </Badge>
                     )}
                   </CardTitle>
@@ -235,7 +237,7 @@ const FindDonors = () => {
                   disabled={!hasActiveFilters}
                 >
                   <RotateCcw className="h-3 w-3 mr-1" />
-                  Reset all filters
+                  {t('resetAllFilters')}
                 </Button>
               </CardHeader>
 
@@ -246,11 +248,11 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.bloodGroup ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Droplet className="h-4 w-4 mr-2 text-primary" />
-                        Blood Group
+                        {t('bloodGroup')}
                       </label>
                       <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({ ...filters, bloodGroup: value })}>
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select blood group" />
+                          <SelectValue placeholder={t('selectBloodGroup')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
                           {BLOOD_GROUPS.map((bg) => (
@@ -264,12 +266,12 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.location ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <MapPin className="h-4 w-4 mr-2 text-primary" />
-                        Location
+                        {t('location')}
                       </label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="Enter area/district"
+                          placeholder={t('enterAreaDistrict')}
                           className="pl-10 bg-background"
                           value={filters.location}
                           onChange={(e) => setFilters({ ...filters, location: e.target.value })}
@@ -283,17 +285,17 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.gender ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Users className="h-4 w-4 mr-2 text-primary" />
-                        Gender
+                        {t('gender')}
                       </label>
                       <Select value={filters.gender} onValueChange={(value) => setFilters({ ...filters, gender: value })}>
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select gender" />
+                          <SelectValue placeholder={t('selectGender')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
                           {GENDER_OPTIONS.map((gender) => (
-                            <SelectItem key={gender.value} value={gender.value}>{gender.label}</SelectItem>
+                            <SelectItem key={gender.value} value={gender.value}>{t(gender.labelKey)}</SelectItem>
                           ))}
-                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="any">{t('any')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -302,15 +304,15 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.lastDonationDate ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Calendar className="h-4 w-4 mr-2 text-primary" />
-                        Last Donation
+                        {t('lastDonation')}
                       </label>
                       <Select value={filters.lastDonationDate} onValueChange={(value) => setFilters({ ...filters, lastDonationDate: value })}>
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select period" />
+                          <SelectValue placeholder={t('selectPeriod')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
                           {LAST_DONATION_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                            <SelectItem key={option.value} value={option.value}>{t(option.labelKey)}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -320,15 +322,15 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.availability ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Clock className="h-4 w-4 mr-2 text-primary" />
-                        Availability
+                        {t('availability')}
                       </label>
                       <Select value={filters.availability} onValueChange={(value) => setFilters({ ...filters, availability: value })}>
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select availability" />
+                          <SelectValue placeholder={t('selectAvailability')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
                           {AVAILABILITY_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                            <SelectItem key={option.value} value={option.value}>{t(option.labelKey)}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -338,15 +340,15 @@ const FindDonors = () => {
                     <div className={`p-3 rounded-lg transition-colors ${filters.distance ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <MapPin className="h-4 w-4 mr-2 text-primary" />
-                        Distance
+                        {t('distanceLabel')}
                       </label>
                       <Select value={filters.distance} onValueChange={(value) => setFilters({ ...filters, distance: value })}>
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Select distance" />
+                          <SelectValue placeholder={t('selectDistance')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
                           {DISTANCE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                            <SelectItem key={option.value} value={option.value}>{t(option.labelKey)}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -358,7 +360,7 @@ const FindDonors = () => {
                         <div className="flex items-center gap-2">
                           <AlertCircle className="h-4 w-4 text-primary" />
                           <label htmlFor="urgent-only" className="text-sm font-medium cursor-pointer">
-                            Urgent Availability
+                            {t('urgentAvailability')}
                           </label>
                         </div>
                         <Switch
@@ -372,7 +374,7 @@ const FindDonors = () => {
                         <div className="flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-primary" />
                           <label htmlFor="verified-only" className="text-sm font-medium cursor-pointer">
-                            Verified Donors
+                            {t('verifiedDonorsFilter')}
                           </label>
                         </div>
                         <Switch
@@ -395,7 +397,7 @@ const FindDonors = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search donors by name or location..."
+                  placeholder={t('searchDonorsPlaceholder')}
                   className="pl-10"
                 />
               </div>
@@ -404,17 +406,17 @@ const FindDonors = () => {
             {/* Results Header */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-muted-foreground">
-                Showing {filteredDonors.length} donors
+                {t('showingDonors', { count: filteredDonors.length })}
               </p>
               <Select defaultValue="distance">
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="distance">Sort by Distance</SelectItem>
-                  <SelectItem value="rating">Sort by Rating</SelectItem>
-                  <SelectItem value="donations">Sort by Donations</SelectItem>
-                  <SelectItem value="recent">Sort by Recent Activity</SelectItem>
+                  <SelectItem value="distance">{t('sortByDistance')}</SelectItem>
+                  <SelectItem value="rating">{t('sortByRating')}</SelectItem>
+                  <SelectItem value="donations">{t('sortByDonations')}</SelectItem>
+                  <SelectItem value="recent">{t('sortByRecent')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -422,10 +424,10 @@ const FindDonors = () => {
             {/* Donors Grid */}
             <div className="space-y-4">
               {loading && (
-                <div className="text-muted-foreground">Loading donors...</div>
+                <div className="text-muted-foreground">{t('loadingDonors')}</div>
               )}
               {error && !loading && (
-                <div className="text-destructive">Failed to load donors: {error}</div>
+                <div className="text-destructive">{t('failedToLoadDonors')} {error}</div>
               )}
               {!loading && !error && filteredDonors.map((donor) => (
                 <Card key={donor.id} className="hover:shadow-medium transition-shadow duration-300">
@@ -440,7 +442,7 @@ const FindDonors = () => {
 
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
-                            <h3 className="font-semibold text-lg">{donor.name || 'Anonymous Donor'}</h3>
+                            <h3 className="font-semibold text-lg">{donor.name || t('anonymousDonor')}</h3>
                           </div>
 
                           <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -455,14 +457,14 @@ const FindDonors = () => {
                               {donor.blood_group}
                             </Badge>
                             <Badge className={getAvailabilityBadgeClass(donor.is_available)}>
-                              {donor.is_available ? 'Available now' : 'Not available'}
+                              {donor.is_available ? t('availableNow') : t('notAvailable')}
                             </Badge>
                           </div>
 
                           <div className="flex items-center space-x-4 text-sm">
                             <div className="flex items-center">
                               <Heart className="h-4 w-4 text-primary mr-1" />
-                              {donor.last_donation_date ? 'Last donation: ' + donor.last_donation_date : 'No recent donation info'}
+                              {donor.last_donation_date ? t('lastDonationPrefix') + donor.last_donation_date : t('noRecentDonation')}
                             </div>
                           </div>
                         </div>
@@ -471,7 +473,7 @@ const FindDonors = () => {
                       <div className="flex flex-col space-y-2">
                         <Button size="sm" onClick={() => navigate("/request-blood")}>
                           <Droplet className="h-4 w-4 mr-2" />
-                          Request Blood
+                          {t('postRequest')}
                         </Button>
                         <Button
                           size="sm"
@@ -481,7 +483,7 @@ const FindDonors = () => {
                             setProfileDialogOpen(true);
                           }}
                         >
-                          View Profile
+                          {t('viewProfile')}
                         </Button>
                       </div>
                     </div>
@@ -489,14 +491,14 @@ const FindDonors = () => {
                 </Card>
               ))}
               {!loading && !error && filteredDonors.length === 0 && (
-                <div className="text-muted-foreground">No donors found.</div>
+                <div className="text-muted-foreground">{t('noDonorsFound')}</div>
               )}
             </div>
 
             {/* Load More */}
             <div className="text-center mt-8">
               <Button variant="outline" size="lg">
-                Load More Donors
+                {t('loadMoreDonors')}
               </Button>
             </div>
           </div>

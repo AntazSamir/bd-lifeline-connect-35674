@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import Marquee from "react-fast-marquee";
+import { useLanguage } from "@/contexts/LanguageContext";
 import bkashLogo from "@/assets/bkash-logo.png";
 import nagadLogo from "@/assets/nagad-logo.png";
 import upayLogo from "@/assets/upay-logo.png";
@@ -8,6 +9,7 @@ import bangladeshMedicalLogo from "@/assets/bangladesh-medical-college-logo.png"
 import dhakaMedicalLogo from "@/assets/dhaka-medical-college-logo.png";
 
 const TrustedCompanies = () => {
+  const { t } = useLanguage();
   // Use existing assets in the project
   const logos = [
     { src: bangladeshMedicalLogo, alt: "Bangladesh Medical College" },
@@ -22,8 +24,8 @@ const TrustedCompanies = () => {
     <section className="py-8 w-full bg-background">
       <div className="container">
         <div className="max-w-5xl mx-auto text-center mb-8">
-          <h2 className="text-lg md:text-xl font-semibold mb-2 text-foreground">Trusted by leading partners</h2>
-          <p className="text-sm text-muted-foreground">We collaborate with top organizations to save lives</p>
+          <h2 className="text-lg md:text-xl font-semibold mb-2 text-foreground">{t('trustedPartners')}</h2>
+          <p className="text-sm text-muted-foreground">{t('trustedPartnersDesc')}</p>
         </div>
 
         <Marquee

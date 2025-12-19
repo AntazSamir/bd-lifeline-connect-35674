@@ -11,9 +11,11 @@ import LiveEmergencyTicker from "@/components/LiveEmergencyTicker";
 import TrustBadges from "@/components/TrustBadges";
 import SmartQuickSearch from "@/components/SmartQuickSearch";
 import heroBackground from "@/assets/hero-background.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
@@ -82,7 +84,7 @@ const Hero = () => {
       <div className="container relative z-10 px-4 py-16 md:py-24">
         <div className="max-w-6xl mx-auto">
           {/* Live Emergency Ticker */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -92,27 +94,27 @@ const Hero = () => {
           </motion.div>
 
           {/* Main Heading - Emotional */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="text-center space-y-6 mb-10"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight tracking-tight">
-              Someone near you needs blood{" "}
+              {t('heroTitle')}{" "}
               <span className="block sm:inline">
                 <span className="bg-gradient-to-r from-primary via-primary-light to-urgent bg-clip-text text-transparent">
-                  in the next 2 hours.
+                  {t('heroTitleHighlight')}
                 </span>
               </span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl text-white/85 max-w-3xl mx-auto font-light">
-              Join 50,000+ verified donors saving lives across Bangladesh. Every second counts.
+              {t('heroSubtitle')}
             </p>
           </motion.div>
 
           {/* Primary CTAs */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -124,7 +126,7 @@ const Hero = () => {
                 className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 group"
               >
                 <Search className="h-5 w-5 mr-2" />
-                Find Blood Now
+                {t('findBloodNow')}
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -136,12 +138,12 @@ const Hero = () => {
               className="w-full sm:w-auto px-8 py-6 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm transition-all duration-300"
             >
               <Heart className="h-5 w-5 mr-2" />
-              Join as Donor
+              {t('joinAsDonor')}
             </Button>
           </motion.div>
 
           {/* Trust Layer */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}

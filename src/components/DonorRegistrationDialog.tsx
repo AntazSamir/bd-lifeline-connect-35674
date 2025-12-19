@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/services/supabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface UserProfile {
   id?: string;
@@ -30,6 +31,7 @@ interface DonorRegistrationDialogProps {
 
 export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: DonorRegistrationDialogProps) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,8 +118,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       const { fullName, phoneNumber, email, dateOfBirth, bloodGroup, division, district, fullAddress } = personalInfo;
       if (!fullName || !phoneNumber || !email || !dateOfBirth || !bloodGroup || !division || !district || !fullAddress) {
         toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields marked with *",
+          title: t('missingInfo'),
+          description: t('fillRequiredFields'),
           variant: "destructive",
         });
         return false;
@@ -127,8 +129,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         toast({
-          title: "Invalid Email",
-          description: "Please enter a valid email address",
+          title: t('invalidEmail'),
+          description: t('enterValidEmail'),
           variant: "destructive",
         });
         return false;
@@ -138,8 +140,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       const phoneRegex = /^(\+88)?01[3-9]\d{8}$/;
       if (!phoneRegex.test(phoneNumber.replace(/\s/g, ''))) {
         toast({
-          title: "Invalid Phone Number",
-          description: "Please enter a valid Bangladeshi phone number",
+          title: t('invalidPhone'),
+          description: t('enterValidPhone'),
           variant: "destructive",
         });
         return false;
@@ -152,8 +154,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       const { weight, height, confirmAccuracy, lastDonationDate, isFirstTimeDonor } = healthInfo;
       if (!weight || !height) {
         toast({
-          title: "Missing Information",
-          description: "Please enter your weight and height",
+          title: t('missingInfo'),
+          description: t('enterWeightHeight'),
           variant: "destructive",
         });
         return false;
@@ -161,8 +163,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
 
       if (!isFirstTimeDonor && !lastDonationDate) {
         toast({
-          title: "Missing Information",
-          description: "Please provide your last donation date or indicate if you are a first-time donor",
+          title: t('missingInfo'),
+          description: t('provideLastDonationDate'),
           variant: "destructive",
         });
         return false;
@@ -170,8 +172,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
 
       if (!confirmAccuracy) {
         toast({
-          title: "Confirmation Required",
-          description: "Please confirm that the information provided is accurate",
+          title: t('confirmationRequired'),
+          description: t('confirmInfoAccurate'),
           variant: "destructive",
         });
         return false;
@@ -184,8 +186,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       const { termsOfService, privacyPolicy, profileSharing } = agreements;
       if (!termsOfService || !privacyPolicy || !profileSharing) {
         toast({
-          title: "Agreements Required",
-          description: "Please accept the Terms of Service, Privacy Policy, and Profile Sharing consent",
+          title: t('agreementsRequired'),
+          description: t('acceptAgreements'),
           variant: "destructive",
         });
         return false;
@@ -259,8 +261,8 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       } catch (error: any) {
         console.error("Registration error:", error);
         toast({
-          title: "Registration Failed",
-          description: error.message || "An error occurred while registering. Please try again.",
+          title: t('registrationFailed'),
+          description: error.message || t('unexpectedError'),
           variant: "destructive",
         });
       } finally {
@@ -297,10 +299,10 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
               transition={{ delay: 0.2 }}
             >
               <DialogTitle className="text-2xl font-bold text-primary mb-2">
-                Registration Successful!
+                {t('registrationSuccess')}
               </DialogTitle>
               <p className="text-muted-foreground">
-                Thank you for becoming a donor. Your commitment helps save lives.
+                {t('registrationSuccessNote')}
               </p>
             </motion.div>
 
@@ -311,7 +313,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
               className="w-full pt-4"
             >
               <Button onClick={handleClose} className="w-full bg-primary hover:bg-primary/90">
-                Done
+                {t('done')}
               </Button>
             </motion.div>
           </div>
@@ -325,14 +327,14 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center">
-            {step === 1 && "Personal Info"}
-            {step === 2 && "Health Screening"}
-            {step === 3 && "Terms & Privacy"}
+            {step === 1 && t('personalInfo')}
+            {step === 2 && t('healthScreening')}
+            {step === 3 && t('termsPrivacy')}
           </DialogTitle>
           <p className="text-center text-muted-foreground text-sm">
-            {step === 1 && "Provide your personal information and contact details"}
-            {step === 2 && "Complete health questionnaire (for donors only)"}
-            {step === 3 && "Review and accept our terms of service and privacy policy"}
+            {step === 1 && t('personalInfoDesc')}
+            {step === 2 && t('healthScreeningDesc')}
+            {step === 3 && t('termsPrivacyDesc')}
           </p>
         </DialogHeader>
 
@@ -348,9 +350,9 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
 
             {/* Steps */}
             {[
-              { num: 1, title: "Personal Info", sub: "Basic Details" },
-              { num: 2, title: "Health Screening", sub: "Medical History" },
-              { num: 3, title: "Terms & Privacy", sub: "Legal Agreement" }
+              { num: 1, title: t('personalInfo'), sub: t('basicDetails') },
+              { num: 2, title: t('healthScreening'), sub: t('medicalHistory') },
+              { num: 3, title: t('termsPrivacy'), sub: t('legalAgreement') }
             ].map((s, i) => (
               <div key={s.num} className="flex flex-col items-center bg-background px-2">
                 <div
@@ -382,65 +384,47 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="fullName">
-                  Full Name <span className="text-destructive">*</span>
+                  {t('fullName')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="fullName"
-                  placeholder="Enter your full name"
+                  placeholder={t('fullNamePlaceholder')}
                   value={personalInfo.fullName}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
-                  disabled={!!userProfile?.full_name}
-                  className={userProfile?.full_name ? "bg-muted" : ""}
                 />
-                {userProfile?.full_name && (
-                  <p className="text-xs text-muted-foreground">From your profile</p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber">
-                  Phone Number <span className="text-destructive">*</span>
+                  {t('phoneLabel')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="phoneNumber"
                   placeholder="+880 1XXX-XXXXXX"
                   value={personalInfo.phoneNumber}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, phoneNumber: e.target.value })}
-                  disabled={!!userProfile?.phone}
-                  className={userProfile?.phone ? "bg-muted" : ""}
                 />
-                {userProfile?.phone ? (
-                  <p className="text-xs text-muted-foreground">From your profile</p>
-                ) : (
-                  <p className="text-xs text-muted-foreground text-red-500">
-                    Note: You cannot change this number later.
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground">
+                  {t('activePhoneNote')}
+                </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">
-                  Email Address <span className="text-destructive">*</span>
+                  {t('email')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder={t('emailPlaceholder')}
                   value={personalInfo.email}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
-                  disabled={!!userProfile?.email}
-                  className={userProfile?.email ? "bg-muted" : ""}
                 />
-                {userProfile?.email ? (
-                  <p className="text-xs text-muted-foreground">From your profile</p>
-                ) : (
-                  <p className="text-xs text-muted-foreground">We'll send OTP for verification</p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="dateOfBirth">
-                  Date of Birth <span className="text-destructive">*</span>
+                  {t('dateOfBirth')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -448,22 +432,21 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                   value={personalInfo.dateOfBirth}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, dateOfBirth: e.target.value })}
                 />
-                <p className="text-xs text-muted-foreground">Must be 18-60 years old</p>
+                <p className="text-xs text-muted-foreground">{t('mustBe18to60')}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="bloodGroup">
-                  Blood Group <span className="text-destructive">*</span>
+                  {t('bloodGroup')} <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={personalInfo.bloodGroup}
                   onValueChange={(value) => setPersonalInfo({ ...personalInfo, bloodGroup: value })}
-                  disabled={!!userProfile?.blood_group}
                 >
-                  <SelectTrigger className={userProfile?.blood_group ? "bg-muted" : ""}>
-                    <SelectValue placeholder="Select your blood group" />
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('selectBloodGroup')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="A+">A+</SelectItem>
@@ -476,17 +459,14 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                     <SelectItem value="O-">O-</SelectItem>
                   </SelectContent>
                 </Select>
-                {userProfile?.blood_group && (
-                  <p className="text-xs text-muted-foreground">From your profile</p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="division">
-                  Division <span className="text-destructive">*</span>
+                  {t('division')} <span className="text-destructive">*</span>
                 </Label>
                 <Select value={personalInfo.division} onValueChange={(value) => setPersonalInfo({ ...personalInfo, division: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select your division" />
+                    <SelectValue placeholder={t('divisionPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Dhaka">Dhaka</SelectItem>
@@ -504,32 +484,27 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
 
             <div className="space-y-2">
               <Label htmlFor="district">
-                District <span className="text-destructive">*</span>
+                {t('district')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="district"
-                placeholder="Enter your district"
+                placeholder={t('districtPlaceholder')}
                 value={personalInfo.district}
                 onChange={(e) => setPersonalInfo({ ...personalInfo, district: e.target.value })}
-                disabled={!!(userProfile?.district || userProfile?.location)}
-                className={(userProfile?.district || userProfile?.location) ? "bg-muted" : ""}
               />
-              {(userProfile?.district || userProfile?.location) && (
-                <p className="text-xs text-muted-foreground">From your profile</p>
-              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="fullAddress">
-                Full Address <span className="text-destructive">*</span>
+                {t('fullAddress')} <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="fullAddress"
-                placeholder="House/Road/Area details"
+                placeholder={t('fullAddressPlaceholder')}
                 value={personalInfo.fullAddress}
                 onChange={(e) => setPersonalInfo({ ...personalInfo, fullAddress: e.target.value })}
               />
-              <p className="text-xs text-muted-foreground">This helps nearby recipients find you</p>
+              <p className="text-xs text-muted-foreground">{t('recipientsFindYou')}</p>
             </div>
           </div>
         )}
@@ -540,20 +515,20 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Health Screening Required</strong>
+                <strong>{t('healthScreeningRequired')}</strong>
                 <br />
-                Please answer all questions honestly. This information helps ensure safe blood donation for both donors and recipients.
+                {t('healthScreeningNote')}
               </AlertDescription>
             </Alert>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="weight">
-                  Weight <span className="text-destructive">*</span>
+                  {t('weight')} <span className="text-destructive">*</span>
                 </Label>
                 <Select value={healthInfo.weight} onValueChange={(value) => setHealthInfo({ ...healthInfo, weight: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select weight" />
+                    <SelectValue placeholder={t('weightPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.from({ length: 50 }, (_, i) => 50 + i).map((w) => (
@@ -561,16 +536,16 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">Minimum 50kg required</p>
+                <p className="text-xs text-muted-foreground">{t('minWeightNote')}</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="height">
-                  Height (cm) <span className="text-destructive">*</span>
+                  {t('height')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="height"
                   type="number"
-                  placeholder="170"
+                  placeholder={t('heightPlaceholder')}
                   value={healthInfo.height}
                   onChange={(e) => setHealthInfo({ ...healthInfo, height: e.target.value })}
                 />
@@ -578,7 +553,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="lastDonationDate">
-                    Last Donation Date {!healthInfo.isFirstTimeDonor && <span className="text-destructive">*</span>}
+                    {t('lastDonationDate')} {!healthInfo.isFirstTimeDonor && <span className="text-destructive">*</span>}
                   </Label>
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -594,7 +569,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                       className="h-4 w-4"
                     />
                     <label htmlFor="isFirstTimeDonor" className="text-xs cursor-pointer text-muted-foreground">
-                      First Time?
+                      {t('firstTimeDonor')}
                     </label>
                   </div>
                 </div>
@@ -611,24 +586,24 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <div className="space-y-3 border rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Heart className="h-5 w-5 text-destructive" />
-                <h3 className="font-semibold">Medical History</h3>
+                <h3 className="font-semibold">{t('medicalHistory')}</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-3">
-                Do you currently have or have you ever been diagnosed with any of the following conditions?
+                {t('medicalHistoryNote')}
               </p>
               <div className="grid grid-cols-2 gap-3">
-                {Object.entries({
-                  heartDisease: "Heart disease or heart problems",
-                  diabetes: "Diabetes",
-                  hepatitis: "Hepatitis B or C",
-                  tuberculosis: "Tuberculosis",
-                  liverDisease: "Liver disease",
-                  highLowBloodPressure: "High or low blood pressure",
-                  cancerBloodDisorders: "Cancer or blood disorders",
-                  hivAids: "HIV/AIDS",
-                  kidneyDisease: "Kidney disease",
-                  epilepsySeizures: "Epilepsy or seizures",
-                }).map(([key, label]) => (
+                {[
+                  "heartDisease",
+                  "diabetes",
+                  "hepatitis",
+                  "tuberculosis",
+                  "liverDisease",
+                  "highLowBloodPressure",
+                  "cancerBloodDisorders",
+                  "hivAids",
+                  "kidneyDisease",
+                  "epilepsySeizures"
+                ].map((key) => (
                   <div key={key} className="flex items-start space-x-2">
                     <Checkbox
                       id={key}
@@ -641,16 +616,16 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                       }
                     />
                     <label htmlFor={key} className="text-sm leading-tight cursor-pointer">
-                      {label}
+                      {t(key)}
                     </label>
                   </div>
                 ))}
               </div>
               <div className="space-y-2 mt-3">
-                <Label htmlFor="otherConditions">Other Medical Conditions</Label>
+                <Label htmlFor="otherConditions">{t('otherMedicalConditions')}</Label>
                 <Textarea
                   id="otherConditions"
-                  placeholder="Please specify any other conditions"
+                  placeholder={t('otherConditionsPlaceholder')}
                   value={healthInfo.otherConditions}
                   onChange={(e) => setHealthInfo({ ...healthInfo, otherConditions: e.target.value })}
                 />
@@ -660,14 +635,14 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <div className="space-y-3 border rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Activity className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Lifestyle & Medications</h3>
+                <h3 className="font-semibold">{t('lifestyleMedications')}</h3>
               </div>
               <div className="space-y-3">
-                {Object.entries({
-                  prescriptionMedications: "I am currently taking prescription medications",
-                  smokeTobacco: "I smoke tobacco products",
-                  consumeAlcohol: "I consume alcohol regularly",
-                }).map(([key, label]) => (
+                {[
+                  "prescriptionMedications",
+                  "smokeTobacco",
+                  "consumeAlcohol"
+                ].map((key) => (
                   <div key={key} className="flex items-start space-x-2">
                     <Checkbox
                       id={key}
@@ -680,7 +655,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                       }
                     />
                     <label htmlFor={key} className="text-sm leading-tight cursor-pointer">
-                      {label}
+                      {t(key)}
                     </label>
                   </div>
                 ))}
@@ -690,17 +665,17 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <div className="space-y-3 border rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Calendar className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Recent Activities</h3>
+                <h3 className="font-semibold">{t('recentActivities')}</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">In the past 3 months, have you:</p>
+              <p className="text-sm text-muted-foreground mb-3">{t('recentActivitiesNote')}</p>
               <div className="space-y-3">
-                {Object.entries({
-                  vaccinations: "Had any vaccinations or immunizations",
-                  dentalWork: "Had any dental work or surgery",
-                  traveledOutside: "Traveled outside Bangladesh",
-                  tattoosPiercings: "Had any tattoos or piercings",
-                  beenSick: "Been sick with fever, cold, or flu",
-                }).map(([key, label]) => (
+                {[
+                  "vaccinations",
+                  "dentalWork",
+                  "traveledOutside",
+                  "tattoosPiercings",
+                  "beenSick"
+                ].map((key) => (
                   <div key={key} className="flex items-start space-x-2">
                     <Checkbox
                       id={key}
@@ -713,7 +688,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                       }
                     />
                     <label htmlFor={key} className="text-sm leading-tight cursor-pointer">
-                      {label}
+                      {t(key)}
                     </label>
                   </div>
                 ))}
@@ -727,7 +702,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                 onCheckedChange={(checked) => setHealthInfo({ ...healthInfo, confirmAccuracy: checked as boolean })}
               />
               <label htmlFor="confirmAccuracy" className="text-sm leading-tight cursor-pointer">
-                I confirm that all the information provided above is accurate and complete{" "}
+                {t('confirmAccuracy')}{" "}
                 <span className="text-destructive">*</span>
               </label>
             </div>
@@ -745,7 +720,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                   onCheckedChange={(checked) => setAgreements({ ...agreements, termsOfService: checked as boolean })}
                 />
                 <label htmlFor="termsOfService" className="text-sm leading-tight cursor-pointer">
-                  I agree to the <span className="text-destructive font-medium">Terms of Service</span>{" "}
+                  {t('termsOfServiceAgree')}{" "}
                   <span className="text-destructive">*</span>
                 </label>
               </div>
@@ -757,7 +732,7 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                   onCheckedChange={(checked) => setAgreements({ ...agreements, privacyPolicy: checked as boolean })}
                 />
                 <label htmlFor="privacyPolicy" className="text-sm leading-tight cursor-pointer">
-                  I agree to the <span className="text-destructive font-medium">Privacy Policy</span>{" "}
+                  {t('privacyPolicyAgree')}{" "}
                   <span className="text-destructive">*</span>
                 </label>
               </div>
@@ -769,10 +744,10 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                   onCheckedChange={(checked) => setAgreements({ ...agreements, notifications: checked as boolean })}
                 />
                 <label htmlFor="notifications" className="text-sm leading-tight cursor-pointer">
-                  I consent to receive SMS and email notifications about urgent blood requests
+                  {t('notificationConsent')}
                   <br />
                   <span className="text-xs text-muted-foreground">
-                    You can change this preference later in your profile settings
+                    {t('notificationConsentNote')}
                   </span>
                 </label>
               </div>
@@ -784,11 +759,11 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
                   onCheckedChange={(checked) => setAgreements({ ...agreements, profileSharing: checked as boolean })}
                 />
                 <label htmlFor="profileSharing" className="text-sm leading-tight cursor-pointer">
-                  I consent to sharing my profile information with verified recipients when there's a blood type match{" "}
+                  {t('profileSharingConsent')}{" "}
                   <span className="text-destructive">*</span>
                   <br />
                   <span className="text-xs text-muted-foreground">
-                    This is essential for the platform to function and connect donors with recipients
+                    {t('profileSharingConsentNote')}
                   </span>
                 </label>
               </div>
@@ -797,10 +772,9 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
             <Alert>
               <Shield className="h-4 w-4" />
               <AlertDescription>
-                <strong>Your Privacy Matters</strong>
+                <strong>{t('privacyMatters')}</strong>
                 <br />
-                We are committed to protecting your personal information and medical data. Your information is encrypted
-                and only shared with your explicit consent for blood matching purposes.
+                {t('privacyMattersNote')}
               </AlertDescription>
             </Alert>
           </div>
@@ -809,19 +783,19 @@ export function DonorRegistrationDialog({ open, onOpenChange, userProfile }: Don
         {/* Navigation */}
         <div className="flex items-center justify-between pt-6 border-t">
           <Button variant="outline" onClick={handlePrevious} disabled={step === 1}>
-            Previous
+            {t('previous')}
           </Button>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Shield className="h-4 w-4" />
-            <span>Secure Registration</span>
+            <span>{t('secureRegistration')}</span>
           </div>
 
           {step < totalSteps ? (
-            <Button onClick={handleNext}>Next</Button>
+            <Button onClick={handleNext}>{t('next')}</Button>
           ) : (
             <Button onClick={handleSubmit} className="gap-2" disabled={isSubmitting}>
-              {isSubmitting ? "Registering..." : "Complete Registration"}
+              {isSubmitting ? t('registering') : t('completeRegistration')}
               {!isSubmitting && <Heart className="h-4 w-4" />}
             </Button>
           )}

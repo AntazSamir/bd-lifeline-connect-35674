@@ -26,22 +26,10 @@ import { EditProfileDialog } from "@/components/EditProfileDialog";
 import { AvailabilityDialog } from "@/components/AvailabilityDialog";
 import { NotificationSettingsDialog } from "@/components/NotificationSettingsDialog";
 import { RespondToRequestDialog } from "@/components/RespondToRequestDialog";
-
-function getTimeAgo(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (seconds < 60) return `${seconds} seconds ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} minutes ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hours ago`;
-  const days = Math.floor(hours / 24);
-  return `${days} days ago`;
-}
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Profile = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: { full_name?: string }; created_at?: string } | null>(null);
   const [profile, setProfile] = useState<{ full_name?: string; blood_group?: string; district?: string; location?: string; created_at?: string; phone?: string } | null>(null);
@@ -52,6 +40,20 @@ const Profile = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [respondDialogOpen, setRespondDialogOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<BloodRequest | null>(null);
+
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return t('secondsAgo', { count: seconds });
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return t('minutesAgo', { count: minutes });
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return t('hoursAgo', { count: hours });
+    const days = Math.floor(hours / 24);
+    return t('daysAgo', { count: days });
+  };
 
   useEffect(() => {
     fetchUserData();
@@ -87,7 +89,7 @@ const Profile = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container py-12 text-center">
-          <p>Loading...</p>
+          <p>{t('loading')}</p>
         </div>
         <Footer />
       </div>
@@ -95,26 +97,26 @@ const Profile = () => {
   }
 
   const userProfile = {
-    name: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User",
-    bloodGroup: profile?.blood_group || "Not set",
-    location: profile?.district || profile?.location || "Not set",
-    joinDate: profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Recently",
+    name: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('notSet'),
+    bloodGroup: profile?.blood_group || t('notSet'),
+    location: profile?.district || profile?.location || t('notSet'),
+    joinDate: profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : t('recently'),
     totalDonations: 0,
-    lastDonation: "No donations yet",
-    nextEligible: "Available now",
-    tier: "New Donor",
-    phone: profile?.phone || "Not set",
-    email: user?.email || "Not set"
+    lastDonation: t('noDonationHistory'),
+    nextEligible: t('availableNow'),
+    tier: t('newDonor'),
+    phone: profile?.phone || t('notSet'),
+    email: user?.email || t('notSet')
   };
 
   const donationHistory: any[] = []; // TODO: Fetch real history when available
 
-  const achievements = [
-    { title: "Bronze Donor", description: "5 successful donations", earned: false },
-    { title: "Silver Donor", description: "10 successful donations", earned: false },
-    { title: "Gold Donor", description: "15 successful donations", earned: false },
-    { title: "Platinum Donor", description: "25 successful donations", earned: false },
-    { title: "Life Saver", description: "50 successful donations", earned: false }
+  const achievementsData = [
+    { titleKey: "bronzeDonor", descriptionKey: "bronzeDesc", earned: false },
+    { titleKey: "silverDonor", descriptionKey: "silverDesc", earned: false },
+    { titleKey: "goldDonor", descriptionKey: "goldDesc", earned: false },
+    { titleKey: "platinumDonor", descriptionKey: "platinumDesc", earned: false },
+    { titleKey: "lifeSaver", descriptionKey: "lifeSaverDesc", earned: false }
   ];
 
   const urgentRequests = matchingRequests.map(req => ({
@@ -122,7 +124,7 @@ const Profile = () => {
     bloodGroup: req.blood_group,
     location: req.location,
     urgency: req.urgency,
-    timeAgo: req.created_at ? getTimeAgo(req.created_at) : 'Recently'
+    timeAgo: req.created_at ? getTimeAgo(req.created_at) : t('recently')
   }));
 
   return (
@@ -151,7 +153,7 @@ const Profile = () => {
 
                   <div className="w-full space-y-2 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Blood Group:</span>
+                      <span className="text-muted-foreground">{t('bloodGroup')}:</span>
                       <Badge variant="outline" className="text-primary border-primary">
                         {userProfile.bloodGroup}
                       </Badge>
@@ -162,7 +164,7 @@ const Profile = () => {
                     </div>
                     <div className="flex items-center text-muted-foreground">
                       <Calendar className="h-4 w-4 mr-2" />
-                      Joined {userProfile.joinDate}
+                      {t('joinedPrefix')}{userProfile.joinDate}
                     </div>
                     <div className="flex items-center text-muted-foreground">
                       <Phone className="h-4 w-4 mr-2" />
@@ -181,7 +183,7 @@ const Profile = () => {
                     onClick={() => setEditProfileOpen(true)}
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    Edit Profile
+                    {t('editProfile')}
                   </Button>
                 </div>
               </CardContent>
@@ -200,7 +202,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-primary">{userProfile.totalDonations}</div>
-                      <div className="text-sm text-muted-foreground">Total Donations</div>
+                      <div className="text-sm text-muted-foreground">{t('totalDonations')}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -214,7 +216,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-secondary">0</div>
-                      <div className="text-sm text-muted-foreground">Lives Impacted</div>
+                      <div className="text-sm text-muted-foreground">{t('livesImpacted')}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -228,7 +230,7 @@ const Profile = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-hope-green">0</div>
-                      <div className="text-sm text-muted-foreground">Achievements</div>
+                      <div className="text-sm text-muted-foreground">{t('achievements')}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -238,32 +240,32 @@ const Profile = () => {
             {/* Tabs */}
             <Tabs defaultValue="overview" className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
-                <TabsTrigger value="achievements">Achievements</TabsTrigger>
-                <TabsTrigger value="requests">Requests</TabsTrigger>
+                <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
+                <TabsTrigger value="history">{t('history')}</TabsTrigger>
+                <TabsTrigger value="achievements">{t('achievements')}</TabsTrigger>
+                <TabsTrigger value="requests">{t('requests')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
                 {/* Donation Status */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Donation Status</CardTitle>
+                    <CardTitle>{t('donationStatus')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Last Donation:</span>
+                          <span className="text-muted-foreground">{t('lastDonationPrefix')}</span>
                           <span className="font-medium">{userProfile.lastDonation}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Next Eligible:</span>
+                          <span className="text-muted-foreground">{t('nextEligible')}</span>
                           <Badge variant="secondary">{userProfile.nextEligible}</Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Status:</span>
-                          <Badge className="bg-secondary text-secondary-foreground">Available</Badge>
+                          <span className="text-muted-foreground">{t('status')}</span>
+                          <Badge className="bg-secondary text-secondary-foreground">{t('availableNow')}</Badge>
                         </div>
                       </div>
                       <div className="space-y-3">
@@ -271,7 +273,7 @@ const Profile = () => {
                           className="w-full"
                           onClick={() => setAvailabilityOpen(true)}
                         >
-                          Update Availability
+                          {t('updateAvailability')}
                         </Button>
                         <Button
                           variant="outline"
@@ -279,7 +281,7 @@ const Profile = () => {
                           onClick={() => setNotificationsOpen(true)}
                         >
                           <Bell className="h-4 w-4 mr-2" />
-                          Notification Settings
+                          {t('notificationSettings')}
                         </Button>
                       </div>
                     </div>
@@ -290,12 +292,12 @@ const Profile = () => {
               <TabsContent value="history">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Donation History</CardTitle>
+                    <CardTitle>{t('donationHistory')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {donationHistory.length === 0 ? (
-                        <p className="text-center text-muted-foreground py-4">No donation history yet.</p>
+                        <p className="text-center text-muted-foreground py-4">{t('noDonationHistory')}</p>
                       ) : (
                         donationHistory.map((donation) => (
                           <div key={donation.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -319,11 +321,11 @@ const Profile = () => {
               <TabsContent value="achievements">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Your Achievements</CardTitle>
+                    <CardTitle>{t('yourAchievements')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid md:grid-cols-2 gap-4">
-                      {achievements.map((achievement, index) => (
+                      {achievementsData.map((achievement, index) => (
                         <div
                           key={index}
                           className={`p-4 rounded-lg border ${achievement.earned ? 'bg-accent/20 border-primary' : 'bg-muted/20'}`}
@@ -334,8 +336,8 @@ const Profile = () => {
                               <Award className="h-5 w-5" />
                             </div>
                             <div>
-                              <div className="font-medium">{achievement.title}</div>
-                              <div className="text-sm text-muted-foreground">{achievement.description}</div>
+                              <div className="font-medium">{t(achievement.titleKey)}</div>
+                              <div className="text-sm text-muted-foreground">{t(achievement.descriptionKey)}</div>
                             </div>
                           </div>
                         </div>
@@ -348,15 +350,15 @@ const Profile = () => {
               <TabsContent value="requests">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Matching Blood Requests</CardTitle>
+                    <CardTitle>{t('matchingRequests')}</CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      Urgent requests matching your blood group
+                      {t('matchingRequestsDesc')}
                     </p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {urgentRequests.length === 0 ? (
-                        <p className="text-center text-muted-foreground py-4">No matching requests found.</p>
+                        <p className="text-center text-muted-foreground py-4">{t('noMatchingRequests')}</p>
                       ) : (
                         urgentRequests.map((request) => (
                           <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -366,7 +368,7 @@ const Profile = () => {
                                   {request.bloodGroup}
                                 </Badge>
                                 <Badge className={request.urgency === 'immediate' ? 'bg-urgent' : 'bg-primary'}>
-                                  {request.urgency}
+                                  {t(request.urgency === 'immediate' ? 'immediate' : (request.urgency === 'urgent' ? 'urgent' : 'flexible'))}
                                 </Badge>
                               </div>
                               <div className="text-sm text-muted-foreground">
@@ -385,7 +387,7 @@ const Profile = () => {
                                 setRespondDialogOpen(true);
                               }}
                             >
-                              Respond
+                              {t('respond')}
                             </Button>
                           </div>
                         ))

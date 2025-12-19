@@ -2,16 +2,18 @@ import { Home, Search, AlertTriangle, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Search, label: "Find Donor", path: "/find-donors" },
-  { icon: AlertTriangle, label: "Emergency", path: "/create-request", isEmergency: true },
-  { icon: User, label: "Profile", path: "/profile" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const MobileBottomNav = () => {
+  const { t } = useLanguage();
   const location = useLocation();
+
+  const navItems = [
+    { icon: Home, labelKey: "home", path: "/" },
+    { icon: Search, labelKey: "findDonor", path: "/find-donors" },
+    { icon: AlertTriangle, labelKey: "emergency", path: "/create-request", isEmergency: true },
+    { icon: User, labelKey: "profile", path: "/profile" },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-lg border-t border-border safe-area-bottom">
@@ -19,7 +21,7 @@ const MobileBottomNav = () => {
         {navItems.map((item) => {
           const IconComponent = item.icon;
           const isActive = location.pathname === item.path;
-          
+
           return (
             <Link
               key={item.path}
@@ -42,12 +44,12 @@ const MobileBottomNav = () => {
                 <>
                   <IconComponent className={cn("h-5 w-5", isActive && "text-primary")} />
                   <span className={cn("text-xs mt-1 font-medium", isActive && "text-primary")}>
-                    {item.label}
+                    {t(item.labelKey)}
                   </span>
                 </>
               )}
               {item.isEmergency && (
-                <span className="text-xs mt-6 font-medium text-urgent">{item.label}</span>
+                <span className="text-xs mt-6 font-medium text-urgent">{t(item.labelKey)}</span>
               )}
             </Link>
           );

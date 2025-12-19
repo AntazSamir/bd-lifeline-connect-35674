@@ -2,15 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, X, Phone, MessageCircle, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FloatingEmergencyButton = () => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
   const actions = [
-    { icon: AlertTriangle, label: "Post Request", path: "/create-request", color: "bg-urgent" },
-    { icon: Phone, label: "Hotline", href: "tel:+8801234567890", color: "bg-hope-green" },
-    { icon: MessageCircle, label: "WhatsApp", href: "https://wa.me/8801234567890", color: "bg-[#25D366]" },
+    { icon: AlertTriangle, labelKey: "postRequest", path: "/create-request", color: "bg-urgent" },
+    { icon: Phone, labelKey: "hotline", href: "tel:+8801234567890", color: "bg-hope-green" },
+    { icon: MessageCircle, labelKey: "whatsApp", href: "https://wa.me/8801234567890", color: "bg-[#25D366]" },
   ];
 
   return (
@@ -33,7 +34,7 @@ const FloatingEmergencyButton = () => {
                   className="flex items-center gap-2"
                 >
                   <span className="bg-background/95 backdrop-blur px-3 py-1.5 rounded-full text-sm font-medium shadow-lg whitespace-nowrap">
-                    {action.label}
+                    {t(action.labelKey)}
                   </span>
                   <div className={`w-12 h-12 rounded-full ${action.color} flex items-center justify-center shadow-lg`}>
                     <IconComponent className="h-5 w-5 text-white" />
@@ -43,13 +44,13 @@ const FloatingEmergencyButton = () => {
 
               if (action.path) {
                 return (
-                  <Link key={action.label} to={action.path} onClick={() => setIsOpen(false)}>
+                  <Link key={action.labelKey} to={action.path} onClick={() => setIsOpen(false)}>
                     {content}
                   </Link>
                 );
               }
               return (
-                <a key={action.label} href={action.href} target="_blank" rel="noopener noreferrer">
+                <a key={action.labelKey} href={action.href} target="_blank" rel="noopener noreferrer">
                   {content}
                 </a>
               );
@@ -61,9 +62,8 @@ const FloatingEmergencyButton = () => {
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-          isOpen ? "bg-foreground" : "bg-primary"
-        }`}
+        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${isOpen ? "bg-foreground" : "bg-primary"
+          }`}
       >
         <motion.div
           animate={{ rotate: isOpen ? 45 : 0 }}
@@ -76,7 +76,7 @@ const FloatingEmergencyButton = () => {
           )}
         </motion.div>
       </motion.button>
-      
+
       {!isOpen && (
         <motion.div
           initial={{ scale: 1 }}

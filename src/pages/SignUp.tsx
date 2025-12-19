@@ -9,8 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 import { signUp, createUserProfile } from "@/services/dbService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SignUp = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -32,8 +34,8 @@ const SignUp = () => {
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Error",
-        description: "Passwords do not match",
+        title: t('errorTitle'),
+        description: t('passwordsDoNotMatch'),
         variant: "destructive",
       });
       return;
@@ -43,7 +45,7 @@ const SignUp = () => {
 
     try {
       // Sign up the user
-      const result = await signUp(formData.email, formData.password);
+      await signUp(formData.email, formData.password);
 
       // Create user profile with all registration data
       let profileCreated = false;
@@ -64,18 +66,17 @@ const SignUp = () => {
         // If it's a table not found error, show a specific message
         if (errorMessage && (errorMessage.includes('user_profiles') || errorMessage.includes('table') || errorMessage.includes('relation'))) {
           toast({
-            title: "Database Setup Required",
-            description: "The user_profiles table doesn't exist in the database. Please run the SQL script from create-user-profiles-table.sql in your Supabase SQL editor.",
+            title: t('dbSetupRequired'),
+            description: t('dbSetupDesc'),
             variant: "destructive",
           });
         } else {
           // For other errors, show notice about profile issue
           toast({
-            title: "Notice",
-            description: "Account created successfully! Profile creation had an issue but your account is still active. You can complete your profile later.",
+            title: t('notice'),
+            description: t('profileIssueNotice'),
           });
         }
-        // Don't show duplicate success message - we've already informed the user
         // Redirect to sign in page after a delay to allow user to read the message
         setTimeout(() => {
           navigate("/sign-in");
@@ -86,8 +87,8 @@ const SignUp = () => {
       // Only show success toast if profile was created successfully
       if (profileCreated) {
         toast({
-          title: "Success",
-          description: "Account created successfully! Please check your email to confirm your address.",
+          title: t('success'),
+          description: t('accountCreatedSuccess'),
         });
 
         // Redirect to check email page
@@ -96,10 +97,9 @@ const SignUp = () => {
         }, 1000);
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create account";
       toast({
-        title: "Error",
-        description: message,
+        title: t('errorTitle'),
+        description: t('signUpFailed'),
         variant: "destructive",
       });
     } finally {
@@ -124,41 +124,41 @@ const SignUp = () => {
               <Heart className="h-8 w-8 text-primary" fill="currentColor" />
             </div>
             <CardTitle className="text-2xl font-bold">
-              Create New Account
+              {t('createNewAccount')}
             </CardTitle>
             <CardDescription>
-              Join the blood donation service
+              {t('joinService')}
             </CardDescription>
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">{t('fullName')}</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder={t('fullNamePlaceholder')}
                   value={formData.name}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('email')}</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('emailPlaceholder')}
                   value={formData.email}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">{t('phoneLabel')}</Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -169,29 +169,29 @@ const SignUp = () => {
                   required
                 />
                 <p className="text-xs text-muted-foreground text-red-500">
-                  Note: You cannot change your phone number after registration.
+                  {t('phoneNote')}
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nid">National ID Number</Label>
+                <Label htmlFor="nid">{t('nidLabel')}</Label>
                 <Input
                   id="nid"
                   name="nid"
                   type="text"
-                  placeholder="Enter your NID number"
+                  placeholder={t('nidPlaceholder')}
                   value={formData.nid}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter a strong password"
+                    placeholder={t('passwordStrongPlaceholder')}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -212,13 +212,13 @@ const SignUp = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Re-enter your password"
+                    placeholder={t('confirmPasswordPlaceholder')}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -246,13 +246,13 @@ const SignUp = () => {
                 className="w-full"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? t('creatingAccount') : t('createAccount')}
               </Button>
 
               <div className="text-center text-sm">
-                Already have an account?{" "}
+                {t('alreadyHaveAccount')}{" "}
                 <Link to="/sign-in" className="text-primary hover:underline font-medium">
-                  Sign In
+                  {t('signIn')}
                 </Link>
               </div>
             </CardFooter>

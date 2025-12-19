@@ -9,9 +9,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BLOOD_GROUPS, DIVISIONS } from "@/lib/constants";
 import { useDonors } from "@/hooks/useDatabase";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 
 const SmartQuickSearch = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [bloodGroup, setBloodGroup] = useState("");
   const [hospital, setHospital] = useState("");
@@ -30,20 +32,20 @@ const SmartQuickSearch = () => {
           (position) => {
             // For demo, we'll just set a default division
             setDivision("Dhaka");
-            toast.success("Location detected: Dhaka Division");
+            toast.success(t('locationDetected', { location: "Dhaka Division" }));
             setLocationLoading(false);
           },
           (error) => {
-            toast.error("Unable to detect location. Please select manually.");
+            toast.error(t('unableToDetectLocation'));
             setLocationLoading(false);
           }
         );
       } else {
-        toast.error("Geolocation not supported by your browser");
+        toast.error(t('geolocationNotSupported'));
         setLocationLoading(false);
       }
     } catch (error) {
-      toast.error("Location detection failed");
+      toast.error(t('locationDetectionFailed'));
       setLocationLoading(false);
     }
   };
@@ -67,7 +69,7 @@ const SmartQuickSearch = () => {
 
   const handleSearch = () => {
     if (!bloodGroup) {
-      toast.error("Please select a blood group");
+      toast.error(t('pleaseSelectBloodGroup'));
       return;
     }
     navigate(`/find-donors?blood_group=${bloodGroup}&division=${division}&urgency=${isEmergency ? 'immediate' : 'flexible'}`);
@@ -81,22 +83,21 @@ const SmartQuickSearch = () => {
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
               <Search className="h-5 w-5 text-primary" />
-              Smart Donor Search
+              {t('smartDonorSearch')}
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">Find compatible donors near you instantly</p>
+            <p className="text-sm text-muted-foreground mt-1">{t('findDonorsInstantly')}</p>
           </div>
-          
+
           {/* Urgency Toggle */}
           <button
             onClick={() => setIsEmergency(!isEmergency)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              isEmergency 
-                ? "bg-urgent text-white shadow-lg shadow-urgent/30" 
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${isEmergency
+                ? "bg-urgent text-white shadow-lg shadow-urgent/30"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
+              }`}
           >
             <Zap className={`h-4 w-4 ${isEmergency ? "animate-pulse" : ""}`} />
-            {isEmergency ? "Emergency" : "Normal"}
+            {isEmergency ? t('emergency') : t('normal')}
           </button>
         </div>
 
@@ -105,11 +106,11 @@ const SmartQuickSearch = () => {
           {/* Blood Group - Required */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-              🩸 Blood Group <span className="text-primary">*</span>
+              🩸 {t('bloodGroup')} <span className="text-primary">*</span>
             </label>
             <Select value={bloodGroup} onValueChange={setBloodGroup}>
               <SelectTrigger className="h-12 bg-background/50 border-border/50">
-                <SelectValue placeholder="Select blood group" />
+                <SelectValue placeholder={t('selectBloodGroup')} />
               </SelectTrigger>
               <SelectContent>
                 {BLOOD_GROUPS.map((bg) => (
@@ -124,10 +125,10 @@ const SmartQuickSearch = () => {
           {/* Hospital Name - Required */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Hospital className="h-4 w-4" /> Hospital Name <span className="text-primary">*</span>
+              <Hospital className="h-4 w-4" /> {t('hospitalName')}
             </label>
             <Input
-              placeholder="Enter hospital name"
+              placeholder={t('enterHospitalName')}
               value={hospital}
               onChange={(e) => setHospital(e.target.value)}
               className="h-12 bg-background/50 border-border/50"
@@ -137,11 +138,11 @@ const SmartQuickSearch = () => {
           {/* Division */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> Division / District
+              <MapPin className="h-4 w-4" /> {t('divisionDistrict')}
             </label>
             <Select value={division} onValueChange={setDivision}>
               <SelectTrigger className="h-12 bg-background/50 border-border/50">
-                <SelectValue placeholder="Select area" />
+                <SelectValue placeholder={t('selectArea')} />
               </SelectTrigger>
               <SelectContent>
                 {DIVISIONS.map((div) => (
@@ -153,7 +154,7 @@ const SmartQuickSearch = () => {
 
           {/* Location Button */}
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-foreground opacity-0 hidden md:block">Action</label>
+            <label className="text-sm font-semibold text-foreground opacity-0 hidden md:block">{t('action') || 'Action'}</label>
             <Button
               variant="outline"
               onClick={handleUseLocation}
@@ -165,7 +166,7 @@ const SmartQuickSearch = () => {
               ) : (
                 <Navigation className="h-4 w-4 mr-2" />
               )}
-              Use My Location
+              {locationLoading ? t('detectingLocation') : t('useMyLocation')}
             </Button>
           </div>
         </div>
@@ -182,26 +183,26 @@ const SmartQuickSearch = () => {
               {isSearching ? (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">Searching donors...</span>
+                  <span className="text-sm">{t('searchingDonors')}</span>
                 </div>
               ) : previewResults !== null && previewResults > 0 ? (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="bg-hope-green/10 text-hope-green">
-                      {previewResults} donors found
+                      {t('donorsFound', { count: previewResults })}
                     </Badge>
-                    <span className="text-sm text-muted-foreground">matching your criteria</span>
+                    <span className="text-sm text-muted-foreground">{t('matchingCriteria')}</span>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-urgent">
                     <AlertTriangle className="h-4 w-4" />
-                    <span className="text-sm font-medium">No donors found for this criteria</span>
+                    <span className="text-sm font-medium">{t('noDonorsFoundCriteria')}</span>
                   </div>
                   <Link to="/create-request">
                     <Button size="sm" variant="destructive" className="text-xs">
-                      Post Emergency Request
+                      {t('postEmergencyRequest')}
                     </Button>
                   </Link>
                 </div>
@@ -211,16 +212,15 @@ const SmartQuickSearch = () => {
         </AnimatePresence>
 
         {/* Search Button */}
-        <Button 
+        <Button
           onClick={handleSearch}
-          className={`w-full mt-6 py-6 text-lg font-semibold shadow-lg transition-all duration-300 ${
-            isEmergency 
-              ? "bg-urgent hover:bg-urgent/90 shadow-urgent/30" 
+          className={`w-full mt-6 py-6 text-lg font-semibold shadow-lg transition-all duration-300 ${isEmergency
+              ? "bg-urgent hover:bg-urgent/90 shadow-urgent/30"
               : "bg-primary hover:bg-primary/90 shadow-primary/30"
-          }`}
+            }`}
         >
           <Search className="h-5 w-5 mr-2" />
-          {isEmergency ? "Find Blood Now - Emergency" : "Search Donors"}
+          {isEmergency ? t('findBloodEmergency') : t('searchDonorsBtn')}
         </Button>
       </div>
     </Card>

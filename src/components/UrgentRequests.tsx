@@ -7,8 +7,10 @@ import { Link } from "react-router-dom";
 import { useBloodRequests } from "@/hooks/useDatabase";
 import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const UrgentRequests = () => {
+  const { t } = useLanguage();
   const [showTimeout, setShowTimeout] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
@@ -55,11 +57,11 @@ const UrgentRequests = () => {
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
 
     if (diffInMinutes < 60) {
-      return `${diffInMinutes} min ago`;
+      return `${diffInMinutes} ${t('minAgo')}`;
     } else if (diffInMinutes < 1440) {
-      return `${Math.floor(diffInMinutes / 60)}h ago`;
+      return `${Math.floor(diffInMinutes / 60)}${t('hAgo')}`;
     } else {
-      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+      return `${Math.floor(diffInMinutes / 1440)}${t('dAgo')}`;
     }
   };
 
@@ -71,14 +73,14 @@ const UrgentRequests = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-urgent/10 text-urgent px-4 py-2 rounded-full mb-4">
               <AlertTriangle className="h-4 w-4" />
-              <span className="text-sm font-semibold">Emergency Requests</span>
+              <span className="text-sm font-semibold">{t('urgentBloodRequests')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Urgent Blood Requests
+              {t('urgentBloodRequests')}
             </h2>
             <p className="text-muted-foreground flex items-center justify-center gap-2">
               <RefreshCw className="h-4 w-4 animate-spin" />
-              Fetching latest emergency blood requests...
+              {t('fetchingRequests')}
             </p>
           </div>
 
@@ -117,13 +119,13 @@ const UrgentRequests = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-urgent/10 text-urgent px-4 py-2 rounded-full mb-4">
               <AlertTriangle className="h-4 w-4" />
-              <span className="text-sm font-semibold">Emergency Requests</span>
+              <span className="text-sm font-semibold">{t('urgentBloodRequests')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Urgent Blood Requests
+              {t('urgentBloodRequests')}
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              Having trouble loading requests. Please try again.
+              {t('troubleLoading')}
             </p>
             <Button
               onClick={() => window.location.reload()}
@@ -131,7 +133,7 @@ const UrgentRequests = () => {
               className="gap-2"
             >
               <RefreshCw className="h-4 w-4" />
-              Retry
+              {t('retry')}
             </Button>
           </div>
         </div>
@@ -147,17 +149,17 @@ const UrgentRequests = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-hope-green/10 text-hope-green px-4 py-2 rounded-full mb-4">
               <Droplets className="h-4 w-4" />
-              <span className="text-sm font-semibold">All Clear</span>
+              <span className="text-sm font-semibold">{t('allClear')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              No Urgent Requests Right Now
+              {t('noUrgentRequests')}
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              Good news! There are no urgent blood requests at the moment. Check back later or browse all requests.
+              {t('noUrgentRequestsDesc')}
             </p>
             <Link to="/request-blood">
               <Button variant="outline" size="lg">
-                View All Requests
+                {t('viewAllRequests')}
               </Button>
             </Link>
           </div>
@@ -180,13 +182,13 @@ const UrgentRequests = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-urgent opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-urgent"></span>
             </span>
-            <span className="text-sm font-semibold">Live Emergency Requests</span>
+            <span className="text-sm font-semibold">{t('liveEmergencyRequests')}</span>
           </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Urgent Blood Requests
+            {t('urgentBloodRequests')}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            These patients need blood donations immediately. Your quick response can save a life.
+            {t('urgentRequestsDesc')}
           </p>
         </div>
 
@@ -207,12 +209,12 @@ const UrgentRequests = () => {
                         <span className="text-2xl font-bold text-primary">{request.blood_group}</span>
                       </div>
                       <div>
-                        <CardTitle className="text-lg">Blood Needed</CardTitle>
-                        <p className="text-sm text-muted-foreground">{request.units_needed} units required</p>
+                        <CardTitle className="text-lg">{t('bloodNeeded')}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{request.units_needed} {t('unitsRequired')}</p>
                       </div>
                     </div>
                     <Badge className={`${getUrgencyColor(request.urgency)} uppercase text-xs`}>
-                      {request.urgency}
+                      {t(request.urgency)}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -225,7 +227,7 @@ const UrgentRequests = () => {
 
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Clock className="h-4 w-4 mr-2 text-primary/70" />
-                    Posted {formatTimeAgo(request.created_at || new Date().toISOString())}
+                    {t('posted')} {formatTimeAgo(request.created_at || new Date().toISOString())}
                   </div>
 
                   {request.patient_info && (
@@ -238,7 +240,7 @@ const UrgentRequests = () => {
                     <a href={`tel:${request.contact_number}`} className="flex-1">
                       <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
                         <Phone className="h-4 w-4 mr-2" />
-                        Call Now
+                        {t('callNow')}
                       </Button>
                     </a>
                     <a
@@ -248,7 +250,7 @@ const UrgentRequests = () => {
                       className="flex-1"
                     >
                       <Button size="sm" variant="outline" className="w-full">
-                        WhatsApp
+                        {t('whatsApp')}
                       </Button>
                     </a>
                   </div>
@@ -261,7 +263,7 @@ const UrgentRequests = () => {
         <div className="text-center mt-10">
           <Link to="/request-blood">
             <Button variant="outline" size="lg" className="gap-2">
-              View All Requests
+              {t('viewAllRequests')}
               <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{requests.length}+</span>
             </Button>
           </Link>

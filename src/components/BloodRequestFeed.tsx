@@ -18,27 +18,28 @@ import {
 } from "lucide-react";
 import { useBloodRequests } from "@/hooks/useDatabase";
 import { BloodRequest, BloodRequestFilters } from "@/services/dbService";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Utility functions
-const getUrgencyStyle = (urgency: string) => {
+const getUrgencyStyle = (urgency: string, t: (key: string) => string) => {
   switch (urgency) {
     case "immediate":
       return {
         badge: "bg-destructive text-destructive-foreground",
         icon: <AlertTriangle className="h-3 w-3" />,
-        text: "Immediate"
+        text: t('immediate')
       };
     case "urgent":
       return {
         badge: "bg-primary text-primary-foreground",
         icon: <Clock className="h-3 w-3" />,
-        text: "Urgent"
+        text: t('urgent')
       };
     case "flexible":
       return {
         badge: "bg-secondary text-secondary-foreground",
         icon: <Clock className="h-3 w-3" />,
-        text: "Flexible"
+        text: t('flexible')
       };
     default:
       return {
@@ -50,27 +51,32 @@ const getUrgencyStyle = (urgency: string) => {
 };
 
 const formatDistrict = (district: string) => {
+  if (!district) return "";
   return district.charAt(0).toUpperCase() + district.slice(1);
 };
 
-const formatTimeAgo = (dateString: string) => {
+const formatTimeAgo = (dateString: string, t: (key: string, variables?: any) => string) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
 
+  if (diffInMinutes < 1) {
+    return t('secondsAgo', { count: 30 }); // Defaulting to 30 for simplicity
+  }
   if (diffInMinutes < 60) {
-    return `${diffInMinutes} minutes ago`;
+    return t('minutesAgo', { count: diffInMinutes });
   } else if (diffInMinutes < 1440) {
-    return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    return t('hoursAgo', { count: Math.floor(diffInMinutes / 60) });
   } else {
-    return `${Math.floor(diffInMinutes / 1440)} days ago`;
+    return t('daysAgo', { count: Math.floor(diffInMinutes / 1440) });
   }
 };
 
 // Memoized request card component for better performance
 const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
-  const urgencyStyle = useMemo(() => getUrgencyStyle(request.urgency), [request.urgency]);
-  const timeAgo = useMemo(() => formatTimeAgo(request.created_at || new Date().toISOString()), [request.created_at]);
+  const { t } = useLanguage();
+  const urgencyStyle = useMemo(() => getUrgencyStyle(request.urgency, t), [request.urgency, t]);
+  const timeAgo = useMemo(() => formatTimeAgo(request.created_at || new Date().toISOString(), t), [request.created_at, t]);
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -82,7 +88,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
             </div>
             <div>
               <div className="flex items-center space-x-2 flex-wrap">
-                <h3 className="font-semibold text-foreground text-sm sm:text-base">Patient #{request.id}</h3>
+                <h3 className="font-semibold text-foreground text-sm sm:text-base">{t('patient')} #{request.id}</h3>
                 <Badge variant="secondary" className="text-xs font-bold">
                   {request.blood_group}
                 </Badge>
@@ -104,7 +110,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
           <div className="flex items-start space-x-2">
             <Hospital className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <span className="text-foreground line-clamp-2">{request.patient_info || "Patient information not provided"}</span>
+            <span className="text-foreground line-clamp-2">{request.patient_info || "---"}</span>
           </div>
           <div className="flex items-center space-x-2">
             <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
@@ -112,11 +118,11 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
           </div>
           <div className="flex items-center space-x-2">
             <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <span className="text-foreground">Contact Person</span>
+            <span className="text-foreground">{t('contactPerson')}</span>
           </div>
           <div className="flex items-center space-x-2">
             <Droplets className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <span className="text-foreground">{request.units_needed} unit(s) needed</span>
+            <span className="text-foreground">{t('unitsNeeded', { units: request.units_needed })}</span>
           </div>
         </div>
 
@@ -129,10 +135,10 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
           </div>
           <div className="flex space-x-2">
             <Button size="sm" variant="outline" className="flex-1 sm:flex-none text-xs sm:text-sm">
-              Share
+              {t('share')}
             </Button>
             <Button size="sm" className="bg-destructive hover:bg-destructive/90 flex-1 sm:flex-none text-xs sm:text-sm">
-              I Can Help
+              {t('iCanHelp')}
             </Button>
           </div>
         </div>
@@ -150,6 +156,7 @@ interface BloodRequestFeedProps {
 }
 
 const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
+  const { t } = useLanguage();
   const { requests, loading, error, page, setPage, totalPages } = useBloodRequests(1, ITEMS_PER_PAGE, filters);
 
   // Reset to page 1 when filters change
@@ -160,6 +167,10 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
   if (loading) {
     return (
       <div className="space-y-6">
+        <div className="flex items-center space-x-2 text-muted-foreground mb-4">
+          <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <span>{t('loadingRequests')}</span>
+        </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
@@ -186,7 +197,7 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
   }
 
   if (error) {
-    return <div className="text-center py-8 text-destructive">Error loading blood requests: {error}</div>;
+    return <div className="text-center py-8 text-destructive">{t('failedToLoadDonors')} {error}</div>; // Reusing key or adding new if needed
   }
 
   return (
@@ -201,8 +212,8 @@ const BloodRequestFeed = ({ filters = {} }: BloodRequestFeedProps) => {
         <div className="text-center py-8">
           <p className="text-muted-foreground">
             {filters.searchQuery
-              ? `No blood requests match "${filters.searchQuery}"`
-              : "No blood requests found."}
+              ? t('noMatchFound', { query: filters.searchQuery })
+              : t('noRequestsFound')}
           </p>
         </div>
       )}
