@@ -125,8 +125,8 @@ const UrgentRequests = () => {
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               Having trouble loading requests. Please try again.
             </p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               variant="outline"
               className="gap-2"
             >
@@ -241,7 +241,7 @@ const UrgentRequests = () => {
                         Call Now
                       </Button>
                     </a>
-                    <a 
+                    <a
                       href={`https://wa.me/${request.contact_number?.replace(/\D/g, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"

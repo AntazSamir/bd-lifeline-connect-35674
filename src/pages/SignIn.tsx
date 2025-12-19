@@ -30,7 +30,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
-      await signIn(formData.email, formData.password);
+      await signIn(formData.email.trim(), formData.password);
       toast({
         title: "Success",
         description: "Signed in successfully!",
@@ -39,10 +39,10 @@ const SignIn = () => {
     } catch (error: any) {
       let title = "Sign In Failed";
       let message = "An unexpected error occurred. Please try again.";
-      
+
       const errorMessage = error?.message?.toLowerCase() || "";
       const errorCode = error?.code || "";
-      
+
       if (errorMessage.includes("invalid login credentials") || errorCode === "invalid_credentials") {
         title = "Incorrect Password";
         message = "The password you entered is incorrect. Please try again or reset your password.";
@@ -58,7 +58,7 @@ const SignIn = () => {
       } else if (error instanceof Error) {
         message = error.message;
       }
-      
+
       toast({
         title,
         description: message,
@@ -95,7 +95,7 @@ const SignIn = () => {
     setIsResetLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
