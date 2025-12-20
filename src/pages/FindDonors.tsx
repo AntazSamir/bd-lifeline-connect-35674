@@ -13,7 +13,6 @@ import {
   MapPin,
   Heart,
   Filter,
-  Star,
   Calendar,
   Clock,
   ChevronDown,
@@ -21,7 +20,6 @@ import {
   RotateCcw,
   Droplet,
   Users,
-
   ShieldCheck,
   AlertCircle
 } from "lucide-react";
@@ -35,6 +33,10 @@ import { Donor } from "@/services/dbService";
 import { BLOOD_GROUPS, DISTANCE_OPTIONS, GENDER_OPTIONS, LAST_DONATION_OPTIONS, AVAILABILITY_OPTIONS } from "@/lib/constants";
 import { supabase } from "@/services/supabaseClient";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { DonorListSkeleton } from "@/components/skeletons/DonorCardSkeleton";
+import FiltersSkeleton from "@/components/skeletons/FiltersSkeleton";
+import PageHeaderSkeleton from "@/components/skeletons/PageHeaderSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FindDonors = () => {
   const { t } = useLanguage();
@@ -182,6 +184,32 @@ const FindDonors = () => {
       setRegistrationDialogOpen(true);
     }
   };
+
+  // Show full page skeleton during initial load
+  if (loading && checkingDonorStatus) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-8">
+          <PageHeaderSkeleton />
+          <div className="grid lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1">
+              <FiltersSkeleton />
+            </div>
+            <div className="lg:col-span-3">
+              <Skeleton className="h-10 w-full mb-6 rounded-md" />
+              <div className="flex items-center justify-between mb-4">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-10 w-48 rounded-md" />
+              </div>
+              <DonorListSkeleton count={5} />
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -423,9 +451,7 @@ const FindDonors = () => {
 
             {/* Donors Grid */}
             <div className="space-y-4">
-              {loading && (
-                <div className="text-muted-foreground">{t('loadingDonors')}</div>
-              )}
+              {loading && <DonorListSkeleton count={5} />}
               {error && !loading && (
                 <div className="text-destructive">{t('failedToLoadDonors')} {error}</div>
               )}
