@@ -1,43 +1,53 @@
-This project appears to be a Blood Donation Platform (likely named "BD Lifeline Connect"), designed to connect blood donors with patients in need. It leverages Supabase for the backend (database & authentication) and a modern React stack for the frontend.
+Product Specification Details: BD LifeLine Connect
+BD LifeLine Connect is a high-performance web platform designed to bridge the gap between blood donors and recipients in Bangladesh. The application focuses on real-time search, urgent request management, and a robust verification system to ensure a reliable blood donation ecosystem.
 
-Core Purpose
-The application serves as a bridge between blood donors and recipients, allowing users to:
-
-Request Blood: Post urgent needs for blood donations.
-Find Donors: Search for available donors based on blood group and location.
-Manage Profiles: Maintain donor status and personal information.
-Key Features & Workflow
-1. User Access & Authentication
-Sign Up / Sign In: Users can create accounts (/sign-up) and log in (/sign-in).
-Email Verification: Includes an email confirmation flow (/confirm-email) to verify users.
-Profile Completion: After signing up, users are guided to complete their profile (/complete-profile), likely to collect essential details like blood group and location.
-2. Blood Requests
-View Requests (/request-blood): A public feed where users can see current blood needs.
-Create Request (/create-request): Authenticated users can post new blood requests, specifying details like:
-Blood Group
-Location / Hospital
-Urgency (Immediate, Urgent, Flexible)
-Contact Information
-3. Donor Network
-Find Donors (/find-donors): A search interface to locate donors. It likely allows filtering by blood group and location to find matches quickly.
-Donor Status: Users can probably toggle their availability to donate in their profile.
-4. User Dashboard
-Profile Management (/profile or /dashboard): A central hub for users to:
-View and edit their personal info.
-Manage their own blood requests.
-Update their donation history or availability.
-Technical Architecture
-Frontend: Built with React, Vite, and TypeScript.
-Styling: Uses Tailwind CSS and shadcn-ui for a modern, responsive design.
-Backend (Supabase):
-Database: Stores blood_requests, donors, and user_profiles.
-Auth: Handles user registration and session management.
-Security: Row Level Security (RLS) policies ensure users can only edit their own data while keeping requests and donor lists publicly viewable.
-How It Should Work (User Flow)
-Visitor: Lands on the home page (/), can browse "Find Donors" or "Blood Requests" immediately.
-Registration: To post a request or become a donor, the visitor signs up.
-Onboarding: The user completes their profile, adding their blood group and location.
-Action:
-Need Blood? The user creates a request. It appears on the public feed.
-Want to Donate? The user sets themselves as "Available" and appears in donor searches.
-Connection: Interested donors contact the requester via the provided phone number.
+1. Technical Stack
+Frontend: React 18 with Vite, TypeScript.
+Styling: Tailwind CSS (Mobile-first, responsive design).
+UI Components: Shadcn UI (Radix UI primitives), Framer Motion (Animations).
+Backend/Database: Supabase (PostgreSQL, Real-time engine, Auth).
+State Management: React Query (Data fetching), React Context (Language/Auth).
+Internationalization: Custom i18n system for English and Bengali.
+Validation: Zod (Schema-based validation for all forms).
+2. Core Modules & Features
+A. Authentication & Onboarding
+Methods: Email/Password and Google OAuth integration.
+Flows:
+Email Verification: Users must verify their email via a dedicated check-email flow.
+Smart Profile Completion: New users are automatically detected if essential data (Blood Group, District, Phone) is missing and redirected to a "Complete Profile" wizard.
+Password Management: Secure password reset flow with email link verification.
+B. Donor Search System
+Smart Search: Real-time filtering by Blood Group, District, Gender, and Availability.
+Verification: "ShieldCheck" badges for verified donors.
+Real-time Status: Indicators showing live donor availability.
+Sorting: Sort results by distance, rating, or donation count.
+C. Blood Request Engine
+Request Creation: Detailed forms covering patient info, hospital address, units needed, and urgency level.
+Urgency Levels:
+Immediate: Triggers critical alerts.
+Urgent: Highlighted in feeds.
+Flexible: Standard visibility.
+Response System: Logged-in donors can directly respond to requests through a managed dialog.
+D. User Profile Management
+Personal Dashboard: View matching blood requests, donation history, and achievements.
+Availability Toggle: Donors can update their status to "Available" or "Busy" with one click.
+Avatar System: Support for profile photo uploads integrated with Supabase Storage.
+Notification Settings: Customizable alerts for blood requests matching the user's blood group.
+3. Information Architecture
+/: Dynamic landing page with impact stats, "How it Works," and urgent request previews.
+/find-donors: Core search interface for discovering compatible blood donors.
+/request-blood: Feed of active blood requests with advanced filtering.
+/create-request: Form-based wizard for creating new blood needs.
+/profile: Central hub for user data, achievements, and account settings.
+/about: Mission statement, FAQ, and Privacy Policy (with deep-link support).
+/contact: Support inquiry system with telephone hotline integration.
+4. Design Standards
+Aesthetics: Glassmorphism effects, vibrant primary "Blood Red" (HSL 0, 84%, 60%) theme, and smooth micro-animations.
+Performance: Optimized layout shifts (Lighthouse focused), semantic HTML5, and responsive breakpoints for all device sizes.
+Accessibility: ARIA labels, focus rings, and high-contrast text for critical alerts.
+5. Data Constraints (Validations)
+Donor Age: 18–60 years.
+Donor Weight: Minimum 50 kg.
+Passwords: Minimum 6 characters.
+NID: 10–17 digit validation.
+Requests: Units capped at 50 per request to prevent misuse.

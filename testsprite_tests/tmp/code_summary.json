@@ -2,155 +2,168 @@
   "tech_stack": [
     "TypeScript",
     "React",
-    "Vite",
     "Supabase",
-    "PostgreSQL",
     "Tailwind CSS",
-    "shadcn-ui",
-    "React Router",
-    "TanStack Query",
-    "Framer Motion"
+    "Vite",
+    "Framer Motion",
+    "Lucide React"
   ],
   "features": [
     {
-      "name": "Authentication System",
-      "description": "User authentication with email/password and Google OAuth, including sign up, sign in, sign out, password reset, and email confirmation",
+      "name": "Blood Request System",
+      "description": "Component and service for managing blood requests, including fetching paginated/filtered lists, creating new requests, and responding to existing ones.",
       "files": [
+        "src/services/dbService.ts",
+        "src/pages/RequestBlood.tsx",
+        "src/pages/CreateRequest.tsx",
+        "src/components/BloodRequestFeed.tsx"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Blood Request API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/blood_requests": {
+            "get": {
+              "summary": "Retrieve a list of blood requests with optional filters",
+              "parameters": [
+                {
+                  "name": "page",
+                  "in": "query",
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "in": "query",
+                  "schema": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "name": "bloodGroup",
+                  "in": "query",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "post": {
+              "summary": "Post a new blood request",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "blood_group": {
+                          "type": "string"
+                        },
+                        "location": {
+                          "type": "string"
+                        },
+                        "units_needed": {
+                          "type": "integer"
+                        },
+                        "urgency": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Donor Discovery & Registration",
+      "description": "Functionality to search for verified donors and for users to register themselves as blood donors.",
+      "files": [
+        "src/services/dbService.ts",
+        "src/pages/FindDonors.tsx",
+        "src/components/DonorRegistrationDialog.tsx"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Donor API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/donors": {
+            "get": {
+              "summary": "Fetch list of donors"
+            },
+            "post": {
+              "summary": "Register a donor profile"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User Authentication & Onboarding",
+      "description": "Supabase-powered authentication flow including email/password, Google OAuth, and mandatory profile completion for new users.",
+      "files": [
+        "src/services/dbService.ts",
         "src/pages/SignIn.tsx",
         "src/pages/SignUp.tsx",
-        "src/pages/ResetPassword.tsx",
-        "src/pages/EmailConfirmation.tsx",
-        "src/services/dbService.ts",
-        "src/services/supabaseClient.ts"
-      ]
+        "src/pages/CompleteProfile.tsx",
+        "src/pages/CheckEmail.tsx",
+        "src/pages/EmailConfirmation.tsx"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Auth API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/auth/signup": {
+            "post": {
+              "summary": "Register a new user"
+            }
+          },
+          "/auth/signin": {
+            "post": {
+              "summary": "Authenticate a user"
+            }
+          }
+        }
+      }
     },
     {
       "name": "User Profile Management",
-      "description": "Complete user profile system with creation, update, and deletion. Includes profile completion flow and user profile display",
+      "description": "Secure dashboard where users can manage their personal information, donation status, and notification preferences.",
       "files": [
+        "src/services/dbService.ts",
         "src/pages/Profile.tsx",
-        "src/pages/CompleteProfile.tsx",
-        "src/pages/UserProfile.tsx",
-        "src/services/dbService.ts",
-        "src/hooks/useDatabase.ts"
-      ]
-    },
-    {
-      "name": "Blood Request Management",
-      "description": "Create, read, update, and delete blood requests with filtering, pagination, and search functionality",
-      "files": [
-        "src/pages/RequestBlood.tsx",
-        "src/pages/CreateRequest.tsx",
-        "src/components/BloodRequestFeed.tsx",
-        "src/components/UrgentRequests.tsx",
-        "src/services/dbService.ts",
-        "src/hooks/useDatabase.ts"
-      ]
-    },
-    {
-      "name": "Donor Management",
-      "description": "Donor registration, availability toggle, donor search, and real-time donor updates",
-      "files": [
-        "src/pages/FindDonors.tsx",
-        "src/components/DonorRegistrationDialog.tsx",
-        "src/components/DonorRegistrationForm.tsx",
-        "src/components/DonorAvailabilityToggle.tsx",
-        "src/services/dbService.ts",
-        "src/hooks/useDatabase.ts"
-      ]
-    },
-    {
-      "name": "Real-time Updates",
-      "description": "Real-time subscription to donor updates using Supabase real-time features with status indicator",
-      "files": [
-        "src/components/RealtimeStatusIndicator.tsx",
-        "src/pages/TestRealtime.tsx",
-        "src/hooks/useDatabase.ts"
-      ]
-    },
-    {
-      "name": "Homepage Components",
-      "description": "Landing page with hero section, trusted companies, urgent requests, why donate section, impact stats, how it works, and testimonials",
-      "files": [
-        "src/pages/Index.tsx",
-        "src/components/Hero.tsx",
-        "src/components/TrustedCompanies.tsx",
-        "src/components/UrgentRequests.tsx",
-        "src/components/WhyDonate.tsx",
-        "src/components/ImpactStats.tsx",
-        "src/components/HowItWorks.tsx",
-        "src/components/Testimonials.tsx"
-      ]
-    },
-    {
-      "name": "Navigation and Layout",
-      "description": "Header with navigation, footer, theme toggle, and error boundary for error handling",
-      "files": [
-        "src/components/Header.tsx",
-        "src/components/Footer.tsx",
-        "src/components/ThemeToggle.tsx",
-        "src/components/ThemeProvider.tsx",
-        "src/components/ErrorBoundary.tsx",
-        "src/App.tsx"
-      ]
-    },
-    {
-      "name": "UI Components",
-      "description": "Comprehensive shadcn-ui component library including buttons, forms, dialogs, cards, tables, and more",
-      "files": [
-        "src/components/ui/button.tsx",
-        "src/components/ui/input.tsx",
-        "src/components/ui/form.tsx",
-        "src/components/ui/dialog.tsx",
-        "src/components/ui/card.tsx",
-        "src/components/ui/table.tsx",
-        "src/components/ui/toast.tsx",
-        "src/components/ui/toaster.tsx",
-        "src/components/ui/sonner.tsx",
-        "src/lib/utils.ts"
-      ]
-    },
-    {
-      "name": "Database Service",
-      "description": "Centralized database service with CRUD operations for blood requests, donors, and user profiles",
-      "files": [
-        "src/services/dbService.ts",
-        "src/services/supabaseClient.ts"
-      ]
-    },
-    {
-      "name": "Custom Hooks",
-      "description": "React hooks for managing blood requests, donors, and user profiles with state management",
-      "files": [
-        "src/hooks/useDatabase.ts",
-        "src/hooks/use-mobile.tsx",
-        "src/hooks/use-toast.ts"
-      ]
-    },
-    {
-      "name": "Additional Pages",
-      "description": "About page, contact page, and 404 not found page",
-      "files": [
-        "src/pages/About.tsx",
-        "src/pages/Contact.tsx",
-        "src/pages/NotFound.tsx"
-      ]
-    },
-    {
-      "name": "Background Effects",
-      "description": "Shader background component for visual effects",
-      "files": [
-        "src/components/shader-background.tsx"
-      ]
-    },
-    {
-      "name": "Supabase Edge Functions",
-      "description": "Serverless functions for admin actions and user deletion",
-      "files": [
-        "supabase/functions/admin-action/index.ts",
-        "supabase/functions/delete-user/index.ts"
-      ]
+        "src/components/EditProfileDialog.tsx"
+      ],
+      "api_doc": {
+        "openapi": "3.0.0",
+        "info": {
+          "title": "Profile API",
+          "version": "1.0.0"
+        },
+        "paths": {
+          "/user_profiles/{id}": {
+            "get": {
+              "summary": "Get profile details"
+            },
+            "patch": {
+              "summary": "Update profile details"
+            }
+          }
+        }
+      }
     }
   ]
 }
-

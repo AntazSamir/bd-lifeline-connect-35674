@@ -2,7 +2,7 @@
   {
     "id": "TC001",
     "title": "Email/Password Sign Up Flow",
-    "description": "Verify that a new user can successfully sign up using a valid email and password and receives an email confirmation.",
+    "description": "Verify that a new user can successfully sign up using a valid email and password, receives an email confirmation, and can confirm their email.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -12,7 +12,7 @@
       },
       {
         "type": "action",
-        "description": "Enter a valid email address and a strong password"
+        "description": "Input a valid email address and a secure password"
       },
       {
         "type": "action",
@@ -20,22 +20,22 @@
       },
       {
         "type": "assertion",
-        "description": "Verify email confirmation message is shown indicating user must confirm their email"
+        "description": "Check that a confirmation email is sent to the provided email address"
       },
       {
         "type": "action",
-        "description": "Open confirmation email and click the confirmation link"
+        "description": "Open the confirmation email and click the email confirmation link"
       },
       {
         "type": "assertion",
-        "description": "Confirm that the user account is activated and they are redirected to the sign in page"
+        "description": "Verify that the email confirmation is successful and user is redirected to sign in or dashboard"
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Google OAuth Sign In Flow",
-    "description": "Verify that users can sign in successfully using Google OAuth authentication.",
+    "title": "Email/Password Sign In with Confirmed User",
+    "description": "Verify that a user with a confirmed email can sign in successfully with correct credentials.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -45,22 +45,64 @@
       },
       {
         "type": "action",
-        "description": "Click the 'Sign in with Google' button"
+        "description": "Input previously registered email and correct password"
       },
       {
         "type": "action",
-        "description": "Complete the Google OAuth authentication flow"
+        "description": "Submit the sign in form"
       },
       {
         "type": "assertion",
-        "description": "Verify successful sign in and redirect to the user dashboard"
+        "description": "Verify that the user is signed in and redirected to their dashboard or homepage"
       }
     ]
   },
   {
     "id": "TC003",
+    "title": "Email/Password Sign In with Unconfirmed User",
+    "description": "Verify that a user who has not confirmed their email cannot sign in and is prompted to confirm their email.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to sign in with an email that has not been confirmed and valid password"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that sign in is blocked and user receives a message to confirm their email address"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Google OAuth Sign Up and Sign In",
+    "description": "Verify that a user can sign up and sign in using Google OAuth integration successfully.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the Sign In page"
+      },
+      {
+        "type": "action",
+        "description": "Click the Google Sign In button"
+      },
+      {
+        "type": "action",
+        "description": "Complete Google OAuth authentication flow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the user is authenticated and redirected to profile completion or dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
     "title": "Password Reset Flow",
-    "description": "Verify that users can successfully reset their password via email link.",
+    "description": "Verify that users can trigger a password reset email, receive it, and change their password to regain access.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -70,67 +112,92 @@
       },
       {
         "type": "action",
-        "description": "Enter registered email address and submit reset request"
+        "description": "Input registered email address and submit password reset request"
       },
       {
         "type": "assertion",
-        "description": "Verify that password reset email is sent"
+        "description": "Check that password reset email is sent"
       },
       {
         "type": "action",
-        "description": "Open the password reset email and click the reset link"
+        "description": "Open the password reset email and follow the link to the reset page"
       },
       {
         "type": "action",
-        "description": "Enter and confirm a new valid password"
+        "description": "Input and confirm a new valid password"
       },
       {
         "type": "assertion",
-        "description": "Verify password reset success confirmation and ability to sign in with new password"
+        "description": "Verify that password reset is successful and user can sign in with new password"
       }
     ]
   },
   {
-    "id": "TC004",
-    "title": "Profile Completion Mandatory Flow",
-    "description": "Verify that new users are required to complete profile with blood group and location before accessing main features.",
+    "id": "TC006",
+    "title": "User Profile Completion Flow Mandates Blood Group and Location",
+    "description": "Verify that after authentication users are forced to complete their profile including mandatory fields: blood group and location before accessing dashboard.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Sign in as a newly registered user without a completed profile"
+        "description": "Sign in as a new user or OAuth authenticated user with incomplete profile"
       },
       {
         "type": "assertion",
-        "description": "Verify redirect to Complete Profile page"
+        "description": "Verify redirection to profile completion page"
       },
       {
         "type": "action",
-        "description": "Attempt to navigate to dashboard or other app features"
+        "description": "Attempt to submit profile form without selecting blood group or location"
       },
       {
         "type": "assertion",
-        "description": "Verify user cannot access these features before profile completion"
+        "description": "Check validation errors are shown for missing mandatory fields"
       },
       {
         "type": "action",
-        "description": "Fill in required fields: blood group, location, and other mandatory info"
-      },
-      {
-        "type": "action",
-        "description": "Submit the profile completion form"
+        "description": "Fill in valid blood group and location and submit the form"
       },
       {
         "type": "assertion",
-        "description": "Verify successful profile completion and access to full app features"
+        "description": "Verify successful profile completion and redirection to dashboard"
       }
     ]
   },
   {
-    "id": "TC005",
-    "title": "Create New Blood Request",
-    "description": "Verify that authenticated users can create new blood requests with required fields and valid data.",
+    "id": "TC007",
+    "title": "Profile Management: Update and Delete",
+    "description": "Verify that authenticated users can update their profile details and delete their profile with proper confirmations and data changes.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the Profile Management page while signed in"
+      },
+      {
+        "type": "action",
+        "description": "Edit profile fields such as name, blood group, contact info, and save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the updated profile details are saved and displayed correctly"
+      },
+      {
+        "type": "action",
+        "description": "Initiate profile deletion and confirm the action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile is deleted and user is logged out and redirected appropriately"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Blood Request CRUD Operations with Filters and Pagination",
+    "description": "Verify users can create, read, update, and delete blood requests with correct functioning of filtering by urgency and blood group, search, and pagination.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -140,48 +207,43 @@
       },
       {
         "type": "action",
-        "description": "Fill in blood request form with urgency, blood type, hospital location, and contact info"
-      },
-      {
-        "type": "action",
-        "description": "Submit the blood request"
+        "description": "Create a new blood request with valid details including urgency, blood group, hospital location, and contact info"
       },
       {
         "type": "assertion",
-        "description": "Verify that the new request appears in the user's request list and on the urgent requests homepage section"
-      }
-    ]
-  },
-  {
-    "id": "TC006",
-    "title": "Blood Request CRUD Operations and Validation",
-    "description": "Verify create, read, update, delete operations for blood requests including input validation and error handling.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Create a new blood request with valid data"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify successful creation and correct display"
+        "description": "Verify the new blood request appears in the blood request feed"
       },
       {
         "type": "action",
-        "description": "Edit the existing blood request to change urgency and contact info"
+        "description": "Use filtering options to filter requests by blood group and urgency"
       },
       {
         "type": "assertion",
-        "description": "Verify the updates are saved and displayed correctly"
+        "description": "Verify that only matching requests are displayed"
       },
       {
         "type": "action",
-        "description": "Attempt to create or update requests with invalid inputs (e.g. missing required fields, invalid locations)"
+        "description": "Use search functionality to find requests by hospital or requester name"
       },
       {
         "type": "assertion",
-        "description": "Verify appropriate validation error messages are shown and no invalid data is saved"
+        "description": "Verify that search results are accurate"
+      },
+      {
+        "type": "action",
+        "description": "Navigate through paginated blood requests list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify correct items are displayed per page and pagination updates correctly"
+      },
+      {
+        "type": "action",
+        "description": "Update an existing blood request details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updated request details are saved and displayed"
       },
       {
         "type": "action",
@@ -189,94 +251,53 @@
       },
       {
         "type": "assertion",
-        "description": "Verify the request is removed from the list and database"
-      }
-    ]
-  },
-  {
-    "id": "TC007",
-    "title": "Blood Request Filtering, Search and Pagination",
-    "description": "Verify blood requests can be filtered by urgency, blood type, location, and paginated correctly with search functionality.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to the blood request listing page"
-      },
-      {
-        "type": "action",
-        "description": "Apply filters for urgency level and blood group"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify that the requests displayed match filter criteria"
-      },
-      {
-        "type": "action",
-        "description": "Use search box with partial and full keywords to find requests by hospital or contact"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify that search results are relevant and accurate"
-      },
-      {
-        "type": "action",
-        "description": "Navigate through pages using pagination controls"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify correct requests are shown per page and page count is accurate"
-      }
-    ]
-  },
-  {
-    "id": "TC008",
-    "title": "Donor Registration and Availability Toggle",
-    "description": "Verify users can register as donors including input of blood group and location, and toggle availability status reliably.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Authenticate user and navigate to Donor Registration form"
-      },
-      {
-        "type": "action",
-        "description": "Input required donor info: blood group, location, contact details"
-      },
-      {
-        "type": "action",
-        "description": "Submit donor registration"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify user appears in donor list with correct details and default availability status"
-      },
-      {
-        "type": "action",
-        "description": "Toggle donor availability status on"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify donor availability updates immediately in UI and real-time donor searches"
-      },
-      {
-        "type": "action",
-        "description": "Toggle donor availability status off"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify donor is removed from availability lists in real-time"
+        "description": "Verify the request is removed from the list"
       }
     ]
   },
   {
     "id": "TC009",
-    "title": "Donor Search Functionality with Filters and Pagination",
-    "description": "Verify users can search for donors by blood group, availability, and location with functioning pagination over results.",
+    "title": "Donor Registration and Availability Toggle Real-time Update",
+    "description": "Verify users can register as donors, toggle availability status, and that these changes reflect immediately in donor search results and real-time updates.",
     "category": "functional",
-    "priority": "Medium",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Sign in and navigate to Donor Registration page"
+      },
+      {
+        "type": "action",
+        "description": "Fill in donor registration form with valid blood group and location and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify donor is registered and appears in donor list"
+      },
+      {
+        "type": "action",
+        "description": "Toggle donor availability OFF"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify donor is marked unavailable and no longer appears in available donors list in real-time"
+      },
+      {
+        "type": "action",
+        "description": "Toggle donor availability ON"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify donor reappears in donor search and availability status updates instantly across sessions"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Donor Search with Filters and Real-time Status Indicator",
+    "description": "Verify the donor search function filters by blood group and location correctly and real-time updates reflect availability changes with status indicators.",
+    "category": "functional",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
@@ -284,65 +305,36 @@
       },
       {
         "type": "action",
-        "description": "Apply blood group and location filters"
+        "description": "Input filter criteria such as blood group and location and perform search"
       },
       {
         "type": "assertion",
-        "description": "Verify donor list updates accurately to display matching donors"
+        "description": "Verify that donor list reflects only matching donors"
       },
       {
         "type": "action",
-        "description": "Use pagination controls to navigate through multiple pages of donors"
+        "description": "Observe real-time status indicators for donor availability"
       },
       {
         "type": "assertion",
-        "description": "Verify consistency and correctness of donor list per page"
-      }
-    ]
-  },
-  {
-    "id": "TC010",
-    "title": "Real-Time Donor Status Updates",
-    "description": "Verify that donor availability status changes are propagated instantly to subscribed users via real-time updates.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Subscribe to donor status updates on a client"
-      },
-      {
-        "type": "action",
-        "description": "From a different client, change donor availability status"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify real-time status indicator updates immediately on subscribed clients"
-      },
-      {
-        "type": "action",
-        "description": "Simulate network interruption and recovery during updates"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify synchronization of donor statuses resumes correctly without data loss"
+        "description": "Simulate donor toggling availability and ensure status indicators update instantly"
       }
     ]
   },
   {
     "id": "TC011",
-    "title": "Homepage Component Rendering and Content Accuracy",
-    "description": "Verify all homepage sections render correctly and display current data such as urgent requests and donation impact statistics.",
+    "title": "Homepage Components Rendering and Data Accuracy",
+    "description": "Verify that all homepage components (hero section, trusted companies, urgent requests, impact stats, testimonials, educational content) render correctly and show accurate up-to-date information.",
     "category": "ui",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the homepage"
+        "description": "Open the homepage"
       },
       {
         "type": "assertion",
-        "description": "Verify hero section is visible with correct text and images"
+        "description": "Verify hero section loads with correct text and call-to-action"
       },
       {
         "type": "assertion",
@@ -350,143 +342,139 @@
       },
       {
         "type": "assertion",
-        "description": "Verify urgent blood requests are shown and up to date"
+        "description": "Verify urgent blood requests are listed with correct details"
       },
       {
         "type": "assertion",
-        "description": "Verify donation impact statistics reflect accurate values"
+        "description": "Verify donation impact statistics are displayed and numerically accurate"
       },
       {
         "type": "assertion",
-        "description": "Verify educational content and testimonials sections render without errors"
+        "description": "Verify testimonials are visible and formatted correctly"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify educational content sections render with text and images"
       }
     ]
   },
   {
     "id": "TC012",
-    "title": "Navigation and Responsive Layout with Error Boundary Handling",
-    "description": "Verify header and footer links work correctly, theme toggling functions, layout is responsive, and errors are caught gracefully shown in UI.",
+    "title": "Navigation, Layout Responsiveness, Theme Toggling, and Error Boundary Handling",
+    "description": "Verify the header and footer navigation links work correctly across screen sizes, theme toggle changes UI correctly, and error boundaries catch UI errors gracefully.",
     "category": "ui",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Verify all header navigation links route to correct pages"
-      },
-      {
-        "type": "action",
-        "description": "Toggle UI theme between light and dark modes"
+        "description": "Navigate through all header and footer links across multiple pages"
       },
       {
         "type": "assertion",
-        "description": "Verify theme changes persist and UI updates accordingly"
+        "description": "Verify navigation works correctly without broken links"
       },
       {
         "type": "action",
-        "description": "Resize the browser window to different viewports (mobile, tablet, desktop)"
+        "description": "Resize viewport to mobile, tablet, and desktop layouts"
       },
       {
         "type": "assertion",
-        "description": "Verify navigation and layout adapt properly without content clipping or overlap"
+        "description": "Verify layout adapts and remains usable and visually consistent"
       },
       {
         "type": "action",
-        "description": "Trigger a component error manually within a wrapped subtree"
+        "description": "Toggle theme from light to dark and vice versa"
       },
       {
         "type": "assertion",
-        "description": "Verify error boundary displays user-friendly error message and does not crash the app"
+        "description": "Verify all UI components update styling accordingly without glitches"
+      },
+      {
+        "type": "action",
+        "description": "Force a runtime error in a component to trigger error boundary"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error boundary catches error and displays fallback UI gracefully"
       }
     ]
   },
   {
     "id": "TC013",
-    "title": "Database Security and Supabase RLS Enforcement",
-    "description": "Verify that database Row-Level Security policies enforce user data isolation and prevent unauthorized access.",
+    "title": "Security: Database Access Rules Enforcement",
+    "description": "Verify that database operations enforce Row Level Security (RLS) policies and users cannot access or modify data they do not own.",
     "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Sign in as User A and attempt to read, update, and delete blood requests and profiles owned by User B"
+        "description": "Authenticate as User A and attempt to access User B's profile, blood requests, or donor entries directly via API or UI"
       },
       {
         "type": "assertion",
-        "description": "Verify access is denied and no data belonging to User B can be modified or fetched"
+        "description": "Verify access is denied or no data is returned"
       },
       {
         "type": "action",
-        "description": "Sign in as User B and perform legal operations on own data"
+        "description": "Attempt unauthorized update or deletion on another user's data"
       },
       {
         "type": "assertion",
-        "description": "Verify allowed operations complete successfully with proper data modifications"
+        "description": "Verify that database operation is rejected and no changes occur"
       }
     ]
   },
   {
     "id": "TC014",
-    "title": "Additional Pages Accessibility and Content Verification",
-    "description": "Verify About, Contact, and 404 Not Found pages are accessible, contain correct content, and handle invalid routes gracefully.",
-    "category": "functional",
-    "priority": "Low",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to About page"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify About page content matches specification and renders without errors"
-      },
-      {
-        "type": "action",
-        "description": "Navigate to Contact page"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify Contact page includes necessary contact info and form or links as designed"
-      },
-      {
-        "type": "action",
-        "description": "Navigate to a random invalid URL not mapped in routing"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify 404 Not Found page is displayed with appropriate messaging and navigation options"
-      }
-    ]
-  },
-  {
-    "id": "TC015",
-    "title": "Supabase Edge Function Admin and User Deletion Actions",
-    "description": "Verify Supabase edge functions for admin actions and user deletion operate securely and trigger expected backend changes.",
+    "title": "Real-time Subscription Reliability for Donor Status Updates",
+    "description": "Verify that real-time subscriptions to donor availability updates reliably deliver status changes and update UI components instantly.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Invoke admin-action edge function with valid admin credentials to perform an administrative task"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the admin action completes successfully with correct backend effects"
+        "description": "Open donor list in one session"
       },
       {
         "type": "action",
-        "description": "Invoke user deletion edge function with authenticated user token to delete user's account"
+        "description": "In another session, toggle donor availability status"
       },
       {
         "type": "assertion",
-        "description": "Verify user data is removed from database and session is invalidated"
+        "description": "Verify that the UI updates instantly in the first session reflecting donor status changes"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Additional Pages Accessibility and Content Validation",
+    "description": "Verify that About, Contact, and 404 Not Found pages are accessible from navigation or direct URL and display correct content without errors.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the About page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify About page content loads and displays correctly"
       },
       {
         "type": "action",
-        "description": "Attempt edge function access without proper authentication"
+        "description": "Navigate to the Contact page"
       },
       {
         "type": "assertion",
-        "description": "Verify access is denied and no operation is performed"
+        "description": "Verify Contact page content and contact form UI are correct"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to an undefined route to trigger 404"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify 404 Not Found page is displayed with appropriate messaging and navigation options"
       }
     ]
   }

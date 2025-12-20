@@ -2,16 +2,16 @@
   "status": "commited",
   "type": "frontend",
   "scope": "codebase",
-  "localEndpoint": "http://localhost:8080",
+  "localEndpoint": "http://localhost:8082",
   "loginUser": "bellalhasan15@gmail.com",
-  "loginPassword": "221902264!@Ss",
+  "loginPassword": "221902264",
   "executionArgs": {
     "projectName": "bd-lifeline-connect-35674",
-    "projectPath": "C:\\Users\\rocks\\OneDrive\\Desktop\\HTML\\bd-lifeline-connect-35674",
+    "projectPath": "c:\\Users\\rocks\\OneDrive\\Desktop\\HTML\\bd-lifeline-connect-35674",
     "testIds": [],
-    "additionalInstruction": "Test all critical user flows including authentication, blood request management, donor search, and profile management. Focus on finding bugs and issues.",
+    "additionalInstruction": "Test core flows: authentication (sign up/sign in) if possible, profile completion, blood request creation, and donor search. Verify data persistence and route transitions. Project is on port 8082.",
     "envs": {
-      "API_KEY": "sk-user-AxbvUglOEpQ_kLYH6e-Grby9usZ6KQeMRaAntck0StLRQxcJ69u4cxlVkbaI8Ihs_O4iZSKDOVLCLif-5qqxY1e_EOF-zkVttXw5vLsbW7zD6KOLIkjvnsXHjs_PAhOaZis"
+      "API_KEY": "sk-user-WwuykHMW5DohySsf_QA8mOIMdYGMpQyt6-Rnc3KvvUz679EScHYYNQACQbeff8c6kRUAHJJy3DEiw4ff5VZqR4jXJdrnyqhLnVVGYnKfI-D2UcXkkBgDESDibxsnpVVNNnc"
     }
   }
 }
