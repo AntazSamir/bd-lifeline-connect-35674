@@ -10,12 +10,16 @@ import { motion } from "framer-motion";
 import LiveEmergencyTicker from "@/components/LiveEmergencyTicker";
 import TrustBadges from "@/components/TrustBadges";
 import SmartQuickSearch from "@/components/SmartQuickSearch";
-import heroBackground from "@/assets/hero-background.jpg";
+import heroDarkBg from "@/assets/hero-gradient-bg.png";
+import heroLightBg from "@/assets/hero-light-bg.png"; // Light mode background
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "next-themes";
 
 const Hero = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
@@ -23,6 +27,7 @@ const Hero = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
+    setMounted(true);
     getCurrentUser().then(user => {
       setIsLoggedIn(!!user);
     }).catch(() => {
@@ -70,16 +75,31 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col justify-center overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.85) 100%), url(${heroBackground})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
+      className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-background"
     >
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+      {/* Animated Background Layers */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        {/* Dark Mode Background */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${mounted && resolvedTheme === 'dark' ? 'opacity-100' : 'opacity-0'}`}
+          style={{ backgroundImage: `url(${heroDarkBg})` }}
+        />
+
+        {/* Light Mode Background */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${mounted && resolvedTheme === 'light' ? 'opacity-100' : 'opacity-0'}`}
+          style={{ backgroundImage: `url(${heroLightBg})` }}
+        />
+
+        {/* Gradient Overlay (Theme Responsive) */}
+        <div
+          className="absolute inset-0 transition-all duration-1000 ease-in-out"
+          style={{ background: 'var(--hero-gradient)' }}
+        />
+
+        {/* Depth Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+      </div>
 
       <div className="container relative z-10 px-4 py-16 md:py-24">
         <div className="max-w-6xl mx-auto">
@@ -123,7 +143,7 @@ const Hero = () => {
             <Link to="/find-donors">
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 group"
+                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 group border-[0.3px] border-white"
               >
                 <Search className="h-5 w-5 mr-2" />
                 {t('findBloodNow')}

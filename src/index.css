@@ -9,17 +9,21 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Core Background & Text */
-    --background: 0 0% 100%; /* Pure white */
-    --foreground: 240 10% 3.9%; /* Deep slate */
+    --background: 0 0% 100%;
+    /* Pure white */
+    --foreground: 240 10% 3.9%;
+    /* Deep slate */
 
     /* Card & Popover */
-    --card: 0 0% 100%; /* Pure white */
+    --card: 0 0% 100%;
+    /* Pure white */
     --card-foreground: 215 25% 27%;
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 27%;
 
     /* Brand/Accent Colors */
-    --destructive: 0 84% 60%; /* Vibrant red */
+    --destructive: 0 84% 60%;
+    /* Vibrant red */
     --destructive-foreground: 0 0% 100%;
 
     /* Primary - Blood Red */
@@ -38,7 +42,8 @@ All colors MUST be HSL.
     --trust-blue: 210 80% 50%;
     --trust-white: 0 0% 100%;
     --hope-green: 142 76% 36%;
-    --urgent: 25 95% 53%; /* Orange for urgent */
+    --urgent: 25 95% 53%;
+    /* Orange for urgent */
     --success: 142 76% 36%;
 
     /* Muted Colors */
@@ -92,7 +97,8 @@ All colors MUST be HSL.
 
   .dark {
     /* Core Background & Text - Dark Mode */
-    --background: 240 10% 3.9%; /* Rich dark slate */
+    --background: 240 10% 3.9%;
+    /* Rich dark slate */
     --foreground: 0 0% 98%;
 
     /* Card & Popover - Dark Mode */
@@ -161,6 +167,7 @@ All colors MUST be HSL.
     --brand: 266 70% 60%;
     --brand-foreground: 270 100% 98%;
   }
+
   .theme {
     --animate-marquee: marquee var(--duration) linear infinite;
   }
@@ -176,7 +183,7 @@ All colors MUST be HSL.
     min-width: 320px;
     overflow-x: hidden;
   }
-  
+
   html {
     overflow-x: hidden;
   }
@@ -271,10 +278,13 @@ All colors MUST be HSL.
   }
 
   @keyframes pulseSubtle {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: scale(1);
       opacity: 1;
     }
+
     50% {
       transform: scale(1.02);
       opacity: 0.9;
@@ -287,9 +297,12 @@ All colors MUST be HSL.
   }
 
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
       transform: translateY(-10px);
     }
@@ -301,9 +314,12 @@ All colors MUST be HSL.
   }
 
   @keyframes iconBounce {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: scale(1);
     }
+
     50% {
       transform: scale(1.2);
     }
@@ -311,12 +327,10 @@ All colors MUST be HSL.
 
   /* Shimmer loading effect */
   .shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--muted)) 0%,
-      hsl(var(--muted-foreground) / 0.1) 50%,
-      hsl(var(--muted)) 100%
-    );
+    background: linear-gradient(90deg,
+        hsl(var(--muted)) 0%,
+        hsl(var(--muted-foreground) / 0.1) 50%,
+        hsl(var(--muted)) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
@@ -325,6 +339,7 @@ All colors MUST be HSL.
     0% {
       background-position: 200% 0;
     }
+
     100% {
       background-position: -200% 0;
     }
@@ -354,13 +369,11 @@ All colors MUST be HSL.
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: linear-gradient(
-      45deg,
-      hsl(var(--primary)),
-      hsl(var(--primary) / 0.5),
-      hsl(var(--primary)),
-      hsl(var(--primary) / 0.5)
-    );
+    background: linear-gradient(45deg,
+        hsl(var(--primary)),
+        hsl(var(--primary) / 0.5),
+        hsl(var(--primary)),
+        hsl(var(--primary) / 0.5));
     background-size: 300% 300%;
     animation: glowBorder 3s ease infinite;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -375,9 +388,12 @@ All colors MUST be HSL.
   }
 
   @keyframes glowBorder {
-    0%, 100% {
+
+    0%,
+    100% {
       background-position: 0% 50%;
     }
+
     50% {
       background-position: 100% 50%;
     }
@@ -395,6 +411,7 @@ All colors MUST be HSL.
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -405,6 +422,7 @@ All colors MUST be HSL.
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -419,6 +437,7 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -429,27 +448,32 @@ All colors MUST be HSL.
 
 @theme inline {
   @keyframes marquee {
-  from {
-    transform: translateX(0);
+    from {
+      transform: translateX(0);
     }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
-    }
-  }
-  @keyframes marquee {
-  from {
-    transform: translateX(0);
-    }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
+
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
     }
   }
+
   @keyframes marquee {
-  from {
-    transform: translateX(0);
+    from {
+      transform: translateX(0);
     }
-  to {
-    transform: translateX(calc(-100% - var(--gap)));
+
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
     }
   }
 }
