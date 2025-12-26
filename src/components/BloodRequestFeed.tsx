@@ -79,7 +79,7 @@ const BloodRequestCard = memo(({ request }: { request: BloodRequest }) => {
   const timeAgo = useMemo(() => formatTimeAgo(request.created_at || new Date().toISOString(), t), [request.created_at, t]);
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card>
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
           <div className="flex items-center space-x-3">

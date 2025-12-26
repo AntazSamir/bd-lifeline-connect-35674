@@ -456,7 +456,7 @@ const FindDonors = () => {
                 <div className="text-destructive">{t('failedToLoadDonors')} {error}</div>
               )}
               {!loading && !error && filteredDonors.map((donor) => (
-                <Card key={donor.id} className="hover:shadow-medium transition-shadow duration-300">
+                <Card key={donor.id}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4">
