@@ -80,13 +80,9 @@ const ExitIntentPopup = () => {
 
               {/* Animated heart background */}
               <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary/10 to-transparent">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="absolute top-8 left-1/2 -translate-x-1/2"
-                >
+                <div className="absolute top-8 left-1/2 -translate-x-1/2 animate-pulse">
                   <Heart className="w-12 h-12 text-primary fill-primary/20" />
-                </motion.div>
+                </div>
               </div>
 
               {/* Content */}
