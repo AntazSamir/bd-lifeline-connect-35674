@@ -2,10 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, Clock, Shield, Stethoscope, Sparkles, Droplets } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import saveLivesImg from "@/assets/illustration-save-lives.png";
-import quickEasyImg from "@/assets/illustration-quick-easy.png";
-import healthBenefitsImg from "@/assets/illustration-health-benefits.png";
-import healthCheckImg from "@/assets/illustration-health-check.png";
+
 
 const WhyDonate = () => {
   const { t } = useLanguage();
@@ -16,32 +13,28 @@ const WhyDonate = () => {
       titleKey: "saveLife",
       emotionalKey: "saveLifeEmo",
       medicalKey: "saveLifeMed",
-      gradient: "from-rose-500 to-pink-500",
-      image: saveLivesImg
+      gradient: "from-rose-500 to-pink-500"
     },
     {
       icon: Clock,
       titleKey: "quickEasy",
       emotionalKey: "quickEasyEmo",
       medicalKey: "quickEasyMed",
-      gradient: "from-emerald-500 to-green-500",
-      image: quickEasyImg
+      gradient: "from-emerald-500 to-green-500"
     },
     {
       icon: Stethoscope,
       titleKey: "freeCheckup",
       emotionalKey: "freeCheckupEmo",
       medicalKey: "freeCheckupMed",
-      gradient: "from-blue-500 to-indigo-500",
-      image: healthCheckImg
+      gradient: "from-blue-500 to-indigo-500"
     },
     {
       icon: Shield,
       titleKey: "healthBenefits",
       emotionalKey: "healthBenefitsEmo",
       medicalKey: "healthBenefitsMed",
-      gradient: "from-orange-500 to-amber-500",
-      image: healthBenefitsImg
+      gradient: "from-orange-500 to-amber-500"
     },
   ];
 
