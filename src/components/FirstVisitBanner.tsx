@@ -49,13 +49,9 @@ const FirstVisitBanner = () => {
               <div className="flex items-center justify-between py-3 gap-4">
                 {/* Left content */}
                 <div className="flex items-center gap-4 flex-1">
-                  <motion.div
-                    animate={{ rotate: [0, 15, -15, 0] }}
-                    transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-                    className="hidden sm:flex items-center justify-center w-10 h-10 bg-primary-foreground/20 rounded-full"
-                  >
+                  <div className="hidden sm:flex items-center justify-center w-10 h-10 bg-primary-foreground/20 rounded-full animate-wiggle">
                     <Sparkles className="w-5 h-5" />
-                  </motion.div>
+                  </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                     <span className="font-bold text-sm sm:text-base">

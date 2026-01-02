@@ -41,20 +41,9 @@ export function ThankYouDialog({ open, onOpenChange }: ThankYouDialogProps) {
                         </div>
 
                         {/* Floating Hearts */}
-                        <motion.div
-                            animate={{
-                                y: [-10, -20, -10],
-                                opacity: [0.5, 1, 0.5]
-                            }}
-                            transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                            }}
-                            className="absolute -top-2 -right-2"
-                        >
+                        <div className="absolute -top-2 -right-2 animate-bounce">
                             <Heart className="w-6 h-6 text-primary fill-primary" />
-                        </motion.div>
+                        </div>
                     </motion.div>
 
                     {/* Thank You Message */}
