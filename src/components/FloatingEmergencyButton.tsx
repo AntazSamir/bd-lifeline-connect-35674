@@ -78,12 +78,7 @@ const FloatingEmergencyButton = () => {
       </motion.button>
 
       {!isOpen && (
-        <motion.div
-          initial={{ scale: 1 }}
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute -top-1 -right-1 w-4 h-4 bg-urgent rounded-full border-2 border-background"
-        />
+        <span className="absolute -top-1 -right-1 w-4 h-4 bg-urgent rounded-full border-2 border-background animate-ping opacity-75" />
       )}
     </div>
   );
