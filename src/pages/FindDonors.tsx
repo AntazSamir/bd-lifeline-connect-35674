@@ -21,7 +21,10 @@ import {
   Droplet,
   Users,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Phone,
+  ArrowRight
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -37,10 +40,16 @@ import { DonorListSkeleton } from "@/components/skeletons/DonorCardSkeleton";
 import FiltersSkeleton from "@/components/skeletons/FiltersSkeleton";
 import PageHeaderSkeleton from "@/components/skeletons/PageHeaderSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+import heroDarkBg from "@/assets/hero-gradient-bg.png";
+import heroLightBg from "@/assets/hero-light-bg.png";
+import { useTheme } from "next-themes";
 
 const FindDonors = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [searchParams] = useSearchParams();
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -61,6 +70,10 @@ const FindDonors = () => {
   });
 
   const { donors, loading, error } = useDonors();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Sync filters with URL parameters
   useEffect(() => {
@@ -92,7 +105,6 @@ const FindDonors = () => {
 
           setIsCurrentUserDonor(!!donorData);
 
-          // Fetch user profile for pre-filling registration form
           const { data: profile } = await supabase
             .from('user_profiles')
             .select('*')
@@ -118,11 +130,8 @@ const FindDonors = () => {
       const matchesAvailability = filters.availability
         ? (filters.availability === "now" ? d.is_available : true)
         : true;
-
-      // Urgent availability filter
       const matchesUrgent = filters.urgentOnly ? d.is_available : true;
 
-      // Last donation date filter
       let matchesLastDonation = true;
       if (filters.lastDonationDate && d.last_donation_date) {
         const lastDonation = new Date(d.last_donation_date);
@@ -140,16 +149,9 @@ const FindDonors = () => {
         }
       }
 
-      // Gender filter
       const matchesGender = filters.gender ? (filters.gender === "any" || (d as Donor & { gender?: string }).gender === filters.gender) : true;
-
-
-
-      // Verified only filter
       const matchesVerified = filters.verifiedOnly ? ((d as Donor & { verified?: boolean }).verified === true) : true;
-
-      // Distance filter (placeholder - would need actual location data to calculate)
-      const matchesDistance = filters.distance ? true : true; // TODO: Implement distance calculation when location data is available
+      const matchesDistance = filters.distance ? true : true;
 
       return matchesGroup && matchesLocation && matchesAvailability && matchesUrgent && matchesLastDonation && matchesGender && matchesVerified && matchesDistance;
     });
@@ -215,35 +217,113 @@ const FindDonors = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container py-8">
-        {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-foreground">{t('findBloodDonors')}</h1>
-              <RealtimeStatusIndicator />
-            </div>
-            <p className="text-muted-foreground">{t('connectVerifiedDonors')}</p>
-          </div>
-          {!checkingDonorStatus && !isCurrentUserDonor && (
-            <Button size="lg" className="gap-2" onClick={handleRegisterClick}>
-              <Heart className="h-5 w-5" />
-              {t('registerAsDonor')}
-            </Button>
-          )}
+      {/* Hero Header Section */}
+      <section className="relative overflow-hidden bg-background">
+        {/* Background */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${mounted && resolvedTheme === 'dark' ? 'opacity-60' : 'opacity-0'}`}
+            style={{ backgroundImage: `url(${heroDarkBg})` }}
+          />
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${mounted && resolvedTheme === 'light' ? 'opacity-30' : 'opacity-0'}`}
+            style={{ backgroundImage: `url(${heroLightBg})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-background" />
         </div>
 
+        <div className="container relative z-10 py-12 md:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6"
+            >
+              <Users className="h-4 w-4" />
+              <span className="text-sm font-semibold">{t('findBloodDonors')}</span>
+              <RealtimeStatusIndicator />
+            </motion.div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              <span className="text-foreground">{t('connectVerifiedDonors').split(' ').slice(0, 2).join(' ')}</span>{' '}
+              <span className="bg-gradient-to-r from-primary via-primary-light to-urgent bg-clip-text text-transparent">
+                {t('connectVerifiedDonors').split(' ').slice(2).join(' ')}
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              Find verified blood donors near you. Every donor on our platform is ready to save lives.
+            </p>
+
+            {/* Quick Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap justify-center gap-6 mb-8"
+            >
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <Users className="h-4 w-4 text-trust-blue" />
+                <span className="text-sm font-medium">{donors.length}+ {t('activeDonors')}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <ShieldCheck className="h-4 w-4 text-hope-green" />
+                <span className="text-sm font-medium">{t('verifiedDonors')}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <Clock className="h-4 w-4 text-urgent" />
+                <span className="text-sm font-medium">{t('availableNow')}</span>
+              </div>
+            </motion.div>
+
+            {/* CTA Button */}
+            {!checkingDonorStatus && !isCurrentUserDonor && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button 
+                  size="lg" 
+                  className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
+                  onClick={handleRegisterClick}
+                >
+                  <Heart className="h-5 w-5" />
+                  {t('registerAsDonor')}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="container py-8">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className={`transition-all ${hasActiveFilters ? 'border-primary/50 bg-accent/5' : 'bg-muted/20'}`}>
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="lg:col-span-1"
+          >
+            <Card className={`sticky top-24 transition-all border-border/50 ${hasActiveFilters ? 'border-primary/30 shadow-lg shadow-primary/5' : 'bg-card'}`}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center text-lg">
-                    <Filter className="h-5 w-5 mr-2 text-primary" />
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mr-2">
+                      <Filter className="h-4 w-4 text-primary" />
+                    </div>
                     {t('filters')}
                     {hasActiveFilters && (
-                      <Badge variant="secondary" className="ml-2 h-5 text-xs">
+                      <Badge variant="secondary" className="ml-2 h-5 text-xs bg-primary/10 text-primary">
                         {t('active')}
                       </Badge>
                     )}
@@ -273,13 +353,13 @@ const FindDonors = () => {
                 <CollapsibleContent>
                   <CardContent className="space-y-4 pt-0">
                     {/* Blood Group Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.bloodGroup ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.bloodGroup ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Droplet className="h-4 w-4 mr-2 text-primary" />
                         {t('bloodGroup')}
                       </label>
                       <Select value={filters.bloodGroup} onValueChange={(value) => setFilters({ ...filters, bloodGroup: value })}>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-border/50">
                           <SelectValue placeholder={t('selectBloodGroup')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
@@ -291,7 +371,7 @@ const FindDonors = () => {
                     </div>
 
                     {/* Location Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.location ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.location ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <MapPin className="h-4 w-4 mr-2 text-primary" />
                         {t('location')}
@@ -300,23 +380,21 @@ const FindDonors = () => {
                         <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder={t('enterAreaDistrict')}
-                          className="pl-10 bg-background"
+                          className="pl-10 bg-background border-border/50"
                           value={filters.location}
                           onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                         />
                       </div>
                     </div>
 
-
-
                     {/* Gender Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.gender ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.gender ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Users className="h-4 w-4 mr-2 text-primary" />
                         {t('gender')}
                       </label>
                       <Select value={filters.gender} onValueChange={(value) => setFilters({ ...filters, gender: value })}>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-border/50">
                           <SelectValue placeholder={t('selectGender')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
@@ -329,13 +407,13 @@ const FindDonors = () => {
                     </div>
 
                     {/* Last Donation Date Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.lastDonationDate ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.lastDonationDate ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Calendar className="h-4 w-4 mr-2 text-primary" />
                         {t('lastDonation')}
                       </label>
                       <Select value={filters.lastDonationDate} onValueChange={(value) => setFilters({ ...filters, lastDonationDate: value })}>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-border/50">
                           <SelectValue placeholder={t('selectPeriod')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
@@ -347,13 +425,13 @@ const FindDonors = () => {
                     </div>
 
                     {/* Availability Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.availability ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.availability ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <Clock className="h-4 w-4 mr-2 text-primary" />
                         {t('availability')}
                       </label>
                       <Select value={filters.availability} onValueChange={(value) => setFilters({ ...filters, availability: value })}>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-border/50">
                           <SelectValue placeholder={t('selectAvailability')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
@@ -365,13 +443,13 @@ const FindDonors = () => {
                     </div>
 
                     {/* Distance Filter */}
-                    <div className={`p-3 rounded-lg transition-colors ${filters.distance ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className={`p-3 rounded-xl transition-all ${filters.distance ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'bg-muted/30'}`}>
                       <label className="text-sm font-medium mb-2 flex items-center">
                         <MapPin className="h-4 w-4 mr-2 text-primary" />
                         {t('distanceLabel')}
                       </label>
                       <Select value={filters.distance} onValueChange={(value) => setFilters({ ...filters, distance: value })}>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-border/50">
                           <SelectValue placeholder={t('selectDistance')} />
                         </SelectTrigger>
                         <SelectContent className="bg-popover">
@@ -383,10 +461,10 @@ const FindDonors = () => {
                     </div>
 
                     {/* Toggle Filters */}
-                    <div className="space-y-3 pt-2 border-t">
-                      <div className={`flex items-center justify-between p-3 rounded-lg transition-colors ${filters.urgentOnly ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                    <div className="space-y-3 pt-2 border-t border-border/50">
+                      <div className={`flex items-center justify-between p-3 rounded-xl transition-all ${filters.urgentOnly ? 'bg-urgent/10 border border-urgent/20' : 'bg-muted/30'}`}>
                         <div className="flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4 text-primary" />
+                          <AlertCircle className="h-4 w-4 text-urgent" />
                           <label htmlFor="urgent-only" className="text-sm font-medium cursor-pointer">
                             {t('urgentAvailability')}
                           </label>
@@ -398,9 +476,9 @@ const FindDonors = () => {
                         />
                       </div>
 
-                      <div className={`flex items-center justify-between p-3 rounded-lg transition-colors ${filters.verifiedOnly ? 'bg-primary/5 border border-primary/20' : 'bg-background'}`}>
+                      <div className={`flex items-center justify-between p-3 rounded-xl transition-all ${filters.verifiedOnly ? 'bg-hope-green/10 border border-hope-green/20' : 'bg-muted/30'}`}>
                         <div className="flex items-center gap-2">
-                          <ShieldCheck className="h-4 w-4 text-primary" />
+                          <ShieldCheck className="h-4 w-4 text-hope-green" />
                           <label htmlFor="verified-only" className="text-sm font-medium cursor-pointer">
                             {t('verifiedDonorsFilter')}
                           </label>
@@ -416,28 +494,41 @@ const FindDonors = () => {
                 </CollapsibleContent>
               </Collapsible>
             </Card>
-          </div>
+          </motion.div>
 
           {/* Donors List */}
-          <div className="lg:col-span-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="lg:col-span-3"
+          >
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder={t('searchDonorsPlaceholder')}
-                  className="pl-10"
+                  className="pl-12 h-12 text-base bg-card border-border/50 rounded-xl"
                 />
               </div>
             </div>
 
             {/* Results Header */}
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-muted-foreground">
-                {t('showingDonors', { count: filteredDonors.length })}
-              </p>
+            <div className="flex items-center justify-between mb-6 bg-card/50 rounded-xl p-4 border border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">
+                    {t('showingDonors', { count: filteredDonors.length })}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Ready to help save lives</p>
+                </div>
+              </div>
               <Select defaultValue="distance">
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-48 bg-background border-border/50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -453,81 +544,112 @@ const FindDonors = () => {
             <div className="space-y-4">
               {loading && <DonorListSkeleton count={5} />}
               {error && !loading && (
-                <div className="text-destructive">{t('failedToLoadDonors')} {error}</div>
+                <div className="text-destructive bg-destructive/10 p-4 rounded-xl">{t('failedToLoadDonors')} {error}</div>
               )}
-              {!loading && !error && filteredDonors.map((donor) => (
-                <Card key={donor.id}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="w-16 h-16">
-                          <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                            {(donor.name || '').split(' ').map(n => n[0]).join('') || 'D'}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="font-semibold text-lg">{donor.name || t('anonymousDonor')}</h3>
-                          </div>
-
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {donor.location || '—'}
+              {!loading && !error && filteredDonors.map((donor, index) => (
+                <motion.div
+                  key={donor.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Card className="group overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+                    {/* Gradient accent on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <CardContent className="p-6 relative">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start space-x-4">
+                          {/* Avatar with blood type badge */}
+                          <div className="relative">
+                            <Avatar className="w-16 h-16 border-2 border-primary/20 group-hover:border-primary/40 transition-colors">
+                              <AvatarFallback className="text-lg bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold">
+                                {(donor.name || '').split(' ').map(n => n[0]).join('') || 'D'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shadow-lg">
+                              {donor.blood_group}
                             </div>
                           </div>
 
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="outline" className="text-primary border-primary">
-                              {donor.blood_group}
-                            </Badge>
-                            <Badge className={getAvailabilityBadgeClass(donor.is_available)}>
-                              {donor.is_available ? t('availableNow') : t('notAvailable')}
-                            </Badge>
-                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                                {donor.name || t('anonymousDonor')}
+                              </h3>
+                              {(donor as Donor & { verified?: boolean }).verified && (
+                                <ShieldCheck className="h-5 w-5 text-hope-green" />
+                              )}
+                            </div>
 
-                          <div className="flex items-center space-x-4 text-sm">
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                {donor.location || '—'}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge className={`${getAvailabilityBadgeClass(donor.is_available)} shadow-sm`}>
+                                {donor.is_available ? (
+                                  <><Sparkles className="h-3 w-3 mr-1" />{t('availableNow')}</>
+                                ) : (
+                                  t('notAvailable')
+                                )}
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center text-sm text-muted-foreground">
                               <Heart className="h-4 w-4 text-primary mr-1" />
                               {donor.last_donation_date ? t('lastDonationPrefix') + donor.last_donation_date : t('noRecentDonation')}
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex flex-col space-y-2">
-                        <Button size="sm" onClick={() => navigate("/request-blood")}>
-                          <Droplet className="h-4 w-4 mr-2" />
-                          {t('postRequest')}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedDonor(donor);
-                            setProfileDialogOpen(true);
-                          }}
-                        >
-                          {t('viewProfile')}
-                        </Button>
+                        <div className="flex flex-col gap-2">
+                          <Button 
+                            size="sm" 
+                            onClick={() => navigate("/request-blood")}
+                            className="shadow-sm group-hover:shadow-lg group-hover:shadow-primary/20 transition-all"
+                          >
+                            <Droplet className="h-4 w-4 mr-2" />
+                            {t('postRequest')}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedDonor(donor);
+                              setProfileDialogOpen(true);
+                            }}
+                            className="border-border/50 hover:border-primary/30"
+                          >
+                            {t('viewProfile')}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
               {!loading && !error && filteredDonors.length === 0 && (
-                <div className="text-muted-foreground">{t('noDonorsFound')}</div>
+                <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
+                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-lg font-medium text-foreground mb-2">{t('noDonorsFound')}</p>
+                  <p className="text-muted-foreground">Try adjusting your filters</p>
+                </div>
               )}
             </div>
 
             {/* Load More */}
-            <div className="text-center mt-8">
-              <Button variant="outline" size="lg">
-                {t('loadMoreDonors')}
-              </Button>
-            </div>
-          </div>
+            {filteredDonors.length > 0 && (
+              <div className="text-center mt-8">
+                <Button variant="outline" size="lg" className="border-border/50 hover:border-primary/30">
+                  {t('loadMoreDonors')}
+                </Button>
+              </div>
+            )}
+          </motion.div>
         </div>
       </main>
 
