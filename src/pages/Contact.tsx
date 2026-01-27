@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,9 @@ import {
   Send,
   Heart,
   MessageCircle,
-  HelpCircle
+  HelpCircle,
+  Users,
+  ShieldCheck
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -24,6 +26,10 @@ import { ThankYouDialog } from "@/components/ThankYouDialog";
 import { getCurrentUser } from "@/services/dbService";
 import { supabase } from "@/services/supabaseClient";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
+import heroDarkBg from "@/assets/hero-gradient-bg.png";
+import heroLightBg from "@/assets/hero-light-bg.png";
 
 // Base validation schema for type inference
 const contactSchema = z.object({
@@ -40,6 +46,8 @@ const Contact = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrationDialogOpen, setRegistrationDialogOpen] = useState(false);
   const [thankYouDialogOpen, setThankYouDialogOpen] = useState(false);
@@ -52,6 +60,10 @@ const Contact = () => {
     message: ""
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -244,19 +256,75 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container py-16">
-        {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-            <MessageCircle className="h-8 w-8 text-primary" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {t('contactTitle')}
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('contactSubtitle')}
-          </p>
+      {/* Hero Section with Background */}
+      <section className="relative overflow-hidden bg-background">
+        {/* Background */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${mounted && resolvedTheme === 'dark' ? 'opacity-60' : 'opacity-0'}`}
+            style={{ backgroundImage: `url(${heroDarkBg})` }}
+          />
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${mounted && resolvedTheme === 'light' ? 'opacity-30' : 'opacity-0'}`}
+            style={{ backgroundImage: `url(${heroLightBg})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-background" />
         </div>
+
+        <div className="container relative z-10 py-12 md:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="text-sm font-semibold">{t('contactTitle')}</span>
+            </motion.div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              <span className="text-foreground">We're Here to</span>{' '}
+              <span className="bg-gradient-to-r from-primary via-primary-light to-urgent bg-clip-text text-transparent">
+                Help You
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              {t('contactSubtitle')}
+            </p>
+
+            {/* Quick Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap justify-center gap-4"
+            >
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <Phone className="h-4 w-4 text-trust-blue" />
+                <span className="text-sm font-medium">24/7 Hotline</span>
+              </div>
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <Mail className="h-4 w-4 text-hope-green" />
+                <span className="text-sm font-medium">Quick Response</span>
+              </div>
+              <div className="flex items-center gap-2 bg-card/80 backdrop-blur border border-border/50 rounded-full px-4 py-2">
+                <ShieldCheck className="h-4 w-4 text-urgent" />
+                <span className="text-sm font-medium">Trusted Support</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="container py-8">
 
         {/* Blood Donor Telephone Enquiries Section */}
         <Card noHover className="mb-16 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
